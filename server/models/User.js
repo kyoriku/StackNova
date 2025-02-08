@@ -45,7 +45,6 @@ User.init(
   {
     // Lifecycle hooks for password hashing
     // Automatically hash passwords before create and update operations
-    
     hooks: {
       beforeCreate: async (newUserData) => {
         newUserData.password = await bcrypt.hash(newUserData.password, 12);
