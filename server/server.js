@@ -12,11 +12,9 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-/** 
- * Session configuration for user authentication
- * Includes security settings for cookies and session storage
- * Uses Sequelize to persist session data in the database
- */
+// Session configuration for user authentication
+// Includes security settings for cookies and session storage
+// Uses Sequelize to persist session data in the database
 const sess = {
   secret: process.env.SESSION_SECRET,
   cookie: {
@@ -43,10 +41,8 @@ app.use(express.urlencoded({ extended: true }));
 // Set up routes
 app.use(routes);
 
-/** 
- * Initialize database connection and start server
- * force: false prevents database from being dropped and recreated
- */
+// Initialize database connection and start server
+// force: false prevents database from being dropped and recreated
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

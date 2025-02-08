@@ -7,11 +7,9 @@ require('dotenv').config();
 // Sequelize connection instance
 let sequelize;
 
-/** 
- * Initialize database connection based on environment
- * Creates connection using JAWSDB_URL for Heroku deployment
- * or local credentials for development environment
- */
+// Initialize database connection based on environment
+// Creates connection using JAWSDB_URL for Heroku deployment
+// or local credentials for development environment
 if (process.env.JAWSDB_URL) {
   sequelize = new Sequelize(process.env.JAWSDB_URL);
 } else {
