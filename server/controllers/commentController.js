@@ -1,5 +1,6 @@
 // controllers/commentController.js
 const { Comment, User } = require('../models');
+const redisService = require('../utils/redis');
 
 const commentController = {
   // Get comments for a post
@@ -30,6 +31,9 @@ const commentController = {
         user_id: req.session.user_id,
         post_id: req.body.post_id
       });
+
+      // Clear cache for the associated post and its comments
+      await redisService.clearPostCache(req.body.post_id);
 
       res.status(201).json(newComment);
     } catch (err) {
@@ -76,6 +80,9 @@ const commentController = {
         return;
       }
 
+      // Clear cache for the associated post and its comments
+      await redisService.clearPostCache(commentData.post_id);
+
       res.status(200).json({ message: 'Comment updated successfully' });
     } catch (err) {
       console.error(err);
@@ -106,6 +113,9 @@ const commentController = {
       }
 
       await commentData.destroy();
+
+      // Clear cache for the associated post and its comments
+      await redisService.clearPostCache(commentData.post_id);
 
       res.status(200).json({
         message: 'Comment deleted successfully'
