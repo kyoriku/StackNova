@@ -1,5 +1,4 @@
-// Main database seeding script that coordinates the sequential 
-// creation of users, posts, and comments
+// Main database seeding script that coordinates the sequential creation of users, posts, and comments
 const seedUsers = require('./userSeeds');
 const seedPosts = require('./postSeeds');
 const seedComments = require('./commentSeeds');

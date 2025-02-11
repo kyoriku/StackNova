@@ -13,7 +13,7 @@ const postController = {
             attributes: ['username'] 
           }
         ],
-        order: [['created_at', 'DESC']] // Most recent posts first
+        // order: [['created_at', 'DESC']] // Most recent posts first
       });
       res.json(postData);
     } catch (err) {
@@ -36,7 +36,7 @@ const postController = {
               model: User,
               attributes: ['username']
             }],
-            order: [['created_at', 'DESC']] // Most recent comments first
+            // order: [['created_at', 'DESC']] // Most recent comments first
           }
         ]
       });
@@ -84,6 +84,7 @@ const postController = {
         return;
       }
 
+      // Clear cache for the updated post and all posts
       await redisService.clearPostCache(req.params.id);
       await redisService.clearAllPostsCache();
 
@@ -108,6 +109,7 @@ const postController = {
         return;
       }
 
+      // Clear cache for the deleted post and all posts
       await redisService.clearPostCache(req.params.id);
       await redisService.clearAllPostsCache();
 
