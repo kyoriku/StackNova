@@ -1,6 +1,6 @@
 // controllers/postController.js
 const { Post, User, Comment } = require('../models');
-const redisService = require('../utils/redis');
+const redisService = require('../config/redis');
 
 const postController = {
   // Get all posts
@@ -8,14 +8,16 @@ const postController = {
     try {
       const postData = await Post.findAll({
         include: [
-          { 
-            model: User, 
-            attributes: ['username'] 
+          {
+            model: User,
+            attributes: ['username']
           }
         ],
-        // order: [['created_at', 'DESC']] // Most recent posts first
+        order: [['created_at', 'DESC']]
       });
-      res.json(postData);
+
+      const posts = postData.map(post => post.get({ plain: true }));
+      res.json(posts);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -35,8 +37,7 @@ const postController = {
             include: [{
               model: User,
               attributes: ['username']
-            }],
-            // order: [['created_at', 'DESC']] // Most recent comments first
+            }]
           }
         ]
       });
@@ -46,7 +47,28 @@ const postController = {
         return;
       }
 
-      res.json(postData);
+      res.json(postData.get({ plain: true }));
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  async getUserPosts(req, res) {
+    try {
+      const postData = await Post.findAll({
+        where: {
+          user_id: req.session.user_id
+        },
+        include: [
+          {
+            model: User,
+            attributes: ['username']
+          }
+        ],
+        order: [['createdAt', 'DESC']]
+      });
+
+      res.json(postData.map(post => post.get({ plain: true })));
     } catch (err) {
       res.status(500).json(err);
     }
@@ -59,8 +81,12 @@ const postController = {
         ...req.body,
         user_id: req.session.user_id,
       });
+
+      // Clear caches since we added new content
       await redisService.clearAllPostsCache();
-      res.status(201).json(newPost);
+      await redisService.clearUserPostsCache(req.session.user_id);
+
+      res.status(201).json(newPost.get({ plain: true }));
     } catch (err) {
       res.status(400).json(err);
     }
@@ -69,26 +95,29 @@ const postController = {
   // Update a post
   async updatePost(req, res) {
     try {
-      const [updatedRows] = await Post.update(
-        req.body,
-        {
-          where: {
-            id: req.params.id,
-            user_id: req.session.user_id,
-          },
-        }
-      );
+      const post = await Post.findOne({
+        where: {
+          id: req.params.id,
+          user_id: req.session.user_id,
+        },
+      });
 
-      if (updatedRows === 0) {
+      if (!post) {
         res.status(404).json({ message: 'No post found with this id!' });
         return;
       }
 
-      // Clear cache for the updated post and all posts
+      await post.update(req.body);
+
+      // Clear relevant caches
       await redisService.clearPostCache(req.params.id);
       await redisService.clearAllPostsCache();
+      await redisService.clearUserPostsCache(req.session.user_id);
 
-      res.status(200).json({ message: 'Post updated successfully!' });
+      res.status(200).json({ 
+        message: 'Post updated successfully!',
+        post: post.get({ plain: true })
+      });
     } catch (err) {
       res.status(500).json(err);
     }
@@ -109,9 +138,10 @@ const postController = {
         return;
       }
 
-      // Clear cache for the deleted post and all posts
-      await redisService.clearPostCache(req.params.id);
+      // Clear all relevant caches
+      await redisService.clearPostCache(req.params.id, req.session.user_id);
       await redisService.clearAllPostsCache();
+      await redisService.clearUserPostsCache(req.session.user_id);
 
       res.status(200).json({ message: 'Post deleted successfully!' });
     } catch (err) {
