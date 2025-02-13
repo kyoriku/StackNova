@@ -1,6 +1,6 @@
 // controllers/commentController.js
 const { Comment, User } = require('../models');
-const redisService = require('../utils/redis');
+const redisService = require('../config/redis');
 
 const commentController = {
   // Get comments for a post
@@ -14,10 +14,10 @@ const commentController = {
           model: User,
           attributes: ['username']
         }],
-        // order: [['created_at', 'DESC']]
+        order: [['created_at', 'DESC']]
       });
 
-      res.json(comments);
+      res.json(comments.map(comment => comment.get({ plain: true })));
     } catch (err) {
       res.status(500).json(err);
     }
@@ -32,10 +32,10 @@ const commentController = {
         post_id: req.body.post_id
       });
 
-      // Clear cache for the associated post and its comments
+      // Clear cache for the associated post
       await redisService.clearPostCache(req.body.post_id);
 
-      res.status(201).json(newComment);
+      res.status(201).json(newComment.get({ plain: true }));
     } catch (err) {
       console.error(err);
       res.status(400).json({
@@ -47,43 +47,29 @@ const commentController = {
   // Update a comment
   async updateComment(req, res) {
     try {
-      const commentData = await Comment.findByPk(req.params.id);
-
-      if (!commentData) {
-        res.status(404).json({
-          error: 'Comment not found'
-        });
-        return;
-      }
-
-      // Verify the comment belongs to the user
-      if (commentData.user_id !== req.session.user_id) {
-        res.status(403).json({
-          error: 'Not authorized to edit this comment'
-        });
-        return;
-      }
-
-      // Update the comment
-      const [updatedRows] = await Comment.update(
-        { comment_text: req.body.comment_text },
-        {
-          where: {
-            id: req.params.id,
-            user_id: req.session.user_id
-          }
+      const comment = await Comment.findOne({
+        where: {
+          id: req.params.id,
+          user_id: req.session.user_id
         }
-      );
+      });
 
-      if (updatedRows === 0) {
-        res.status(404).json({ message: 'No comment found with this id!' });
+      if (!comment) {
+        res.status(404).json({
+          error: 'Comment not found or not authorized'
+        });
         return;
       }
 
-      // Clear cache for the associated post and its comments
-      await redisService.clearPostCache(commentData.post_id);
+      await comment.update({ comment_text: req.body.comment_text });
 
-      res.status(200).json({ message: 'Comment updated successfully' });
+      // Clear cache for the associated post
+      await redisService.clearPostCache(comment.post_id);
+
+      res.status(200).json({ 
+        message: 'Comment updated successfully',
+        comment: comment.get({ plain: true })
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({
@@ -95,27 +81,25 @@ const commentController = {
   // Delete a comment
   async deleteComment(req, res) {
     try {
-      const commentData = await Comment.findByPk(req.params.id);
+      const comment = await Comment.findOne({
+        where: {
+          id: req.params.id,
+          user_id: req.session.user_id
+        }
+      });
 
-      if (!commentData) {
+      if (!comment) {
         res.status(404).json({
-          error: 'Comment not found'
+          error: 'Comment not found or not authorized'
         });
         return;
       }
 
-      // Verify the comment belongs to the user
-      if (commentData.user_id !== req.session.user_id) {
-        res.status(403).json({
-          error: 'Not authorized to delete this comment'
-        });
-        return;
-      }
+      const postId = comment.post_id;
+      await comment.destroy();
 
-      await commentData.destroy();
-
-      // Clear cache for the associated post and its comments
-      await redisService.clearPostCache(commentData.post_id);
+      // Clear cache for the associated post
+      await redisService.clearPostCache(postId);
 
       res.status(200).json({
         message: 'Comment deleted successfully'
