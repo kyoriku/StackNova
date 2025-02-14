@@ -11,10 +11,22 @@ const userController = {
         req.session.user_id = userData.id;
         req.session.logged_in = true;
 
-        res.status(201).json(userData);
+        res.status(201).json({
+          user: userData.get({ plain: true }),
+          message: 'User created successfully'
+        });
       });
     } catch (err) {
-      res.status(400).json(err);
+      console.error('Create user error:', err);
+      if (err.name === 'SequelizeUniqueConstraintError') {
+        res.status(400).json({
+          error: 'Email or username already exists'
+        });
+      } else {
+        res.status(400).json({
+          error: 'Unable to create user'
+        });
+      }
     }
   },
 
@@ -25,18 +37,9 @@ const userController = {
         where: { email: req.body.email }
       });
 
-      if (!userData) {
+      if (!userData || !(await userData.checkPassword(req.body.password))) {
         res.status(400).json({
-          message: 'Incorrect email or password'
-        });
-        return;
-      }
-
-      const validPassword = await userData.checkPassword(req.body.password);
-
-      if (!validPassword) {
-        res.status(400).json({
-          message: 'Incorrect email or password'
+          error: 'Incorrect email or password'
         });
         return;
       }
@@ -46,23 +49,72 @@ const userController = {
         req.session.logged_in = true;
 
         res.json({
-          user: userData,
+          user: userData.get({ plain: true }),
           message: 'Logged in successfully'
         });
       });
     } catch (err) {
-      res.status(400).json(err);
+      console.error('Login error:', err);
+      res.status(500).json({
+        error: 'Login failed'
+      });
     }
   },
 
   // User logout
   async logout(req, res) {
-    if (req.session.logged_in) {
-      req.session.destroy(() => {
+    try {
+      if (req.session.logged_in) {
+        // Clear the session from database
+        await new Promise((resolve, reject) => {
+          req.session.destroy((err) => {
+            if (err) reject(err);
+            resolve();
+          });
+        });
+
+        // Clear the cookie
+        res.clearCookie('sessionId', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+          path: '/',
+        });
+
         res.status(204).end();
+      } else {
+        res.status(400).json({
+          error: 'Not logged in'
+        });
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+      res.status(500).json({
+        error: 'Logout failed'
       });
-    } else {
-      res.status(404).end();
+    }
+  },
+
+  // Check if user is logged in
+  async getMe(req, res) {
+    try {
+      if (!req.session.user_id) {
+        return res.status(401).json({ error: 'Not authenticated' });
+      }
+
+      const userData = await User.findByPk(req.session.user_id, {
+        attributes: ['id', 'username', 'email']
+      });
+
+      if (!userData) {
+        req.session.destroy();
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      res.json({ user: userData.get({ plain: true }) });
+    } catch (err) {
+      console.error('Get me error:', err);
+      res.status(500).json({ error: 'Failed to retrieve user session' });
     }
   }
 };
