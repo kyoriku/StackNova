@@ -1,4 +1,4 @@
-// server/benchmark.js
+// server/tests/benchmark.js
 const express = require("express");
 const sequelize = require("../config/connection"); // Sequelize connection
 const { performance } = require("perf_hooks");
