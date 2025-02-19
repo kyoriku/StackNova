@@ -114,8 +114,8 @@ const userController = {
       }
 
       // Only return JSON if there's an active session
-      res.status(200).json({ 
-        user: userData.get({ plain: true }) 
+      res.status(200).json({
+        user: userData.get({ plain: true })
       });
     } catch (err) {
       console.error('Session check error:', err);

@@ -6,7 +6,7 @@ const { commentLimiter } = require('../../middleware/rateLimiter');
 const { validateNewComment, validateCommentUpdate } = require('../../middleware/validate');
 const cacheMiddleware = require('../../middleware/cache');
 
-router.get('/post/:postId', cacheMiddleware, commentController.getPostComments);
+// router.get('/post/:postId', cacheMiddleware, commentController.getPostComments);
 router.post('/', withAuth, commentLimiter, validateNewComment, commentController.createComment);
 router.put('/:id', withAuth, validateCommentUpdate, commentController.updateComment);
 router.delete('/:id', withAuth, commentController.deleteComment);
