@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 
 // Configuration for environment variables loaded from .env file
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
 // Sequelize connection instance
 let sequelize;

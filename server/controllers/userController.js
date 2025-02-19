@@ -95,11 +95,12 @@ const userController = {
     }
   },
 
-  // Check if user is logged in
-  async getMe(req, res) {
+  // Check session status for the current user (if any)
+  async checkSession(req, res) {
     try {
       if (!req.session.user_id) {
-        return res.status(401).json({ error: 'Not authenticated' });
+        // Return 204 No Content instead of 401
+        return res.status(204).end();
       }
 
       const userData = await User.findByPk(req.session.user_id, {
@@ -107,14 +108,19 @@ const userController = {
       });
 
       if (!userData) {
+        // User not found, clear session and return 204
         req.session.destroy();
-        return res.status(401).json({ error: 'User not found' });
+        return res.status(204).end();
       }
 
-      res.json({ user: userData.get({ plain: true }) });
+      // Only return JSON if there's an active session
+      res.status(200).json({ 
+        user: userData.get({ plain: true }) 
+      });
     } catch (err) {
-      console.error('Get me error:', err);
-      res.status(500).json({ error: 'Failed to retrieve user session' });
+      console.error('Session check error:', err);
+      // Return 204 for any errors instead of 500
+      res.status(204).end();
     }
   }
 };
