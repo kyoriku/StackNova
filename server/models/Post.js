@@ -3,9 +3,7 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 const { generateExcerpt } = require('../utils/excerptUtils');
 
-class Post extends Model {
-  // You can add any custom instance methods here if needed
-}
+class Post extends Model { }
 
 // Initialize Post model with columns and configuration
 Post.init(
