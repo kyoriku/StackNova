@@ -136,6 +136,187 @@ Looking into **property-based testing** next - anyone tried it with React?`,
     user_id: 5,
     createdAt: new Date('2024-02-15T16:30:00'),
     updatedAt: new Date('2024-02-15T16:30:00')
+  },
+  {
+    id: 6,
+    title: 'Mastering State Management with Redux Toolkit',
+    content: `Transitioning our React app from vanilla Redux to **Redux Toolkit** was a game-changer.
+
+### Why Redux Toolkit?
+- **Reduced boilerplate** 🔥
+- **Built-in immutability** with Immer
+- **Simplified async logic** using \`createAsyncThunk\`
+
+### Sample Slice Creation:
+\`\`\`javascript
+const userSlice = createSlice({
+  name: 'user',
+  initialState: { 
+    profile: null, 
+    loading: false, 
+    error: null 
+  },
+  reducers: {
+    loginStart: (state) => {
+      state.loading = true;
+    },
+    loginSuccess: (state, action) => {
+      state.profile = action.payload;
+      state.loading = false;
+    }
+  }
+});
+\`\`\`
+
+Performance improved by **40%** - less code, more predictability! 💡
+
+Anyone else moved away from traditional Redux patterns?`,
+    user_id: 1,
+    createdAt: new Date('2024-02-20T11:00:00'),
+    updatedAt: new Date('2024-02-20T11:00:00')
+  },
+  {
+    id: 7,
+    title: 'WebSocket Real-Time Collaboration: Building a Multiplayer Code Editor',
+    content: `Just completed a **real-time collaborative code editor** using **Socket.IO** and **React**.
+
+### Tech Stack:
+- **Backend**: Node.js with Express
+- **WebSockets**: \`Socket.IO\`
+- **Frontend**: React with Operational Transforms
+
+### Key Challenges:
+- Handling **concurrent edits**
+- Implementing **cursor tracking**
+- Managing **connection states**
+
+### Sample Socket Event Handler:
+\`\`\`javascript
+socket.on('code_change', (changes) => {
+  // Apply operational transforms
+  const updatedCode = applyChanges(currentCode, changes);
+  broadcastToCollaborators(updatedCode);
+});
+\`\`\`
+
+**Fascinating discovery**: Real-time sync is hard, but incredibly satisfying when it works! 🚀
+
+Who else is exploring collaborative editing technologies?`,
+    user_id: 2,
+    createdAt: new Date('2024-02-25T14:45:00'),
+    updatedAt: new Date('2024-02-25T14:45:00')
+  },
+  {
+    id: 8,
+    title: 'TypeScript: From Frustration to Productivity',
+    content: `My team's journey from **JavaScript** to **TypeScript** - lessons learned and productivity gains.
+
+### Initial Pain Points:
+- **Steep learning curve** 📚
+- Configuring **tsconfig.json**
+- Handling **complex type definitions**
+
+### Productivity Boosters:
+- **Autocomplete everywhere**
+- Catching errors at **compile-time**
+- **Self-documenting** code
+
+### Advanced Type Magic:
+\`\`\`typescript
+type APIResponse<T> = {
+  data: T;
+  status: 'success' | 'error';
+  timestamp: number;
+};
+
+type UserProfile = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+const processUserData = (response: APIResponse<UserProfile>) => {
+  // Type-safe processing
+};
+\`\`\`
+
+**Type coverage**: 0% → 92% 📈
+**Bugs caught early**: Reduced by 60% 🐛
+
+Embracing the type system, one interface at a time! 💪`,
+    user_id: 3,
+    createdAt: new Date('2024-03-01T09:30:00'),
+    updatedAt: new Date('2024-03-01T09:30:00')
+  },
+  {
+    id: 9,
+    title: 'Performance Profiling in React: Beyond the Basics',
+    content: `Deep dive into **React Performance Optimization** using Chrome DevTools and custom profiling.
+
+### Optimization Techniques:
+- **Memoization** with \`useMemo\` and \`useCallback\`
+- Identifying **unnecessary re-renders**
+- **Code splitting** strategies
+
+### Profiling Example:
+\`\`\`javascript
+const ExpensiveComponent = React.memo(({ data }) => {
+  const processedData = useMemo(() => {
+    return heavyComputation(data);
+  }, [data]);
+
+  return <RenderComponent data={processedData} />;
+});
+\`\`\`
+
+### Key Metrics:
+- **Initial render**: 450ms → 120ms
+- **Re-render time**: 210ms → 35ms
+- **Bundle size**: Reduced by 40% 📉
+
+Performance is a feature, not an afterthought! 🚀
+
+Who else geeks out about web performance?`,
+    user_id: 4,
+    createdAt: new Date('2024-03-05T16:15:00'),
+    updatedAt: new Date('2024-03-05T16:15:00')
+  },
+  {
+    id: 10,
+    title: 'Migrating a Monolith to Microservices: Lessons from the Trenches',
+    content: `Our epic journey of breaking down a **massive Node.js monolith** into **microservices**.
+
+### Architectural Evolution:
+- **Initial Monolith**: 50k lines of code 😱
+- **Communication**: REST → \`gRPC\`
+- **Deployment**: Kubernetes + Helm Charts
+
+### Challenges Overcome:
+- **Distributed transactions**
+- **Service discovery**
+- **Eventual consistency**
+
+### Sample gRPC Service:
+\`\`\`protobuf
+syntax = "proto3";
+
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns (User) {}
+  rpc GetUser(GetUserRequest) returns (User) {}
+}
+\`\`\`
+
+### Results:
+- **Deployment frequency**: Weekly → Multiple times daily
+- **Scaling**: Granular and efficient
+- **Development velocity**: 📈 Increased by 70%
+
+Microservices: Not a silver bullet, but powerful when done right! 💡
+
+Microservice architects, share your war stories!`,
+    user_id: 5,
+    createdAt: new Date('2024-03-10T11:45:00'),
+    updatedAt: new Date('2024-03-10T11:45:00')
   }
 ];
 
