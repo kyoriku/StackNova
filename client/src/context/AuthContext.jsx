@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifySession = async () => {
     try {
-      const response = await fetch('/api/users/session', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/session`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   const signup = async (username, email, password, returnPath) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/users', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, returnPath) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/users/login', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('/api/users/logout', {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/logout`, {
         method: 'POST',
         credentials: 'include'
       });
