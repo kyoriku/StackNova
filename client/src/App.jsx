@@ -1,9 +1,9 @@
 import { createBrowserRouter, RouterProvider, redirect, Outlet } from "react-router-dom";
 import { RootLayout } from "./components/RootLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import PostsPage from "./pages/PostsPage/index";
+import Posts from "./pages/Posts/index";
 import Dashboard from "./pages/Dashboard";
-import SinglePost from "./pages/SinglePost";
+import SinglePost from "./pages/PostDetail";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NewPost from "./pages/NewPost";
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <ErrorBoundary>
-            <PostsPage />
+            <Posts />
           </ErrorBoundary>
         ),
       },
