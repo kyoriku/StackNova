@@ -10,10 +10,10 @@ export const PostItem = ({ post, prefetchPost }) => (
       className="block group h-full"
       aria-labelledby={`post-title-${post.id}`}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 
                     border border-gray-200 dark:border-gray-700
                     hover:border-blue-500 dark:hover:border-blue-400
-                    transition-transform duration-200 shadow-md h-full">
+                    transition-transform duration-200 shadow-sm h-full">
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1">
             <h2 id={`post-title-${post.id}`} className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
@@ -23,14 +23,14 @@ export const PostItem = ({ post, prefetchPost }) => (
               {post.excerpt}
             </p>
             <footer className="text-gray-600 dark:text-gray-400 text-sm">
+              <span>{post.user.username}</span>
+              <span aria-hidden="true"> • </span>
               <time dateTime={post.createdAt}>
                 {format(new Date(post.createdAt), 'MMMM d, yyyy')}
               </time>
-              <span aria-hidden="true"> • </span>
-              <span>{post.user.username}</span>
             </footer>
           </div>
-          <ChevronRight 
+          <ChevronRight
             className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1 
                       transition-all duration-200 
                       group-hover:translate-x-1.5

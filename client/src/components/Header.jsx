@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, LayoutDashboard, LogIn, LogOut, Sun, Moon, Menu, X } from 'lucide-react';
+import { Home, LayoutDashboard, LogIn, LogOut, Sun, Moon, Menu, X, User } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -37,7 +37,7 @@ const Header = () => {
     <header className="bg-white dark:bg-gray-800 shadow-lg relative z-50">
       <nav ref={navRef} className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          {/* Logo and brand same as before */}
+          {/* Logo and brand */}
           <Link
             to="/"
             className="flex items-center text-xl font-bold text-gray-900 dark:text-white [&:hover]:text-blue-400"
@@ -77,6 +77,13 @@ const Header = () => {
                 >
                   <LayoutDashboard size={18} />
                   Dashboard
+                </Link>
+                <Link
+                  to={`/user/${user.username}`}
+                  className={`${isActive(`/user/${user.username}`)} ${linkClasses}`}
+                >
+                  <User size={18} />
+                  Profile
                 </Link>
                 <button
                   onClick={logout}
@@ -130,6 +137,13 @@ const Header = () => {
                 >
                   <LayoutDashboard size={18} />
                   Dashboard
+                </Link>
+                <Link
+                  to={`/user/${user.username}`}
+                  className={`${isActive(`/user/${user.username}`)} ${linkClasses}`}
+                >
+                  <User size={18} />
+                  Profile
                 </Link>
                 <button
                   onClick={() => {

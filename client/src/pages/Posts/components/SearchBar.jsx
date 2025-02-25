@@ -3,6 +3,12 @@ import { Search, X } from 'lucide-react';
 export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
   const clearSearch = () => setSearchTerm('');
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent form submission behavior
+    }
+  };
+
   return (
     <section aria-label="Search posts" className="max-w-2xl mx-auto mb-1">
       <form role="search" onSubmit={(e) => e.preventDefault()} className="relative">
@@ -16,6 +22,7 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
           placeholder="Search posts..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleKeyDown} // Prevent Enter key from clearing input
           className="w-full pl-10 pr-10 py-3 rounded-xl
                    bg-white dark:bg-gray-700 
                    text-gray-900 dark:text-white 

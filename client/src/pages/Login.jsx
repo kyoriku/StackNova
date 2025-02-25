@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mail, Lock } from 'lucide-react';
@@ -90,7 +89,7 @@ const Login = () => {
            flex items-center justify-center cursor-pointer"
         >
           {isLoading ? (
-            <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em]" />
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em]" />
           ) : (
             'Login'
           )}
