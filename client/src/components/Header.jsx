@@ -28,10 +28,10 @@ const Header = () => {
   }, []);
 
   const isActive = (path) => {
-    return location.pathname === path ? 'text-blue-400' : 'text-gray-900 dark:text-gray-300';
+    return location.pathname === path ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-300';
   };
 
-  const linkClasses = "flex items-center gap-2 [&:hover]:text-blue-400";
+  const linkClasses = "flex items-center gap-2 hover:text-blue-700 dark:hover:text-blue-400";
 
   return (
     <header className="bg-white dark:bg-gray-800 shadow-lg relative z-50">
@@ -40,7 +40,7 @@ const Header = () => {
           {/* Logo and brand */}
           <Link
             to="/"
-            className="flex items-center text-xl font-bold text-gray-900 dark:text-white [&:hover]:text-blue-400"
+            className="flex items-center text-xl font-bold text-gray-900 dark:text-white hover:text-blue-700 dark:hover:text-blue-400"
           >
             <img
               src="/favicon.svg"
@@ -56,7 +56,7 @@ const Header = () => {
             className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X size={24} className="text-gray-900 dark:text-gray-300" /> : <Menu size={24} className="text-gray-900 dark:text-gray-300" />}
+            {isMenuOpen ? <X size={24} className="text-gray-700 dark:text-gray-300" /> : <Menu size={24} className="text-gray-700 dark:text-gray-300" />}
           </button>
 
           {/* Desktop Navigation */}
@@ -87,7 +87,7 @@ const Header = () => {
                 </Link>
                 <button
                   onClick={logout}
-                  className={`text-gray-900 dark:text-gray-300 ${linkClasses} cursor-pointer`}
+                  className={`text-gray-700 dark:text-gray-300 ${linkClasses} cursor-pointer`}
                 >
                   <LogOut size={18} />
                   Logout
@@ -110,9 +110,9 @@ const Header = () => {
               aria-label="Toggle theme"
             >
               {isDarkMode ? (
-                <Sun size={18} className="text-yellow-500" />
+                <Sun size={18} className="text-amber-500" />
               ) : (
-                <Moon size={18} className="text-gray-500" />
+                <Moon size={18} className="text-gray-600" />
               )}
             </button>
           </div>
@@ -120,7 +120,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden flex-col space-y-4 pb-4 fixed inset-x-0 top-16 bg-white dark:bg-gray-800 shadow-lg p-4 z-50">
+          <div className="md:hidden flex flex-col space-y-4 pb-4 fixed inset-x-0 top-16 bg-white dark:bg-gray-800 shadow-lg p-4 z-50">
             <Link
               to="/"
               className={`${isActive('/')} ${linkClasses}`}
@@ -150,7 +150,7 @@ const Header = () => {
                     logout();
                     setIsMenuOpen(false);
                   }}
-                  className={`text-gray-900 dark:text-gray-300 ${linkClasses} cursor-pointer`}
+                  className={`text-gray-700 dark:text-gray-300 ${linkClasses} cursor-pointer`}
                 >
                   <LogOut size={18} />
                   Logout
@@ -177,13 +177,13 @@ const Header = () => {
             >
               {isDarkMode ? (
                 <>
-                  <Sun size={18} className="text-yellow-500" />
-                  <span className="text-gray-900 dark:text-gray-300">Light Mode</span>
+                  <Sun size={18} className="text-amber-500" />
+                  <span className="text-gray-700 dark:text-gray-300">Light Mode</span>
                 </>
               ) : (
                 <>
-                  <Moon size={18} className="text-gray-500" />
-                  <span className="text-gray-900 dark:text-gray-300">Dark Mode</span>
+                  <Moon size={18} className="text-gray-600" />
+                  <span className="text-gray-700 dark:text-gray-300">Dark Mode</span>
                 </>
               )}
             </button>

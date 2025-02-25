@@ -25,7 +25,7 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto px-4">
-      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8 theme-transition">
+      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
         Login
       </h1>
 
@@ -45,8 +45,8 @@ const Login = () => {
                        bg-white dark:bg-gray-700 
                        text-gray-900 dark:text-white 
                        border border-gray-200 dark:border-gray-600
-                       focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800
-                       theme-transition"
+                       focus:outline-none focus:border-blue-500 focus:ring-2 
+                       focus:ring-blue-200 dark:focus:ring-blue-800"
               required
             />
           </div>
@@ -67,8 +67,8 @@ const Login = () => {
                        bg-white dark:bg-gray-700 
                        text-gray-900 dark:text-white 
                        border border-gray-200 dark:border-gray-600
-                       focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800
-                       theme-transition"
+                       focus:outline-none focus:border-blue-500 focus:ring-2 
+                       focus:ring-blue-200 dark:focus:ring-blue-800"
               required
             />
           </div>
@@ -95,7 +95,7 @@ const Login = () => {
           )}
         </button>
 
-        <p className="text-center text-gray-600 dark:text-gray-400 theme-transition">
+        <p className="text-center text-gray-600 dark:text-gray-400">
           Don't have an account?{' '}
           <Link
             to="/signup"

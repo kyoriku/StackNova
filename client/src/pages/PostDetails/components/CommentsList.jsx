@@ -12,7 +12,7 @@ export const CommentsList = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 theme-transition">
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
         <MessageSquare className="inline-block mr-2" size={24} />
         Comments
       </h2>
