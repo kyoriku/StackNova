@@ -18,7 +18,7 @@ export const useComments = (postId) => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['post', postId]);
+      queryClient.invalidateQueries({ queryKey: ['post', postId] });
     }
   });
 
@@ -33,7 +33,7 @@ export const useComments = (postId) => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['post', postId]);
+      queryClient.invalidateQueries({ queryKey: ['post', postId] });
       setEditingCommentId(null);
     }
   });
@@ -46,7 +46,7 @@ export const useComments = (postId) => {
       if (!response.ok) throw new Error('Failed to delete comment');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['post', postId]);
+      queryClient.invalidateQueries({ queryKey: ['post', postId] });
       setDeleteModalOpen(false);
       setCommentToDelete(null);
     }
