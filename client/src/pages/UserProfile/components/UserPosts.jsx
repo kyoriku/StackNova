@@ -21,10 +21,10 @@ export const UserPosts = ({ posts, prefetchPost }) => {
   if (!posts?.length) {
     return (
       <div>
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 theme-transition">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
           Recent Posts
         </h2>
-        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 theme-transition">
+        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <p className="text-gray-600 dark:text-gray-400">No posts yet</p>
         </div>
       </div>
@@ -34,7 +34,7 @@ export const UserPosts = ({ posts, prefetchPost }) => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white theme-transition">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Recent Posts
         </h2>
         <select
@@ -43,7 +43,7 @@ export const UserPosts = ({ posts, prefetchPost }) => {
           className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
                    rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white
                    focus:outline-none focus:ring-2 focus:ring-blue-500 
-                   theme-transition"
+                  "
         >
           <option value="newest">Newest Posts</option>
           <option value="oldest">Oldest Posts</option>

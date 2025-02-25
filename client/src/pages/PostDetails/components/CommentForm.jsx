@@ -9,7 +9,7 @@ export const CommentForm = ({
   isSubmitting
 }) => (
   <div className="mb-8">
-    <h4 id="comment-form" className="text-xl font-semibold text-gray-900 dark:text-white mb-4 theme-transition">
+    <h4 id="comment-form" className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
       {isEditing ? 'Edit your comment' : 'Share your thoughts!'}
     </h4>
     <form onSubmit={onSubmit}>

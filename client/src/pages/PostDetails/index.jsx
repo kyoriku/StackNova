@@ -104,7 +104,7 @@ const PostDetails = () => {
           isSubmitting={addCommentMutation.isPending || editCommentMutation.isPending}
         />
       ) : (
-        <div className="mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg text-center theme-transition border border-gray-200 dark:border-gray-700">
+        <div className="mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg text-center border border-gray-200 dark:border-gray-700">
           <p className="text-gray-900 dark:text-white">
             Please{' '}
             <Link

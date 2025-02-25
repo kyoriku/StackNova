@@ -24,13 +24,13 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown} // Prevent Enter key from clearing input
           className="w-full pl-10 pr-10 py-3 rounded-xl
-                   bg-white dark:bg-gray-700 
+                   bg-white dark:bg-gray-800 
                    text-gray-900 dark:text-white 
-                   border-2 border-gray-200 dark:border-gray-600
-                   shadow-sm
-                   focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800
-                   placeholder-gray-500 dark:placeholder-gray-400
-                   theme-transition"
+                   border-2 border-gray-200 dark:border-gray-700
+                   shadow-sm dark:shadow-md dark:shadow-black/10
+                   focus:outline-none focus:border-blue-500 focus:ring-2 
+                   focus:ring-blue-200 dark:focus:ring-blue-800
+                   placeholder-gray-500 dark:placeholder-gray-400"
         />
         {searchTerm && (
           <button
@@ -38,7 +38,7 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
             className="absolute inset-y-0 right-0 pr-3 flex items-center 
                        text-gray-400 hover:text-gray-600 
                        dark:hover:text-gray-300
-                       theme-transition cursor-pointer"
+                       cursor-pointer"
             aria-label="Clear search"
           >
             <X className="h-5 w-5" />
@@ -49,7 +49,7 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
       {/* Fixed height container to prevent layout shift */}
       <div className="h-8 mt-3">
         {searchTerm && (
-          <p role="status" aria-live="polite" className="text-center text-gray-600 dark:text-gray-400 theme-transition">
+          <p role="status" aria-live="polite" className="text-center text-gray-600 dark:text-gray-400">
             Found {resultsCount} {resultsCount === 1 ? 'post' : 'posts'}
           </p>
         )}

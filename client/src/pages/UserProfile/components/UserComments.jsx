@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { MarkdownPreview } from '../../../components/MarkdownEditor';
 import { Pagination } from '../../../pages/Posts/components/Pagination';
 
-export const UserComments = ({ comments }) => {
+export const UserComments = ({ comments, prefetchPost }) => {
   const ITEMS_PER_PAGE = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('newest');
@@ -23,10 +23,10 @@ export const UserComments = ({ comments }) => {
   if (!comments?.length) {
     return (
       <div className="mt-8">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4 theme-transition">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
           Recent Comments
         </h2>
-        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 theme-transition">
+        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <p className="text-gray-600 dark:text-gray-400">No comments yet</p>
         </div>
       </div>
@@ -36,7 +36,7 @@ export const UserComments = ({ comments }) => {
   return (
     <div className="space-y-4 mt-8">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white theme-transition">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
           Recent Comments
         </h2>
         <select
@@ -45,7 +45,7 @@ export const UserComments = ({ comments }) => {
           className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
                    rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white
                    focus:outline-none focus:ring-2 focus:ring-blue-500 
-                   theme-transition"
+                  "
         >
           <option value="newest">Newest Comments</option>
           <option value="oldest">Oldest Comments</option>
@@ -55,15 +55,17 @@ export const UserComments = ({ comments }) => {
       {paginatedComments.map((comment) => (
         <div
           key={comment.id}
-          className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 theme-transition"
+          className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700"
         >
-          <p className="text-gray-900 dark:text-white mb-2 theme-transition">
+          <p className="text-gray-900 dark:text-white mb-2">
             <MarkdownPreview content={comment.comment_text} showLineNumbers={false} />
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             on <Link
               to={`/post/${comment.post.id}`}
               className="text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors font-medium underline-offset-2 hover:underline"
+              onMouseEnter={() => prefetchPost(comment.post.id)}
+              onFocus={() => prefetchPost(comment.post.id)}
             >
               {comment.post.title}
             </Link>

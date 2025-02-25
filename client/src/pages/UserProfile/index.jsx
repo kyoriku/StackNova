@@ -26,7 +26,7 @@ const UserProfile = () => {
   }
 
   const userStats = {
-    totalPosts: user.posts.length,
+    totalPosts: user.posts?.length || 0,
     totalComments: user.comments?.length || 0,
     memberSince: user.createdAt 
       ? format(new Date(user.createdAt), 'MMMM yyyy')
@@ -36,17 +36,17 @@ const UserProfile = () => {
   return (
     <div className="max-w-4xl mx-auto pb-8">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 theme-transition">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           {user.username}'s Profile
         </h1>
-        {/* <p className="text-center text-gray-600 dark:text-gray-400 theme-transition">
+        {/* <p className="text-center text-gray-600 dark:text-gray-400">
           {user.bio || `A code sharing enthusiast`}
         </p> */}
       </header>
 
       <UserStats stats={userStats} />
-      <UserPosts posts={user.posts} prefetchPost={prefetchPost} />
-      <UserComments comments={user.comments || []} />
+      <UserPosts posts={user.posts || []} prefetchPost={prefetchPost} />
+      <UserComments comments={user.comments || []} prefetchPost={prefetchPost} />
     </div>
   );
 };
