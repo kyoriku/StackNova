@@ -1,16 +1,16 @@
-import { createBrowserRouter, RouterProvider, redirect, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { RootLayout } from "./components/RootLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Posts from "./pages/Posts";
 import PostDetails from "./pages/PostDetails";
 import UserProfile from "./pages/UserProfile";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Signup from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import NewPost from "./pages/NewPost";
 import EditPost from "./pages/EditPost";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
