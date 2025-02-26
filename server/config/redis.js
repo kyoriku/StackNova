@@ -120,6 +120,33 @@ const redisService = {
     }
   },
 
+  async clearUserProfileCache(username) {
+    try {
+      if (!client.isReady) return;
+      await client.del(`user:profile:${username}`);
+  
+      if (process.env.NODE_ENV === 'development') {
+        console.log('\x1b[36m%s\x1b[0m', `Cleared profile cache for user:`, username);
+      }
+    } catch (error) {
+      console.error('Redis clear user profile cache error:', error);
+    }
+  },
+
+  // Add this to your redisService object in config/redis.js
+async invalidateSitemapCache() {
+  try {
+    if (!client.isReady) return;
+    await client.del('sitemap:xml');
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('\x1b[36m%s\x1b[0m', 'Invalidated sitemap cache');
+    }
+  } catch (error) {
+    console.error('Redis invalidate sitemap cache error:', error);
+  }
+},
+
   isConnected() {
     return client.isReady;
   },
