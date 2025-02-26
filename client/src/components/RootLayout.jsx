@@ -6,7 +6,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Header from "./Header";
 import Footer from "./Footer";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      // Ensure query key changes trigger refetch
+      structuralSharing: false 
+    },
+  },
+});
+
 
 export const RootLayout = () => {
   return (
