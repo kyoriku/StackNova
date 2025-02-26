@@ -18,72 +18,22 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <NotFound />,
     children: [
-      {
-        index: true,
-        element: (
-          <ErrorBoundary>
-            <Posts />
-          </ErrorBoundary>
-        ),
-      },
-      {
-        path: "post/:id",
-        element: (
-          <ErrorBoundary>
-            <PostDetails />
-          </ErrorBoundary>
-        ),
-      },
-      {
-        path: "user/:username",
-        element: (
-          <ErrorBoundary>
-            <UserProfile />
-          </ErrorBoundary>
-        ),
-      },
-      {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
+      { index: true, element: <ErrorBoundary><Posts /></ErrorBoundary> },
+      { path: "post/:id", element: <ErrorBoundary><PostDetails /></ErrorBoundary> },
+      { path: "user/:username", element: <ErrorBoundary><UserProfile /></ErrorBoundary> },
+      { path: "login", element: <Login /> },
+      { path: "signup", element: <Signup /> },
+
       // Protected routes group
       {
-        element:  <ProtectedRoute />,
+        element: <ProtectedRoute />,
         children: [
-          {
-            path: "dashboard",
-            element: (
-              <ErrorBoundary>
-                <Dashboard />
-              </ErrorBoundary>
-            ),
-          },
-          {
-            path: "new-post",
-            element: (
-              <ErrorBoundary>
-                <NewPost />
-              </ErrorBoundary>
-            ),
-          },
-          {
-            path: "edit-post/:id",
-            element: (
-              <ErrorBoundary>
-                <EditPost />
-              </ErrorBoundary>
-            ),
-          },
+          { path: "dashboard", element: <ErrorBoundary><Dashboard /></ErrorBoundary> },
+          { path: "new-post", element: <ErrorBoundary><NewPost /></ErrorBoundary> },
+          { path: "edit-post/:id", element: <ErrorBoundary><EditPost /></ErrorBoundary> },
         ],
       },
-      {
-        path: "*",
-        element: <NotFound />
-      }
+      { path: "*", element: <NotFound /> }
     ],
   },
 ]);

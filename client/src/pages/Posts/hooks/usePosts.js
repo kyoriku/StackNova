@@ -25,11 +25,8 @@ export const usePosts = (searchTerm) => {
       }
     },
     // Caching configuration
-    // staleTime: 1000 * 60, // Consider data fresh for 1 minute
-    // cacheTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
-    // refetchOnWindowFocus: true, // Refetch when user focuses window
-    // refetchOnMount: true, // Refetch when component mounts
-    // refetchOnReconnect: true, // Refetch when internet reconnects
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    cacheTime: 1000 * 60 * 30, // Keep data in cache for 30 minutes
   });
 
   const filteredPosts = posts?.filter(post => {
