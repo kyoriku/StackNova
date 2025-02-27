@@ -89,10 +89,17 @@ const postController = {
         user_id: req.session.user_id,
       });
 
+      // Get the user to access username
+      const user = await User.findByPk(req.session.user_id, {
+        attributes: ['username']
+      });
+
       // Clear home page (new post for everyone) and user's dashboard (their new post)
       await Promise.all([
         redisService.clearHomePageCache(),
-        redisService.clearUserPostsCache(req.session.user_id)
+        redisService.clearUserPostsCache(req.session.user_id),
+        redisService.clearUserProfileCache(user.username),
+        redisService.invalidateSitemapCache()
       ]);
 
       res.status(201).json(newPost.get({ plain: true }));
@@ -109,6 +116,10 @@ const postController = {
           id: req.params.id,
           user_id: req.session.user_id,
         },
+        include: [{
+          model: User,
+          attributes: ['username']
+        }]
       });
 
       if (!post) {
@@ -116,13 +127,19 @@ const postController = {
         return;
       }
 
+      const user = await User.findByPk(req.session.user_id, {
+        attributes: ['username']
+      });
+
       await post.update(req.body);
 
       // Clear post details and homepage since content changed
       await Promise.all([
         redisService.clearPostCache(req.params.id), // Don't clear comments
         redisService.clearHomePageCache(),
-        redisService.clearUserPostsCache(req.session.user_id) // Clear user's dashboard as it's their post
+        redisService.clearUserPostsCache(req.session.user_id), // Clear user's dashboard as it's their post
+        redisService.clearUserProfileCache(user.username),
+        redisService.invalidateSitemapCache()
       ]);
 
       res.status(200).json({
@@ -137,27 +154,38 @@ const postController = {
   // Delete a post
   async deletePost(req, res) {
     try {
-      const deletedRows = await Post.destroy({
+      // First find the post to get the username
+      const post = await Post.findOne({
         where: {
           id: req.params.id,
           user_id: req.session.user_id,
         },
+        include: [{
+          model: User,
+          attributes: ['username']
+        }]
       });
 
-      if (deletedRows === 0) {
+      if (!post) {
         res.status(404).json({ message: 'No post found with this id!' });
         return;
       }
+
+      // Delete the post
+      await post.destroy();
 
       // Clear everything since the post is gone
       await Promise.all([
         redisService.clearPostCache(req.params.id, true), // Include comments since post is deleted
         redisService.clearHomePageCache(),
-        redisService.clearUserPostsCache(req.session.user_id) // Clear user's dashboard as it's their post
+        redisService.clearUserPostsCache(req.session.user_id), // Clear user's dashboard 
+        redisService.clearUserProfileCache(post.user.username), // Clear user's profile
+        redisService.invalidateSitemapCache()
       ]);
 
       res.status(200).json({ message: 'Post deleted successfully!' });
     } catch (err) {
+      console.error(err);
       res.status(500).json(err);
     }
   }
