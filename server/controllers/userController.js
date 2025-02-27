@@ -1,5 +1,5 @@
 // controllers/userController.js
-const { User } = require('../models');
+const { User, Post, Comment } = require('../models');
 
 const userController = {
   // Create new user
@@ -122,7 +122,57 @@ const userController = {
       // Return 204 for any errors instead of 500
       res.status(204).end();
     }
+  },
+
+  async getUserProfile(req, res) {
+    try {
+      const userData = await User.findOne({
+        where: { username: req.params.username },
+        attributes: ['username', 'createdAt'], // Only necessary fields
+        include: [
+          {
+            model: Post,
+            attributes: ['id', 'title', 'content', 'excerpt', 'createdAt', 'updatedAt'], // Exclude user_id
+            include: [
+              {
+                model: User,
+                attributes: ['username'] // Only show username, no ID
+              },
+              {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'], // Exclude user_id
+                include: [{
+                  model: User,
+                  attributes: ['username']
+                }]
+              }
+            ],
+            order: [['createdAt', 'DESC']]
+          },
+          {
+            model: Comment,
+            attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'], // Exclude user_id
+            include: [{
+              model: Post,
+              attributes: ['id', 'title']
+            }],
+            order: [['createdAt', 'DESC']]
+          }
+        ]
+      });
+
+      if (!userData) {
+        res.status(404).json({ message: 'No user found with this username!' });
+        return;
+      }
+
+      res.json(userData.get({ plain: true }));
+    } catch (err) {
+      console.error('Get user profile error:', err);
+      res.status(500).json({ error: 'Failed to get user profile' });
+    }
   }
+
 };
 
 module.exports = userController;
