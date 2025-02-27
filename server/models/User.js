@@ -15,10 +15,10 @@ class User extends Model {
 User.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
-      autoIncrement: true,
     },
     username: {
       type: DataTypes.STRING,
@@ -38,7 +38,7 @@ User.init(
       allowNull: false,
       validate: {
         len: [8], // Password must be at least 8 characters long
-        is: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/ // Password must contain at least one letter and one number
+        is: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/ // Password must contain at least one letter and one number
       },
     },
   },
@@ -56,7 +56,7 @@ User.init(
       },
     },
     sequelize,
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true,
     underscored: true,
     modelName: 'user',
