@@ -8,4 +8,11 @@ router.use('/users', userRoutes);
 router.use('/posts', postRoutes);
 router.use('/comments', commentRoutes);
 
+// serve up react front-end in production
+// if (process.env.NODE_ENV === 'production') {
+//   router.use((req, res) => {
+//     res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+//   });
+// }
+
 module.exports = router;
