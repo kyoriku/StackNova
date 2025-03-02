@@ -1,9 +1,8 @@
 // Seed data for creating initial blog posts with timestamps and user relationships
-const { Post } = require('../models');
+const { Post, User } = require('../models');
 
-const postData = [
-  {
-    id: 1,
+const seedPosts = async (users) => {
+  const postData = [{
     title: 'My Journey Learning Machine Learning: From Zero to First Model',
     content: `Just wrapped up my first month of diving into ML using the **Boston Housing dataset**.
 
@@ -17,12 +16,11 @@ The most fascinating discovery was that **number of rooms** had a stronger corre
 - Always use **cross-validation**
 
 Planning to try **gradient boosting** next - what was your first ML project like?`,
-    user_id: 1,
+    user_id: users[0].id,
     createdAt: new Date('2024-01-31T10:15:00'),
     updatedAt: new Date('2024-01-31T10:15:00')
   },
   {
-    id: 2,
     title: 'Express.js API Tips I Wish I Knew Earlier',
     content: `Just improved our **e-commerce platform's API** with some game-changing optimizations.
 
@@ -31,7 +29,7 @@ Planning to try **gradient boosting** next - what was your first ML project like
   \`\`\`js
   const rateLimit = require('express-rate-limit');
   const RedisStore = require('rate-limit-redis');
-  
+
   app.use(rateLimit({
     store: new RedisStore({ client: redisClient }),
     windowMs: 60 * 60 * 1000,
@@ -44,12 +42,11 @@ Planning to try **gradient boosting** next - what was your first ML project like
 - **PM2 cluster mode** _(2.5x better throughput)_
 
 🚀 API response time dropped from **250ms to 85ms**. Next up: **GraphQL** - anyone interested in the implementation details?`,
-    user_id: 2,
+    user_id: users[1].id,
     createdAt: new Date('2024-02-04T15:30:00'),
     updatedAt: new Date('2024-02-04T15:30:00')
   },
   {
-    id: 3,
     title: 'How We Reduced Our React Bundle Size by 60%',
     content: `Finally tackled our **SaaS dashboard's bundle size** issues.
 
@@ -63,7 +60,7 @@ Planning to try **gradient boosting** next - what was your first ML project like
 - Implemented **Code Splitting** with React.lazy():
   \`\`\`js
   const Chart = React.lazy(() => import('./Chart'));
-  
+
   function Dashboard() {
     return (
       <Suspense fallback={<Loading />}>
@@ -79,12 +76,11 @@ Planning to try **gradient boosting** next - what was your first ML project like
 - **Lighthouse Score: 72 → 94** 🔥
 
 Anyone tried **module federation** for micro-frontends?`,
-    user_id: 3,
+    user_id: users[2].id,
     createdAt: new Date('2024-02-08T09:45:00'),
     updatedAt: new Date('2024-02-08T09:45:00')
   },
   {
-    id: 4,
     title: 'Debugging CSS Grid in Real-World Projects',
     content: `Spent last week moving our **dashboard to CSS Grid** and found some interesting **Safari quirks**.
 
@@ -106,12 +102,11 @@ Anyone tried **module federation** for micro-frontends?`,
   \`\`\`
 
 🚀 **Layout shifts reduced by 94%**. Now exploring **Container Queries** - anyone using them in production yet?`,
-    user_id: 4,
+    user_id: users[3].id,
     createdAt: new Date('2024-02-12T14:20:00'),
     updatedAt: new Date('2024-02-12T14:20:00')
   },
   {
-    id: 5,
     title: 'The Hidden Costs of Not Writing Tests',
     content: `A production incident with our **authentication flow** finally pushed us to take testing seriously.
 
@@ -133,12 +128,11 @@ Anyone tried **module federation** for micro-frontends?`,
 🚀 Initial setup took **80 dev hours**, but **saved 120 hours** of bug fixing in the first month. 
 
 Looking into **property-based testing** next - anyone tried it with React?`,
-    user_id: 5,
+    user_id: users[4].id,
     createdAt: new Date('2024-02-15T16:30:00'),
     updatedAt: new Date('2024-02-15T16:30:00')
   },
   {
-    id: 6,
     title: 'Mastering State Management with Redux Toolkit',
     content: `Transitioning our React app from vanilla Redux to **Redux Toolkit** was a game-changer.
 
@@ -171,12 +165,11 @@ const userSlice = createSlice({
 Performance improved by **40%** - less code, more predictability! 💡
 
 Anyone else moved away from traditional Redux patterns?`,
-    user_id: 1,
+    user_id: users[0].id,
     createdAt: new Date('2024-02-20T11:00:00'),
     updatedAt: new Date('2024-02-20T11:00:00')
   },
   {
-    id: 7,
     title: 'WebSocket Real-Time Collaboration: Building a Multiplayer Code Editor',
     content: `Just completed a **real-time collaborative code editor** using **Socket.IO** and **React**.
 
@@ -202,12 +195,11 @@ socket.on('code_change', (changes) => {
 **Fascinating discovery**: Real-time sync is hard, but incredibly satisfying when it works! 🚀
 
 Who else is exploring collaborative editing technologies?`,
-    user_id: 2,
+    user_id: users[1].id,
     createdAt: new Date('2024-02-25T14:45:00'),
     updatedAt: new Date('2024-02-25T14:45:00')
   },
   {
-    id: 8,
     title: 'TypeScript: From Frustration to Productivity',
     content: `My team's journey from **JavaScript** to **TypeScript** - lessons learned and productivity gains.
 
@@ -244,12 +236,11 @@ const processUserData = (response: APIResponse<UserProfile>) => {
 **Bugs caught early**: Reduced by 60% 🐛
 
 Embracing the type system, one interface at a time! 💪`,
-    user_id: 3,
+    user_id: users[2].id,
     createdAt: new Date('2024-03-01T09:30:00'),
     updatedAt: new Date('2024-03-01T09:30:00')
   },
   {
-    id: 9,
     title: 'Performance Profiling in React: Beyond the Basics',
     content: `Deep dive into **React Performance Optimization** using Chrome DevTools and custom profiling.
 
@@ -277,12 +268,11 @@ const ExpensiveComponent = React.memo(({ data }) => {
 Performance is a feature, not an afterthought! 🚀
 
 Who else geeks out about web performance?`,
-    user_id: 4,
+    user_id: users[3].id,
     createdAt: new Date('2024-03-05T16:15:00'),
     updatedAt: new Date('2024-03-05T16:15:00')
   },
   {
-    id: 10,
     title: 'Migrating a Monolith to Microservices: Lessons from the Trenches',
     content: `Our epic journey of breaking down a **massive Node.js monolith** into **microservices**.
 
@@ -314,13 +304,14 @@ service UserService {
 Microservices: Not a silver bullet, but powerful when done right! 💡
 
 Microservice architects, share your war stories!`,
-    user_id: 5,
+    user_id: users[4].id,
     createdAt: new Date('2024-03-10T11:45:00'),
     updatedAt: new Date('2024-03-10T11:45:00')
   }
 ];
 
-// Bulk create all posts
-const seedPosts = () => Post.bulkCreate(postData, { individualHooks: true });
+  const posts = await Post.bulkCreate(postData, { individualHooks: true });
+  return posts;
+};
 
 module.exports = seedPosts;

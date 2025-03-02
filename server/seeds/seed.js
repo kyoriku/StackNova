@@ -1,4 +1,5 @@
 // Main database seeding script
+const { User } = require('../models');
 const seedUsers = require('./userSeeds');
 const seedPosts = require('./postSeeds');
 const seedComments = require('./commentSeeds');
@@ -8,7 +9,6 @@ const redisService = require('../config/redis');
 // Clear Redis cache before seeding data
 const clearRedisCache = async () => {
   try {
-    // Wait for a moment to allow Redis connection to establish
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (!redisService.isConnected()) {
@@ -17,11 +17,20 @@ const clearRedisCache = async () => {
     }
 
     await redisService.clearAllPostsCache();
-    console.log('\n\x1b[32m--- REDIS CACHE CLEARED ---\x1b[0m\n');
+    console.log('\n\x1b[32m--- REDIS POSTS CACHE CLEARED ---\x1b[0m\n');
+
+    // Fetch all usernames from the User model
+    const users = await User.findAll({ attributes: ['username'] });
+    const usernames = users.map(user => user.username);
+
+    await Promise.all(usernames.map(username => redisService.clearUserProfileCache(username)));
+    console.log('\n\x1b[32m--- REDIS USER PROFILES CACHE CLEARED ---\x1b[0m\n');
+
   } catch (err) {
     console.error('\n\x1b[31m--- REDIS CACHE CLEARING FAILED ---\x1b[0m\n', err);
   }
 };
+
 
 // Seed all data in sequence
 const seedAll = async () => {
@@ -33,13 +42,13 @@ const seedAll = async () => {
     await sequelize.sync({ force: true });
     console.log('\n\x1b[32m--- DATABASE SYNCED ---\x1b[0m\n');
 
-    await seedUsers();
+    const users = await seedUsers();
     console.log('\n\x1b[32m--- USERS SEEDED ---\x1b[0m\n');
 
-    await seedPosts();
+    const posts = await seedPosts(users);
     console.log('\n\x1b[32m--- POSTS SEEDED ---\x1b[0m\n');
 
-    await seedComments();
+    await seedComments(users, posts);
     console.log('\n\x1b[32m--- COMMENTS SEEDED ---\x1b[0m\n');
 
     // Explicitly disconnect Redis before exiting

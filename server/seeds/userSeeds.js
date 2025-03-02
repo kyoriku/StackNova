@@ -30,6 +30,8 @@ const userData = [
 ];
 
 // Bulk create users with password hashing hooks
-const seedUsers = () => User.bulkCreate(userData, { individualHooks: true });
-
+const seedUsers = async () => {
+  const users = await User.bulkCreate(userData, { individualHooks: true });
+  return users; // Return the created users with their UUIDs
+};
 module.exports = seedUsers;
