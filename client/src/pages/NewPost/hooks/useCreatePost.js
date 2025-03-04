@@ -9,7 +9,7 @@ export const useCreatePost = () => {
 
   const createPostMutation = useMutation({
     mutationFn: async (postData) => {
-      const response = await fetch('/api/posts', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

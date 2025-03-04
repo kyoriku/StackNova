@@ -4,7 +4,7 @@ export const useDashboardPosts = (userId) => {
   return useQuery({
     queryKey: ['userPosts', userId],
     queryFn: async () => {
-      const response = await fetch('/api/posts/user/posts');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/user/posts`);
       if (!response.ok) throw new Error('Failed to fetch posts');
       return response.json();
     },

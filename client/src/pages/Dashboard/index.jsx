@@ -7,6 +7,7 @@ import { useDeletePost } from './hooks/useDeletePost';
 import { DeleteModal } from './components/DeleteModal';
 import { Header } from './components/Header';
 import { PostsList } from './components/PostsList';
+import { DefaultMetaTags } from '../../components/MetaTags';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -63,27 +64,34 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto pb-8" id="dashboard-content">
-      {/* Delete Confirmation Modal */}
-      <DeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        isDeleting={deletePostMutation.isPending}
-        itemName={postToDelete?.title}
-        itemType="Post"
+    <>
+      <DefaultMetaTags 
+        title="Dashboard" 
+        description="Manage your posts and account on StackNova."
       />
+      
+      <div className="max-w-4xl mx-auto pb-8" id="dashboard-content">
+        {/* Delete Confirmation Modal */}
+        <DeleteModal
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+          isDeleting={deletePostMutation.isPending}
+          itemName={postToDelete?.title}
+          itemType="Post"
+        />
 
-      {/* Header Section */}
-      <Header username={user?.username} />
+        {/* Header Section */}
+        <Header username={user?.username} />
 
-      {/* Posts Section */}
-      <PostsList 
-        posts={posts}
-        onDeleteClick={handleDeleteClick}
-        prefetchPost={prefetchPost}
-      />
-    </div>
+        {/* Posts Section */}
+        <PostsList 
+          posts={posts}
+          onDeleteClick={handleDeleteClick}
+          prefetchPost={prefetchPost}
+        />
+      </div>
+    </>
   );
 };
 
