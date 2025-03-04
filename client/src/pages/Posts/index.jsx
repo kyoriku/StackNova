@@ -4,6 +4,7 @@ import { Pagination } from './components/Pagination';
 import { PostsContainer } from './components/PostsContainer';
 import { usePosts } from './hooks/usePosts';
 import { usePrefetchPost } from './hooks/usePrefetchPost';
+import { DefaultMetaTags } from '../../components/MetaTags';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -20,34 +21,41 @@ const Posts = () => {
   const paginatedPosts = filteredPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <section className="max-w-6xl mx-auto pb-8">
-      <header>
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-          Latest Posts
-        </h1>
-      </header>
-
-      <SearchBar
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        resultsCount={filteredPosts.length}
+    <>
+      <DefaultMetaTags 
+        title="" 
+        description="Browse the latest programming questions, tips, and solutions shared by our community of developers."
       />
+      
+      <section className="max-w-6xl mx-auto pb-8">
+        <header>
+          <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+            Latest Posts
+          </h1>
+        </header>
 
-      <PostsContainer
-        isLoading={isLoading}
-        error={error}
-        posts={paginatedPosts}
-        prefetchPost={prefetchPost}
-      />
-
-      <nav aria-label="Pagination">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+        <SearchBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          resultsCount={filteredPosts.length}
         />
-      </nav>
-    </section>
+
+        <PostsContainer
+          isLoading={isLoading}
+          error={error}
+          posts={paginatedPosts}
+          prefetchPost={prefetchPost}
+        />
+
+        <nav aria-label="Pagination">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </nav>
+      </section>
+    </>
   );
 };
 
