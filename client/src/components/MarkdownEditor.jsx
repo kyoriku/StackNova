@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { Highlight, themes } from 'prism-react-renderer';
 
 const languages = {
@@ -220,20 +221,53 @@ const MarkdownEditor = ({
 };
 
 export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
+  // Preprocess content to handle inline code
+  const processedContent = () => {
+    // Replace inline code with HTML markup
+    return content.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '<span class="custom-inline-code">$1</span>');
+  };
+
+  // CSS for the custom inline code
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.id = 'inline-code-css';
+    style.textContent = `
+      .custom-inline-code {
+        display: inline;
+        background-color: #f3f4f6;
+        padding: 0.1rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.875rem;
+        color: #111827;
+        white-space: normal;
+      }
+      
+      .dark .custom-inline-code {
+        background-color: #374151;
+        color: #ffffff;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.getElementById('inline-code-css')?.remove();
+    };
+  }, []);
+
   return (
     <ReactMarkdown
-      skipHtml={true}
+      rehypePlugins={[rehypeRaw]} // This is critical to parse the HTML in our preprocessed content
       components={{
+        // Only handle code blocks here
         code({ node, inline, className, children, ...props }) {
           if (inline) {
-            return (
-              <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-                {children}
-              </code>
-            );
+            // We're already handling inline code via preprocessing
+            return null;
           }
           return <CodeBlock className={className} showLineNumbers={showLineNumbers}>{children}</CodeBlock>;
         },
+        // Rest of your components remain the same
         p: ({ children }) => (
           <p className="mb-4 last:mb-0 leading-relaxed text-gray-900 dark:text-gray-100">{children}</p>
         ),
@@ -294,7 +328,7 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
         ),
       }}
     >
-      {content}
+      {processedContent()}
     </ReactMarkdown>
   );
 };
