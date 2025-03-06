@@ -267,7 +267,6 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
           }
           return <CodeBlock className={className} showLineNumbers={showLineNumbers}>{children}</CodeBlock>;
         },
-        // Rest of your components remain the same
         p: ({ children }) => (
           <p className="mb-4 last:mb-0 leading-relaxed text-gray-900 dark:text-gray-100">{children}</p>
         ),
