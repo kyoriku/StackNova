@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /post/
+Allow: /user/
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /new-post
+Disallow: /edit-post/
+
+Sitemap: https://stacknova.ca/sitemap.xml
