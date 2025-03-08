@@ -56,7 +56,7 @@ const Dashboard = () => {
   };
 
   if (isLoading && !posts) { // Only show loading state if we don't have cached data
-    return <LoadingSpinner text="Loading your posts..." />;
+    return <LoadingSpinner text="Loading dashboard..." />;
   }
 
   if (error) {
