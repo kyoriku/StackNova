@@ -2,45 +2,79 @@
 const { Comment, User } = require('../models');
 const redisService = require('../config/redis');
 
+// Helper function to handle common Redis cache operations
+async function clearCaches(postId, userId, username) {
+  const cacheOps = [
+    redisService.clearHomePageCache(),
+    redisService.clearUserProfileCache(username),
+    redisService.invalidateSitemapCache()
+  ];
+  
+  if (postId) {
+    cacheOps.push(redisService.clearPostCache(postId, true)); // Include comments
+  }
+
+  if (userId) {
+    cacheOps.push(redisService.clearUserPostsCache(userId));
+  }
+  
+  return Promise.all(cacheOps);
+}
+
 const commentController = {
   // Create a new comment
   async createComment(req, res) {
     try {
-      const newComment = await Comment.create({
-        comment_text: req.body.comment_text,
-        user_id: req.session.user_id,
-        post_id: req.body.post_id
-      });
+      const userId = req.session.user_id;
+      const postId = req.body.post_id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'You must be logged in to create a comment' });
+      }
+
+      if (!postId) {
+        return res.status(400).json({ message: 'Post ID is required' });
+      }
 
       // Get the user to access username
-      const user = await User.findByPk(req.session.user_id, {
+      const user = await User.findByPk(userId, {
         attributes: ['username']
       });
 
-      // Clear caches
-      await Promise.all([
-        redisService.clearPostCache(req.body.post_id, true),
-        redisService.clearHomePageCache(),
-        redisService.clearUserProfileCache(user.username),
-        redisService.invalidateSitemapCache()
-      ]);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      const newComment = await Comment.create({
+        comment_text: req.body.comment_text,
+        user_id: userId,
+        post_id: postId
+      });
+
+      // Clear relevant caches
+      await clearCaches(postId, userId, user.username);
 
       res.status(201).json(newComment.get({ plain: true }));
     } catch (err) {
-      console.error(err);
-      res.status(400).json({
-        error: 'Unable to create comment'
-      });
+      console.error('Error creating comment:', err);
+      res.status(400).json({ message: 'Failed to create comment', error: err.message });
     }
   },
 
   // Update a comment
   async updateComment(req, res) {
     try {
+      const userId = req.session.user_id;
+      const commentId = req.params.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'You must be logged in to update a comment' });
+      }
+
       const comment = await Comment.findOne({
         where: {
-          id: req.params.id,
-          user_id: req.session.user_id
+          id: commentId,
+          user_id: userId
         },
         include: [{
           model: User,
@@ -49,41 +83,38 @@ const commentController = {
       });
 
       if (!comment) {
-        res.status(404).json({
-          error: 'Comment not found or not authorized'
-        });
-        return;
+        return res.status(404).json({ message: 'No comment found with this id or you are not authorized to edit it' });
       }
 
       await comment.update({ comment_text: req.body.comment_text });
 
-      // Clear caches
-      await Promise.all([
-        redisService.clearPostCache(comment.post_id, true),
-        redisService.clearHomePageCache(),
-        redisService.clearUserProfileCache(comment.user.username),
-        redisService.invalidateSitemapCache()
-      ]);
+      // Clear relevant caches
+      await clearCaches(comment.post_id, userId, comment.user.username);
 
       res.status(200).json({
         message: 'Comment updated successfully',
         comment: comment.get({ plain: true })
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'Internal server error'
-      });
+      console.error('Error updating comment:', err);
+      res.status(500).json({ message: 'Failed to update comment', error: err.message });
     }
   },
 
   // Delete a comment
   async deleteComment(req, res) {
     try {
+      const userId = req.session.user_id;
+      const commentId = req.params.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'You must be logged in to delete a comment' });
+      }
+
       const comment = await Comment.findOne({
         where: {
-          id: req.params.id,
-          user_id: req.session.user_id
+          id: commentId,
+          user_id: userId
         },
         include: [{
           model: User,
@@ -92,10 +123,7 @@ const commentController = {
       });
 
       if (!comment) {
-        res.status(404).json({
-          error: 'Comment not found or not authorized'
-        });
-        return;
+        return res.status(404).json({ message: 'No comment found with this id or you are not authorized to delete it' });
       }
 
       const postId = comment.post_id;
@@ -103,22 +131,13 @@ const commentController = {
 
       await comment.destroy();
 
-      // Clear caches
-      await Promise.all([
-        redisService.clearPostCache(postId, true),
-        redisService.clearHomePageCache(),
-        redisService.clearUserProfileCache(username),
-        redisService.invalidateSitemapCache()
-      ]);
+      // Clear relevant caches
+      await clearCaches(postId, userId, username);
 
-      res.status(200).json({
-        message: 'Comment deleted successfully'
-      });
+      res.status(200).json({ message: 'Comment deleted successfully' });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'Internal server error'
-      });
+      console.error('Error deleting comment:', err);
+      res.status(500).json({ message: 'Failed to delete comment', error: err.message });
     }
   }
 };
