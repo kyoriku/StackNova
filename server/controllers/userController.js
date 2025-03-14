@@ -1,6 +1,41 @@
 // controllers/userController.js
 const { User, Post, Comment } = require('../models');
 
+// Common user profile query options
+const userProfileQueryOptions = {
+  attributes: ['username', 'createdAt'],
+  include: [
+    {
+      model: Post,
+      attributes: ['id', 'title', 'content', 'excerpt', 'createdAt', 'updatedAt'],
+      include: [
+        {
+          model: User,
+          attributes: ['username']
+        },
+        {
+          model: Comment,
+          attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'],
+          include: [{
+            model: User,
+            attributes: ['username']
+          }]
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    },
+    {
+      model: Comment,
+      attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'],
+      include: [{
+        model: Post,
+        attributes: ['id', 'title']
+      }],
+      order: [['createdAt', 'DESC']]
+    }
+  ]
+};
+
 const userController = {
   // Create new user
   async createUser(req, res) {
@@ -17,14 +52,16 @@ const userController = {
         });
       });
     } catch (err) {
-      console.error('Create user error:', err);
+      console.error('Error creating user:', err);
       if (err.name === 'SequelizeUniqueConstraintError') {
         res.status(400).json({
-          error: 'Email or username already exists'
+          message: 'Email or username already exists',
+          error: err.message
         });
       } else {
         res.status(400).json({
-          error: 'Unable to create user'
+          message: 'Failed to create user', 
+          error: err.message
         });
       }
     }
@@ -33,15 +70,22 @@ const userController = {
   // User login
   async login(req, res) {
     try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({
+          message: 'Email and password are required'
+        });
+      }
+
       const userData = await User.findOne({
-        where: { email: req.body.email }
+        where: { email }
       });
 
-      if (!userData || !(await userData.checkPassword(req.body.password))) {
-        res.status(400).json({
-          error: 'Incorrect email or password'
+      if (!userData || !(await userData.checkPassword(password))) {
+        return res.status(400).json({
+          message: 'Incorrect email or password'
         });
-        return;
       }
 
       req.session.save(() => {
@@ -54,9 +98,10 @@ const userController = {
         });
       });
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Error logging in:', err);
       res.status(500).json({
-        error: 'Login failed'
+        message: 'Login failed', 
+        error: err.message
       });
     }
   },
@@ -64,33 +109,34 @@ const userController = {
   // User logout
   async logout(req, res) {
     try {
-      if (req.session.logged_in) {
-        // Clear the session from database
-        await new Promise((resolve, reject) => {
-          req.session.destroy((err) => {
-            if (err) reject(err);
-            resolve();
-          });
-        });
-
-        // Clear the cookie
-        res.clearCookie('sessionId', {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-          path: '/',
-        });
-
-        res.status(204).end();
-      } else {
-        res.status(400).json({
-          error: 'Not logged in'
+      if (!req.session.logged_in) {
+        return res.status(400).json({
+          message: 'Not logged in'
         });
       }
+
+      // Clear the session from database
+      await new Promise((resolve, reject) => {
+        req.session.destroy((err) => {
+          if (err) reject(err);
+          resolve();
+        });
+      });
+
+      // Clear the cookie
+      res.clearCookie('sessionId', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+        path: '/',
+      });
+
+      res.status(204).end();
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error('Error logging out:', err);
       res.status(500).json({
-        error: 'Logout failed'
+        message: 'Logout failed', 
+        error: err.message
       });
     }
   },
@@ -118,61 +164,43 @@ const userController = {
         user: userData.get({ plain: true })
       });
     } catch (err) {
-      console.error('Session check error:', err);
+      console.error('Error checking session:', err);
       // Return 204 for any errors instead of 500
       res.status(204).end();
     }
   },
 
+  // Get user profile
   async getUserProfile(req, res) {
     try {
+      const username = req.params.username;
+      
+      if (!username) {
+        return res.status(400).json({
+          message: 'Username is required'
+        });
+      }
+
       const userData = await User.findOne({
-        where: { username: req.params.username },
-        attributes: ['username', 'createdAt'], // Only necessary fields
-        include: [
-          {
-            model: Post,
-            attributes: ['id', 'title', 'content', 'excerpt', 'createdAt', 'updatedAt'], // Exclude user_id
-            include: [
-              {
-                model: User,
-                attributes: ['username'] // Only show username, no ID
-              },
-              {
-                model: Comment,
-                attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'], // Exclude user_id
-                include: [{
-                  model: User,
-                  attributes: ['username']
-                }]
-              }
-            ],
-            order: [['createdAt', 'DESC']]
-          },
-          {
-            model: Comment,
-            attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'], // Exclude user_id
-            include: [{
-              model: Post,
-              attributes: ['id', 'title']
-            }],
-            order: [['createdAt', 'DESC']]
-          }
-        ]
+        where: { username },
+        ...userProfileQueryOptions
       });
 
       if (!userData) {
-        res.status(404).json({ message: 'No user found with this username!' });
-        return;
+        return res.status(404).json({ 
+          message: 'No user found with this username!' 
+        });
       }
 
       res.json(userData.get({ plain: true }));
     } catch (err) {
-      console.error('Get user profile error:', err);
-      res.status(500).json({ error: 'Failed to get user profile' });
+      console.error('Error fetching user profile:', err);
+      res.status(500).json({ 
+        message: 'Failed to get user profile', 
+        error: err.message 
+      });
     }
   }
-
 };
 
 module.exports = userController;
