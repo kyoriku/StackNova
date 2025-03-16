@@ -83,7 +83,6 @@ StackNova is built with a modern tech stack implementing several advanced patter
   * Tailwind CSS for responsive styling
   * Dark/light mode theming
   * Code splitting for optimized loading
-
 * **Backend Structure**:
   * Node.js with Express for API endpoints
   * API-focused architecture separating concerns
@@ -92,27 +91,23 @@ StackNova is built with a modern tech stack implementing several advanced patter
   * RESTful API design principles
   * Middleware for authentication, validation, and error handling
   * Rate limiting for security
-
 * **Database Design**:
   * MySQL with Sequelize ORM
   * User Model: Authentication and profile information
   * Post Model: Title, content, and user relationships
   * Comment Model: Content with user and post relationships
   * Efficient indexing for performance
-
 * **Authentication System**:
   * HTTP-only cookies for secure sessions
   * Express-session for session management
   * Bcrypt for password hashing
   * Protected routes using middleware
   * Session persistence with connect-session-sequelize
-
 * **Performance Optimizations**:
   * Redis for server-side caching
   * Query optimization
   * Client-side data prefetching
   * Lazy loading components
-
 * **Security Features**:
   * XSS prevention through sanitization
   * Rate limiting
