@@ -1,148 +1,203 @@
-// Seed data for creating initial blog posts with timestamps and user relationships
+// Seed data for creating initial questions with timestamps and user relationships
 const { Post, User } = require('../models');
 
 const seedPosts = async (users) => {
   const postData = [{
-    title: 'My Journey Learning Machine Learning: From Zero to First Model',
-    content: `Just wrapped up my first month of diving into ML using the **Boston Housing dataset**.
+    title: 'How to optimize large datasets with React Query and pagination?',
+    content: `I'm building a dashboard that displays **thousands of records** from our MySQL database, and I'm running into performance issues.
 
-After learning Python basics and data manipulation with **pandas**, I built my first \`RandomForestRegressor\` model achieving an R-squared score of **0.84**.
+Currently using **TanStack Query v4** with pagination, but the UI freezes when users rapidly switch between pages.
 
-The most fascinating discovery was that **number of rooms** had a stronger correlation with price (**0.7**) than **distance to employment centers** (**0.5**).
+My current implementation:
 
-### Key Lessons Learned:
-- Watch out for **multicollinearity**
-- Implement proper **feature scaling** _(improved MSE from 21.6 to 15.3)_
-- Always use **cross-validation**
+\`\`\`javascript
+const { data, isLoading } = useQuery({
+  queryKey: ['items', page],
+  queryFn: () => fetchItems(page, 50),
+  keepPreviousData: true
+});
+\`\`\`
 
-Planning to try **gradient boosting** next - what was your first ML project like?`,
+I've tried:
+- Setting \`keepPreviousData: true\`
+- Implementing \`useMemo\` for rendered items
+- Adding \`staleTime: 60000\` to reduce refetches
+
+Has anyone solved similar issues with large datasets? Would **virtualization** help in this case? Are there better patterns for handling data-heavy UIs?`,
     user_id: users[0].id,
     createdAt: new Date('2024-01-31T10:15:00'),
     updatedAt: new Date('2024-01-31T10:15:00')
   },
   {
-    title: 'Express.js API Tips I Wish I Knew Earlier',
-    content: `Just improved our **e-commerce platform's API** with some game-changing optimizations.
+    title: 'What\'s the best approach for implementing rate limiting in Express.js APIs?',
+    content: `Our **Express.js API** is getting hammered with requests, and I need to implement a solid rate limiting solution.
 
-### Key Improvements:
-- Implemented **rate limiting** with Redis:
-  \`\`\`js
-  const rateLimit = require('express-rate-limit');
-  const RedisStore = require('rate-limit-redis');
+### Current Setup:
+- Express.js backend
+- MySQL database with Sequelize
+- Deployed on AWS EC2
 
-  app.use(rateLimit({
-    store: new RedisStore({ client: redisClient }),
-    windowMs: 60 * 60 * 1000,
-    max: (req) => req.isAuthenticated ? 1000 : 100
-  }));
-  \`\`\`
-- Added **centralized error handling** with correlation IDs
-- **Response compression** _(70% smaller payloads)_
-- **Redis caching** _(40% less DB load)_
-- **PM2 cluster mode** _(2.5x better throughput)_
+I've been researching a few options:
 
-🚀 API response time dropped from **250ms to 85ms**. Next up: **GraphQL** - anyone interested in the implementation details?`,
+\`\`\`js
+// Option 1: express-rate-limit with Redis
+const rateLimit = require('express-rate-limit');
+const RedisStore = require('rate-limit-redis');
+
+app.use(rateLimit({
+  store: new RedisStore({ client: redisClient }),
+  windowMs: 60 * 60 * 1000,
+  max: (req) => req.isAuthenticated ? 1000 : 100
+}));
+
+// Option 2: Using IP-based limiting with in-memory storage
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+\`\`\`
+
+I'm curious:
+1. Has anyone used Redis as the store for rate limiting in production?
+2. Should I apply different limits for authenticated vs. unauthenticated users?
+3. Is there a way to implement gradual throttling instead of hard limits?
+4. Any other libraries or approaches I should consider?`,
     user_id: users[1].id,
     createdAt: new Date('2024-02-04T15:30:00'),
     updatedAt: new Date('2024-02-04T15:30:00')
   },
   {
-    title: 'How We Reduced Our React Bundle Size by 60%',
-    content: `Finally tackled our **SaaS dashboard's bundle size** issues.
+    title: 'Quick Tip: Test your app on real devices with Vite\'s --host flag',
+    content: `Just discovered a really convenient way to test your Vite app on actual mobile devices instead of relying on Chrome DevTools.
 
-### Initial State:
-- **2.8MB bundle** 🚨
-- **3.2s First Paint**
+Add the \`--host\` flag to your Vite dev script in \`package.json\`:
 
-### Key Fixes:
-- **Replaced Moment.js** (472KB) → Switched to **date-fns** ✅
-- **Replaced Charting Library** (685KB) → Switched to **Recharts** 📉
-- Implemented **Code Splitting** with React.lazy():
-  \`\`\`js
-  const Chart = React.lazy(() => import('./Chart'));
-
-  function Dashboard() {
-    return (
-      <Suspense fallback={<Loading />}>
-        <Chart />
-      </Suspense>
-    );
+\`\`\`json
+{
+  "scripts": {
+    "dev": "vite --host"
   }
-  \`\`\`
+}
+\`\`\`
 
-### Results:
-- **New Bundle Size: 1.1MB** 🎉
-- **First Paint: 1.1s** ⚡
-- **Lighthouse Score: 72 → 94** 🔥
+When you run \`npm run dev\`, Vite will now expose your app to your local network and show you the IP address:
 
-Anyone tried **module federation** for micro-frontends?`,
+\`\`\`
+  VITE v4.4.9  ready in 752 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.1.5:5173/
+\`\`\`
+
+Just visit that network URL on any device connected to the same wifi and you can test your app on real devices!
+
+This has been a game-changer for quickly checking responsive designs on actual phones and tablets instead of just simulating them in DevTools.
+
+**Bonus tip**: Combine with BrowserSync for auto-reloading across all connected devices.`,
     user_id: users[2].id,
     createdAt: new Date('2024-02-08T09:45:00'),
     updatedAt: new Date('2024-02-08T09:45:00')
   },
   {
-    title: 'Debugging CSS Grid in Real-World Projects',
-    content: `Spent last week moving our **dashboard to CSS Grid** and found some interesting **Safari quirks**.
+    title: 'How do you handle complex CSS Grid layouts for different viewport sizes?',
+    content: `I'm struggling with a **responsive dashboard** that uses CSS Grid. It works well on desktop but falls apart on mobile and tablet views.
 
-### Fixes & Lessons Learned:
-- **Fixed auto-placement issues**:
-  \`\`\`css
-  .grid-container {
-    display: grid;
-    grid-auto-flow: row;
-    gap: 10px;
-  }
-  \`\`\`
-- **Flattened nested grids** (3+ levels caused layout thrashing)
-- **Used CSS Custom Properties** and \`clamp()\` for better responsiveness:
-  \`\`\`css
-  .grid-item {
-    width: clamp(200px, 50%, 400px);
-  }
-  \`\`\`
+My current approach:
 
-🚀 **Layout shifts reduced by 94%**. Now exploring **Container Queries** - anyone using them in production yet?`,
+\`\`\`css
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+/* Media query for tablets */
+@media (max-width: 992px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Media query for mobile */
+@media (max-width: 576px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+\`\`\`
+
+But I have complex widgets that need to span different columns/rows based on the viewport.
+
+Questions:
+1. Is it better to use \`grid-template-areas\` for each breakpoint?
+2. How do you handle grid items that need to be in completely different positions on mobile vs. desktop?
+3. Any tools or methodologies to visualize and plan complex responsive grid layouts?
+4. Has anyone used CSS Container Queries for dashboard layouts?
+
+Would love to see examples of how others handle complex responsive grids!`,
     user_id: users[3].id,
     createdAt: new Date('2024-02-12T14:20:00'),
     updatedAt: new Date('2024-02-12T14:20:00')
   },
   {
-    title: 'The Hidden Costs of Not Writing Tests',
-    content: `A production incident with our **authentication flow** finally pushed us to take testing seriously.
+    title: 'What\'s your testing strategy for a full-stack MERN application?',
+    content: `Our team is developing a new **MERN stack application** and we're debating the best testing approach.
 
-### 6 Weeks Later:
-- **Test coverage**: **12% → 85%** 📈
-- **Tools used**: Jest, React Testing Library, Cypress
-- **CI/CD**: GitHub Actions + Parallel test execution _(CI time: 45 → 12 minutes)_
-- **Visual regression testing** with Percy
-- **TypeScript catching 23% of issues at compile time** ✅
+### Current Tech Stack:
+- React frontend with TanStack Query
+- Express.js backend
+- MongoDB with Mongoose
+- TypeScript throughout
 
-### Example Jest Test:
-  \`\`\`js
-  test('renders login form', () => {
-    render(<LoginForm />);
-    expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
+### Testing Concerns:
+- **Unit tests**: Jest for isolated functions/components?
+- **Integration tests**: Testing API endpoints and database interactions?
+- **E2E tests**: Cypress or Playwright?
+- **Test coverage**: What's a realistic goal for a small team?
+
+Our current plan is:
+
+\`\`\`javascript
+// Example Jest test for a React component
+test('renders login form', () => {
+  render(<LoginForm />);
+  expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
+});
+
+// Example API test with Supertest
+describe('POST /api/users', () => {
+  it('creates a new user', async () => {
+    const res = await request(app)
+      .post('/api/users')
+      .send({ username: 'testuser', password: 'password123' });
+    expect(res.statusCode).toEqual(201);
+    expect(res.body).toHaveProperty('id');
   });
-  \`\`\`
+});
+\`\`\`
 
-🚀 Initial setup took **80 dev hours**, but **saved 120 hours** of bug fixing in the first month. 
-
-Looking into **property-based testing** next - anyone tried it with React?`,
+What's your testing pyramid look like for MERN applications? Any recommendations for balancing thorough testing with development velocity?`,
     user_id: users[4].id,
     createdAt: new Date('2024-02-15T16:30:00'),
     updatedAt: new Date('2024-02-15T16:30:00')
   },
   {
-    title: 'Mastering State Management with Redux Toolkit',
-    content: `Transitioning our React app from vanilla Redux to **Redux Toolkit** was a game-changer.
+    title: 'How to efficiently manage global state in a large React application?',
+    content: `Our React application has grown significantly, and we're facing challenges with state management. Currently using a mix of **Context API** and **Redux**, but it's becoming unwieldy.
 
-### Why Redux Toolkit?
-- **Reduced boilerplate** 🔥
-- **Built-in immutability** with Immer
-- **Simplified async logic** using \`createAsyncThunk\`
+### Current Issues:
+- **Context API** causing unnecessary re-renders
+- **Redux** requiring too much boilerplate
+- Performance degradation with large state changes
+- No clear pattern for async operations
 
-### Sample Slice Creation:
+I'm considering these options:
+
 \`\`\`javascript
+// Option 1: Redux Toolkit
 const userSlice = createSlice({
   name: 'user',
   initialState: { 
@@ -160,155 +215,211 @@ const userSlice = createSlice({
     }
   }
 });
+
+// Option 2: Zustand
+const useUserStore = create((set) => ({
+  profile: null,
+  loading: false,
+  error: null,
+  login: async (credentials) => {
+    set({ loading: true });
+    try {
+      const profile = await loginApi(credentials);
+      set({ profile, loading: false });
+    } catch (error) {
+      set({ error, loading: false });
+    }
+  }
+}));
 \`\`\`
 
-Performance improved by **40%** - less code, more predictability! 💡
+Has anyone migrated from Redux to a newer state management solution like Zustand, Jotai, or Recoil? What were your experiences?
 
-Anyone else moved away from traditional Redux patterns?`,
+Should we break our app into more isolated components with their own state? Or is a global state solution still the way to go?`,
     user_id: users[0].id,
     createdAt: new Date('2024-02-20T11:00:00'),
     updatedAt: new Date('2024-02-20T11:00:00')
   },
   {
-    title: 'WebSocket Real-Time Collaboration: Building a Multiplayer Code Editor',
-    content: `Just completed a **real-time collaborative code editor** using **Socket.IO** and **React**.
+    title: 'Best practices for implementing WebSockets in a MERN stack application?',
+    content: `I'm adding real-time features to our **MERN stack application** and need advice on WebSocket implementation.
 
-### Tech Stack:
-- **Backend**: Node.js with Express
-- **WebSockets**: \`Socket.IO\`
-- **Frontend**: React with Operational Transforms
+### Requirements:
+- Chat functionality between users
+- Real-time notifications
+- Live updates for collaborative features
+- Must scale to thousands of concurrent connections
 
-### Key Challenges:
-- Handling **concurrent edits**
-- Implementing **cursor tracking**
-- Managing **connection states**
+### Current plan:
+- **Socket.IO** on the backend with Express
+- **Socket.IO Client** in React components
+- Redis for scaling across multiple servers
 
-### Sample Socket Event Handler:
 \`\`\`javascript
-socket.on('code_change', (changes) => {
-  // Apply operational transforms
-  const updatedCode = applyChanges(currentCode, changes);
-  broadcastToCollaborators(updatedCode);
+// Server setup
+const io = require('socket.io')(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
+io.on('connection', (socket) => {
+  // Authenticate user from JWT
+  const user = authenticateUserFromToken(socket.handshake.auth.token);
+  
+  // Join user to their own room
+  socket.join(\`user:\${user.id}\`);
+  
+  socket.on('send_message', (data) => {
+    // Store message in DB
+    saveMessageToDatabase(data);
+    // Broadcast to recipient
+    socket.to(\`user:\${data.recipientId}\`).emit('receive_message', data);
+  });
 });
 \`\`\`
 
-**Fascinating discovery**: Real-time sync is hard, but incredibly satisfying when it works! 🚀
+Questions:
+1. Is Socket.IO the right choice, or should I use plain WebSockets?
+2. How to handle authentication with WebSockets?
+3. Best practices for organizing WebSocket events and handlers?
+4. Strategies for testing WebSocket functionality?
+5. How to efficiently scale WebSockets with Redis or other solutions?
 
-Who else is exploring collaborative editing technologies?`,
+Any real-world experiences or gotchas to be aware of?`,
     user_id: users[1].id,
     createdAt: new Date('2024-02-25T14:45:00'),
     updatedAt: new Date('2024-02-25T14:45:00')
   },
   {
-    title: 'TypeScript: From Frustration to Productivity',
-    content: `My team's journey from **JavaScript** to **TypeScript** - lessons learned and productivity gains.
+    title: 'Migrating from JavaScript to TypeScript in a MERN stack: Worth it?',
+    content: `Our team is considering migrating our **MERN stack application** from JavaScript to TypeScript. The codebase is about 40K lines of JS code across frontend and backend.
 
-### Initial Pain Points:
-- **Steep learning curve** 📚
-- Configuring **tsconfig.json**
-- Handling **complex type definitions**
+### Potential Benefits:
+- Better IDE support and autocompletion
+- Catching type-related bugs earlier
+- Improved documentation through types
+- Better maintenance for the long term
 
-### Productivity Boosters:
-- **Autocomplete everywhere**
-- Catching errors at **compile-time**
-- **Self-documenting** code
+### Concerns:
+- Learning curve for team members
+- Time investment for migration
+- Potential performance impact during development
+- Integration with existing libraries
 
-### Advanced Type Magic:
+If we proceed, we'd start with this approach:
+
 \`\`\`typescript
-type APIResponse<T> = {
-  data: T;
-  status: 'success' | 'error';
-  timestamp: number;
-};
-
-type UserProfile = {
-  id: number;
-  name: string;
+// Example of typing a Mongoose model
+interface IUser extends Document {
+  username: string;
   email: string;
-};
+  password: string;
+  createdAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
 
-const processUserData = (response: APIResponse<UserProfile>) => {
-  // Type-safe processing
-};
+const UserSchema = new Schema<IUser>({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
 \`\`\`
 
-**Type coverage**: 0% → 92% 📈
-**Bugs caught early**: Reduced by 60% 🐛
-
-Embracing the type system, one interface at a time! 💪`,
+For those who've gone through a similar migration:
+1. Was it worth the effort?
+2. What migration strategy worked best? (Gradual vs. all at once)
+3. Any unexpected challenges or benefits?
+4. How did it affect your development velocity long-term?
+5. Recommended tooling or resources for the migration process?`,
     user_id: users[2].id,
     createdAt: new Date('2024-03-01T09:30:00'),
     updatedAt: new Date('2024-03-01T09:30:00')
   },
   {
-    title: 'Performance Profiling in React: Beyond the Basics',
-    content: `Deep dive into **React Performance Optimization** using Chrome DevTools and custom profiling.
+    title: 'How to identify and fix performance bottlenecks in React?',
+    content: `Our React application is experiencing **significant performance issues**, especially on pages with complex data visualization and forms.
 
-### Optimization Techniques:
-- **Memoization** with \`useMemo\` and \`useCallback\`
-- Identifying **unnecessary re-renders**
-- **Code splitting** strategies
+### Current Symptoms:
+- Slow initial render (3-5 seconds)
+- UI freezes during certain interactions
+- Memory usage grows over time
+- Some components re-render too frequently
 
-### Profiling Example:
+I've started using the React DevTools Profiler and found some issues, but I'm looking for a more systematic approach.
+
 \`\`\`javascript
-const ExpensiveComponent = React.memo(({ data }) => {
-  const processedData = useMemo(() => {
-    return heavyComputation(data);
-  }, [data]);
-
-  return <RenderComponent data={processedData} />;
-});
+// Example of a component that might be problematic
+function DataGrid({ items, onSelect }) {
+  const [sortedItems, setSortedItems] = useState([]);
+  
+  // This runs on every render
+  const processedItems = items.map(item => ({
+    ...item,
+    formattedDate: formatDate(item.date),
+    fullName: \`\${item.firstName} \${item.lastName}\`
+  }));
+  
+  useEffect(() => {
+    // Complex sorting logic here
+    setSortedItems(sortItems(processedItems));
+  }, [items, processedItems]);
+  
+  return (
+    <Table data={sortedItems} onRowClick={onSelect} />
+  );
+}
 \`\`\`
 
-### Key Metrics:
-- **Initial render**: 450ms → 120ms
-- **Re-render time**: 210ms → 35ms
-- **Bundle size**: Reduced by 40% 📉
+Questions:
+1. What tools and methods do you use to identify React performance issues?
+2. Common patterns that lead to performance problems?
+3. Best practices for optimizing components with heavy data processing?
+4. When should you use \`React.memo\`, \`useMemo\`, and \`useCallback\`?
+5. How to prevent memory leaks in React applications?
 
-Performance is a feature, not an afterthought! 🚀
-
-Who else geeks out about web performance?`,
+Has anyone successfully solved similar performance issues? What was your approach?`,
     user_id: users[3].id,
     createdAt: new Date('2024-03-05T16:15:00'),
     updatedAt: new Date('2024-03-05T16:15:00')
   },
   {
-    title: 'Migrating a Monolith to Microservices: Lessons from the Trenches',
-    content: `Our epic journey of breaking down a **massive Node.js monolith** into **microservices**.
+    title: 'Quick Tip: How to rename a GitHub repository',
+    content: `For beginners who might be wondering: it's actually very simple to rename a GitHub repository, and GitHub automatically handles redirects from the old name!
 
-### Architectural Evolution:
-- **Initial Monolith**: 50k lines of code 😱
-- **Communication**: REST → \`gRPC\`
-- **Deployment**: Kubernetes + Helm Charts
+### Steps to rename a repository:
 
-### Challenges Overcome:
-- **Distributed transactions**
-- **Service discovery**
-- **Eventual consistency**
+1. Go to your repository on GitHub
+2. Click on "Settings" in the top navigation bar
+3. Under the "General" section (should be open by default), find the "Repository name" field
+4. Enter the new name for your repository
+5. Click the "Rename" button
 
-### Sample gRPC Service:
-\`\`\`protobuf
-syntax = "proto3";
+**Important things to know:**
 
-service UserService {
-  rpc CreateUser(CreateUserRequest) returns (User) {}
-  rpc GetUser(GetUserRequest) returns (User) {}
-}
+- GitHub will automatically redirect traffic from the old URL to the new one, so links won't break
+- You'll need to update your local repository's remote URL:
+
+\`\`\`bash
+# Check current remote URL
+git remote -v
+
+# Update the remote URL
+git remote set-url origin https://github.com/username/new-repo-name.git
 \`\`\`
 
-### Results:
-- **Deployment frequency**: Weekly → Multiple times daily
-- **Scaling**: Granular and efficient
-- **Development velocity**: 📈 Increased by 70%
+- If you have GitHub Pages enabled, the site will automatically be available at the new URL
+- Any project collaborators will need to update their remote URLs as well
 
-Microservices: Not a silver bullet, but powerful when done right! 💡
-
-Microservice architects, share your war stories!`,
+This is much easier than creating a new repository and manually migrating everything over!`,
     user_id: users[4].id,
     createdAt: new Date('2024-03-10T11:45:00'),
     updatedAt: new Date('2024-03-10T11:45:00')
   }
-];
+  ];
 
   const posts = await Post.bulkCreate(postData, { individualHooks: true });
   return posts;
