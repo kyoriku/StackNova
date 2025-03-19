@@ -13,11 +13,14 @@ export const PostItem = ({ post, prefetchPost }) => (
       <div className="bg-white dark:bg-gray-800 rounded-lg p-4 
                     border border-gray-200 dark:border-gray-700
                     hover:border-blue-500 dark:hover:border-blue-400
-                    transition-transform duration-200 shadow-md dark:shadow-xl 
-                    dark:shadow-black/20 h-full">
+                    shadow-md dark:shadow-xl dark:shadow-black/20 h-full">
         <div className="flex justify-between items-start gap-4">
           <div className="flex-1">
-            <h2 id={`post-title-${post.id}`} className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
+            <h2 
+              id={`post-title-${post.id}`} 
+              className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2 
+                       group-hover:text-blue-700 dark:group-hover:text-blue-500"
+            >
               {post.title}
             </h2>
             <p className="text-gray-900 dark:text-gray-300 mb-3 line-clamp-2">
