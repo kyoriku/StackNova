@@ -8,7 +8,8 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
   const prefetchUserProfile = usePrefetchUserProfile();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border 
+    border-gray-200 dark:border-gray-700">
       <p className="text-gray-900 dark:text-white mb-2">
         <MarkdownPreview content={comment.comment_text} showLineNumbers={false} />
       </p>
@@ -16,7 +17,8 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           <Link
             to={`/user/${comment.user.username}`}
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors font-medium underline-offset-2 hover:underline"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 
+            dark:hover:text-blue-500 font-medium"
             onMouseEnter={() => prefetchUserProfile(comment.user.username)} // Prefetch on hover
           >
             {comment.user.username}
