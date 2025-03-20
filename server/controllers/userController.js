@@ -15,7 +15,7 @@ const userProfileQueryOptions = {
         },
         {
           model: Comment,
-          attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'],
+          attributes: ['id', 'comment_text', 'excerpt', 'createdAt', 'updatedAt'],
           include: [{
             model: User,
             attributes: ['username']
@@ -26,7 +26,7 @@ const userProfileQueryOptions = {
     },
     {
       model: Comment,
-      attributes: ['id', 'comment_text', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'comment_text', 'excerpt', 'createdAt', 'updatedAt'],
       include: [{
         model: Post,
         attributes: ['id', 'title']

@@ -1,6 +1,7 @@
 // Import required dependencies
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
+const { generateExcerpt } = require('../utils/excerptUtils');
 
 class Comment extends Model { }
 
@@ -18,6 +19,10 @@ Comment.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    excerpt: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+    },
     user_id: {
       type: DataTypes.UUID,
       references: {
@@ -34,6 +39,20 @@ Comment.init(
     },
   },
   {
+    hooks: {
+      beforeCreate: async (comment) => {
+        // Generate excerpt for new comments
+        if (comment.comment_text) {
+          comment.excerpt = generateExcerpt(comment.comment_text);
+        }
+      },
+      beforeUpdate: async (comment) => {
+        // Regenerate excerpt if comment_text has changed
+        if (comment.changed('comment_text')) {
+          comment.excerpt = generateExcerpt(comment.comment_text);
+        }
+      },
+    },
     sequelize,
     timestamps: true,
     freezeTableName: true,

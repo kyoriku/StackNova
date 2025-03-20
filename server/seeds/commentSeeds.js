@@ -3,16 +3,13 @@ const { Comment } = require('../models');
 
 const seedComments = async (users, posts) => {
   const commentData = [
-  // Keep some of your existing detailed comments
   {
     comment_text: "For large datasets with React Query, I'd recommend using virtualization with either react-window or react-virtualized. We had a similar issue and combining React Query's `keepPreviousData` with virtualization reduced our render times from seconds to milliseconds. Here's what worked for us:\n\n```javascript\nimport { useVirtualizer } from '@tanstack/react-virtual';\n\nfunction VirtualizedList({ data }) {\n  const parentRef = useRef(null);\n  \n  const rowVirtualizer = useVirtualizer({\n    count: data.length,\n    getScrollElement: () => parentRef.current,\n    estimateSize: () => 50,\n  });\n  \n  return (\n    <div ref={parentRef} style={{ height: '500px', overflow: 'auto' }}>\n      <div\n        style={{\n          height: `${rowVirtualizer.getTotalSize()}px`,\n          position: 'relative',\n        }}\n      >\n        {rowVirtualizer.getVirtualItems().map((virtualRow) => (\n          <div\n            key={virtualRow.index}\n            style={{\n              position: 'absolute',\n              top: 0,\n              left: 0,\n              width: '100%',\n              height: `${virtualRow.size}px`,\n              transform: `translateY(${virtualRow.start}px)`,\n            }}\n          >\n            {data[virtualRow.index].name}\n          </div>\n        ))}\n      </div>\n    </div>\n  );\n}\n```\n\nAlso, consider implementing cursor-based pagination instead of offset pagination if your data model allows it. It's much more efficient for large datasets.",
     user_id: users[1].id,
     post_id: posts[0].id,
-    createdAt: new Date('2024-02-01T11:30:00'),
-    updatedAt: new Date('2024-02-01T11:30:00')
+
   },
-  
-  // Add some shorter, Stack Overflow style direct answers
+
   {
     comment_text: "The issue is in your dependency array. You're including `processedItems` which is recreated every render, causing an infinite loop. Change your code to this:\n\n```javascript\nfunction DataGrid({ items, onSelect }) {\n  const [sortedItems, setSortedItems] = useState([]);\n  \n  const processedItems = useMemo(() => {\n    return items.map(item => ({\n      ...item,\n      formattedDate: formatDate(item.date),\n      fullName: `${item.firstName} ${item.lastName}`\n    }));\n  }, [items]);\n  \n  useEffect(() => {\n    setSortedItems(sortItems(processedItems));\n  }, [processedItems]); // Now this only depends on the memoized value\n  \n  return <Table data={sortedItems} onRowClick={onSelect} />;\n}\n```\n\nThis should fix your performance issue.",
     user_id: users[3].id,
@@ -29,7 +26,6 @@ const seedComments = async (users, posts) => {
     updatedAt: new Date('2024-02-05T16:45:00')
   },
   
-  // Add more short, direct answers
   {
     comment_text: "Just add the `--host` flag to your Vite command. Simple as that:\n\n```json\n{\n  \"scripts\": {\n    \"dev\": \"vite --host\"\n  }\n}\n```",
     user_id: users[0].id,
@@ -54,7 +50,6 @@ const seedComments = async (users, posts) => {
     updatedAt: new Date('2024-02-16T09:45:00')
   },
   
-  // More short Stack Overflow style answers
   {
     comment_text: "Your Redux code has too much boilerplate. Switch to Redux Toolkit:\n\n```javascript\n// Before (verbose Redux)\nconst INCREMENT = 'counter/increment';\nconst DECREMENT = 'counter/decrement';\n\nfunction counterReducer(state = { value: 0 }, action) {\n  switch (action.type) {\n    case INCREMENT:\n      return { ...state, value: state.value + 1 };\n    case DECREMENT:\n      return { ...state, value: state.value - 1 };\n    default:\n      return state;\n  }\n}\n\n// After (with Redux Toolkit)\nimport { createSlice } from '@reduxjs/toolkit';\n\nconst counterSlice = createSlice({\n  name: 'counter',\n  initialState: { value: 0 },\n  reducers: {\n    increment: state => { state.value += 1 },\n    decrement: state => { state.value -= 1 }\n  }\n});\n\nexport const { increment, decrement } = counterSlice.actions;\nexport default counterSlice.reducer;\n```\n\nMuch cleaner, and you get immutability built-in with Immer.",
     user_id: users[1].id,
@@ -113,8 +108,8 @@ const seedComments = async (users, posts) => {
   }
 ];
 
-// Bulk create all comments
-return Comment.bulkCreate(commentData, { individualHooks: true });
+  const comments = await Comment.bulkCreate(commentData, { individualHooks: true });
+  return comments;
 }; 
 
 module.exports = seedComments;
