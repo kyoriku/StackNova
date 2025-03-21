@@ -69,33 +69,62 @@ I'm curious:
     updatedAt: new Date('2024-02-04T15:30:00')
   },
   {
-    title: 'Quick Tip: Test your app on real devices with Vite\'s --host flag',
-    content: `Just discovered a really convenient way to test your Vite app on actual mobile devices instead of relying on Chrome DevTools.
+    title: 'Setting up effective cross-browser testing with Playwright',
+    content: `I've been struggling with inconsistent UI behavior across different browsers and need a better testing solution.
 
-Add the \`--host\` flag to your Vite dev script in \`package.json\`:
+After trying both Cypress and Playwright, I settled on **Playwright** for automated cross-browser testing. Here's what made the difference for me:
 
-\`\`\`json
-{
-  "scripts": {
-    "dev": "vite --host"
-  }
-}
+\`\`\`javascript
+// playwright.config.js
+module.exports = {
+  testDir: './tests',
+  timeout: 30000,
+  retries: 2,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { browserName: 'chromium' },
+    },
+    {
+      name: 'firefox',
+      use: { browserName: 'firefox' },
+    },
+    {
+      name: 'webkit',
+      use: { browserName: 'webkit' },
+    },
+    {
+      name: 'mobile chrome',
+      use: {
+        browserName: 'chromium',
+        ...devices['Pixel 5'],
+      },
+    },
+    {
+      name: 'mobile safari',
+      use: {
+        browserName: 'webkit',
+        ...devices['iPhone 12'],
+      },
+    },
+  ],
+};
 \`\`\`
 
-When you run \`npm run dev\`, Vite will now expose your app to your local network and show you the IP address:
+The key advantages I found were:
+- Tests run on all major browsers (Chrome, Firefox, Safari) with a single command
+- Built-in mobile device emulation
+- Much faster parallel execution compared to Cypress
+- Better handling of iframes and multiple tabs
 
-\`\`\`
-  VITE v4.4.9  ready in 752 ms
-
-  ➜  Local:   http://localhost:5173/
-  ➜  Network: http://192.168.1.5:5173/
-\`\`\`
-
-Just visit that network URL on any device connected to the same wifi and you can test your app on real devices!
-
-This has been a game-changer for quickly checking responsive designs on actual phones and tablets instead of just simulating them in DevTools.
-
-**Bonus tip**: Combine with BrowserSync for auto-reloading across all connected devices.`,
+Has anyone else made this transition? Any tips for structuring tests to maximize browser compatibility detection?`,
     user_id: users[2].id,
     createdAt: new Date('2024-02-08T09:45:00'),
     updatedAt: new Date('2024-02-08T09:45:00')
@@ -294,47 +323,64 @@ Any real-world experiences or gotchas to be aware of?`,
     updatedAt: new Date('2024-02-25T14:45:00')
   },
   {
-    title: 'Migrating from JavaScript to TypeScript in a MERN stack: Worth it?',
-    content: `Our team is considering migrating our **MERN stack application** from JavaScript to TypeScript. The codebase is about 40K lines of JS code across frontend and backend.
+    title: 'Implementing secure SSO authentication for enterprise applications',
+    content: `Our team is building an enterprise web application that requires secure Single Sign-On (SSO) authentication. We're struggling to choose between several options and implement it correctly.
 
-### Potential Benefits:
-- Better IDE support and autocompletion
-- Catching type-related bugs earlier
-- Improved documentation through types
-- Better maintenance for the long term
+### Requirements:
+- Support for SAML 2.0 and OpenID Connect
+- Role-based access control
+- Audit logging for compliance
+- Works with React frontend and Node.js backend
+- Enterprise client requirements (Azure AD, Okta, Google Workspace)
 
-### Concerns:
-- Learning curve for team members
-- Time investment for migration
-- Potential performance impact during development
-- Integration with existing libraries
+Here's my current approach for handling OIDC:
 
-If we proceed, we'd start with this approach:
+\`\`\`javascript
+// Server-side OAuth handling with Passport.js
+const passport = require('passport');
+const { Strategy } = require('passport-oauth2');
 
-\`\`\`typescript
-// Example of typing a Mongoose model
-interface IUser extends Document {
-  username: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-  comparePassword(candidatePassword: string): Promise<boolean>;
-}
-
-const UserSchema = new Schema<IUser>({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
+passport.use(new Strategy({
+    authorizationURL: process.env.OAUTH_AUTH_URL,
+    tokenURL: process.env.OAUTH_TOKEN_URL,
+    clientID: process.env.OAUTH_CLIENT_ID,
+    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    callbackURL: process.env.OAUTH_CALLBACK_URL,
+    scope: ['openid', 'profile', 'email']
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      // Get user info using the token
+      const userInfo = await getUserInfo(accessToken);
+      
+      // Find or create user in our database
+      let user = await User.findOne({ email: userInfo.email });
+      
+      if (!user) {
+        // Create new user with info from SSO provider
+        user = await User.create({
+          email: userInfo.email,
+          name: userInfo.name,
+          // Map roles from provider to our system
+          roles: mapProviderRolesToSystem(userInfo.roles)
+        });
+      }
+      
+      // Update last login
+      user.lastLogin = new Date();
+      await user.save();
+      
+      return done(null, user);
+    } catch (error) {
+      return done(error);
+    }
+  }
+));
 \`\`\`
 
-For those who've gone through a similar migration:
-1. Was it worth the effort?
-2. What migration strategy worked best? (Gradual vs. all at once)
-3. Any unexpected challenges or benefits?
-4. How did it affect your development velocity long-term?
-5. Recommended tooling or resources for the migration process?`,
+Has anyone integrated with multiple SSO providers for enterprise clients? What are the key challenges? Are there any libraries or approaches that made this significantly easier?
+
+Also, how do you handle role mapping between the identity provider and your application's permission system?`,
     user_id: users[2].id,
     createdAt: new Date('2024-03-01T09:30:00'),
     updatedAt: new Date('2024-03-01T09:30:00')
@@ -387,34 +433,92 @@ Has anyone successfully solved similar performance issues? What was your approac
     updatedAt: new Date('2024-03-05T16:15:00')
   },
   {
-    title: 'Quick Tip: How to rename a GitHub repository',
-    content: `For beginners who might be wondering: it's actually very simple to rename a GitHub repository, and GitHub automatically handles redirects from the old name!
+    title: 'Strategies for handling complex form validation in React',
+    content: `I'm working on an enterprise application with complex multi-step forms, and I'm looking for the best approach to handle validation, error reporting, and state management.
 
-### Steps to rename a repository:
+Currently, we're using a combination of Formik, Yup, and custom validation, but it's becoming unwieldy as our forms grow more complex.
 
-1. Go to your repository on GitHub
-2. Click on "Settings" in the top navigation bar
-3. Under the "General" section (should be open by default), find the "Repository name" field
-4. Enter the new name for your repository
-5. Click the "Rename" button
+### Current implementation:
 
-**Important things to know:**
+\`\`\`jsx
+// Current form implementation with Formik + Yup
+const validationSchema = Yup.object({
+  personalInfo: Yup.object({
+    firstName: Yup.string().required('Required'),
+    lastName: Yup.string().required('Required'),
+    email: Yup.string().email('Invalid email').required('Required'),
+  }),
+  address: Yup.object({
+    street: Yup.string().required('Required'),
+    city: Yup.string().required('Required'),
+    state: Yup.string().required('Required'),
+    zipCode: Yup.string()
+      .matches(/^\\d{5}(-\\d{4})?$/, 'Invalid ZIP code')
+      .required('Required'),
+  }),
+  // Many more nested objects with complex validation rules
+});
 
-- GitHub will automatically redirect traffic from the old URL to the new one, so links won't break
-- You'll need to update your local repository's remote URL:
-
-\`\`\`bash
-# Check current remote URL
-git remote -v
-
-# Update the remote URL
-git remote set-url origin https://github.com/username/new-repo-name.git
+// Component using Formik
+function ComplexForm() {
+  return (
+    <Formik
+      initialValues={{
+        personalInfo: { firstName: '', lastName: '', email: '' },
+        address: { street: '', city: '', state: '', zipCode: '' },
+        // More fields...
+      }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ values, errors, touched, handleChange, handleBlur }) => (
+        <Form>
+          {/* Step 1: Personal Info */}
+          {currentStep === 1 && (
+            <>
+              <Field name="personalInfo.firstName" />
+              <ErrorMessage name="personalInfo.firstName" />
+              {/* More fields... */}
+            </>
+          )}
+          
+          {/* Step 2: Address */}
+          {currentStep === 2 && (
+            <>
+              <Field name="address.street" />
+              <ErrorMessage name="address.street" />
+              {/* More fields... */}
+            </>
+          )}
+          
+          {/* Navigation buttons */}
+          <button type="button" onClick={handlePrevStep}>
+            Previous
+          </button>
+          {currentStep < totalSteps ? (
+            <button type="button" onClick={handleNextStep}>
+              Next
+            </button>
+          ) : (
+            <button type="submit">Submit</button>
+          )}
+        </Form>
+      )}
+    </Formik>
+  );
+}
 \`\`\`
 
-- If you have GitHub Pages enabled, the site will automatically be available at the new URL
-- Any project collaborators will need to update their remote URLs as well
+### Problems we're facing:
+1. Validating fields conditionally based on values in other fields
+2. Handling validation across multiple steps 
+3. Performance issues with large forms (200+ fields across all steps)
+4. Error summarization for accessibility
+5. Saving form progress (drafts)
 
-This is much easier than creating a new repository and manually migrating everything over!`,
+I've been looking at alternatives like React Hook Form with Zod, but I'm not sure if it'll solve our specific issues.
+
+Has anyone successfully implemented complex multi-step forms at scale? What libraries or patterns worked well? Any specific performance optimizations you found helpful?`,
     user_id: users[4].id,
     createdAt: new Date('2024-03-10T11:45:00'),
     updatedAt: new Date('2024-03-10T11:45:00')
