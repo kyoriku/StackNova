@@ -41,6 +41,11 @@ const CodeBlock = ({ children, className, showLineNumbers = true }) => {
   const lang = match && match[1];
   const language = languages[lang] || 'text';
 
+  let code = String(children).trim();
+  if (code.endsWith('```')) {
+    code = code.slice(0, -3);
+  }
+
   // Get initial dark mode state synchronously
   const [isDark, setIsDark] = useState(() =>
     typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
@@ -68,7 +73,7 @@ const CodeBlock = ({ children, className, showLineNumbers = true }) => {
     <div className="rounded-lg overflow-hidden my-4">
       <Highlight
         theme={isDark ? themes.tomorrow : themes.github}
-        code={String(children).trim()}
+        code={code}
         language={language}
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
@@ -221,10 +226,67 @@ const MarkdownEditor = ({
 };
 
 export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
-  // Preprocess content to handle inline code
+  // Preprocess content to handle inline code and code blocks properly
   const processedContent = () => {
-    // Replace inline code with HTML markup
-    return content.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '<span class="custom-inline-code">$1</span>');
+    // First split content into code blocks and non-code blocks
+    const parts = [];
+    let inCodeBlock = false;
+    let currentPart = '';
+    let codeBlockLanguage = '';
+    
+    // Split content by triple backtick lines
+    const lines = content.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      if (line.startsWith('```')) {
+        // Toggle code block state
+        if (!inCodeBlock) {
+          // End of non-code block, start of code block
+          if (currentPart) {
+            parts.push({ type: 'text', content: currentPart });
+          }
+          // Extract language from the opening code fence
+          codeBlockLanguage = line.slice(3);
+          currentPart = '';
+          inCodeBlock = true;
+        } else {
+          // End of code block - add as a code block WITHOUT the closing ```
+          parts.push({ 
+            type: 'code', 
+            language: codeBlockLanguage,
+            content: currentPart 
+          });
+          currentPart = '';
+          inCodeBlock = false;
+        }
+      } else {
+        // Inside a code block or text part
+        if (currentPart || i > 0) {
+          currentPart += '\n';
+        }
+        currentPart += lines[i]; // Use original line with whitespace
+      }
+    }
+    
+    // Add any remaining content
+    if (currentPart) {
+      parts.push({ type: inCodeBlock ? 'code' : 'text', content: currentPart });
+    }
+    
+    // Reconstruct the content with proper handling of code blocks
+    let reconstructed = '';
+    parts.forEach(part => {
+      if (part.type === 'text') {
+        // Process inline code in text parts only
+        reconstructed += part.content.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '<span class="custom-inline-code">$1</span>');
+      } else if (part.type === 'code') {
+        // Add code blocks with explicit language
+        reconstructed += `\n\`\`\`${part.language || ''}\n${part.content}\n\`\`\`\n`;
+      }
+    });
+    
+    return reconstructed;
   };
 
   // CSS for the custom inline code
