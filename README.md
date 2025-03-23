@@ -69,9 +69,10 @@ Visit the live website at: [https://stacknova.ca](https://stacknova.ca)
   * Business information exposure
 
 ## Screenshots
-![StackNova-Home](public/screenshots/1-StackNovaHome.jpg)
-![StackNova-Question](public/screenshots/2-StackNovaQuestion.jpg)
-![StackNova-Dashboard](public/screenshots/3-StackNovaDashboard.jpg)
+![StackNova-Home](client/public/screenshots/1-StackNova-Home.jpg)
+![StackNova-Question](client/public/screenshots/2-StackNova-Question.jpg)
+![StackNova-Dashboard](client/public/screenshots/3-StackNova-Dashboard.jpg)
+![StackNova-Profile](client/public/screenshots/4-StackNova-Profile.jpg)
 
 ## Technical Details
 StackNova is built with a modern tech stack implementing several advanced patterns and features:
