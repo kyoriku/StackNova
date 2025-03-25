@@ -14,7 +14,7 @@ export const PostContent = ({ post }) => {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg 
       dark:shadow-black/20 p-4 mb-8 border border-gray-200 dark:border-gray-700">
         <p className="text-gray-900 dark:text-white mb-4">
-          <MarkdownPreview content={post.content} />
+          <MarkdownPreview content={post.content} showLineNumbers={false}/>
         </p>
         {/* <hr className='mb-4 border-gray-400'/> */}
         <p className="text-gray-600 dark:text-gray-400 text-sm">
