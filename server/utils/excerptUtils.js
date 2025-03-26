@@ -1,5 +1,5 @@
 // utils/excerptUtils.js
-const generateExcerpt = (content, maxLength = 100) => {
+const generateExcerpt = (content, maxLength = 115) => {
   if (!content) return '';
   
   // Split into paragraphs and take the first one
