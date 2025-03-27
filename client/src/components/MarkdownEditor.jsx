@@ -69,10 +69,18 @@ const CodeBlock = ({ children, className, showLineNumbers = true }) => {
     return () => observer.disconnect();
   }, []);
 
+  const modifiedVsLight = {
+    ...themes.vsLight,
+    plain: {
+      ...themes.vsLight.plain,
+      backgroundColor: '#f5f7f9'
+    }
+  };
+
   return (
-    <div className="rounded-lg overflow-hidden my-4">
+    <div className="rounded-lg overflow-hidden my-4 shadow-sm">
       <Highlight
-        theme={isDark ? themes.tomorrow : themes.github}
+        theme={isDark ? themes.vsDark : modifiedVsLight}
         code={code}
         language={language}
       >
