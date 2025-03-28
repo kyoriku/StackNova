@@ -7,12 +7,16 @@ import { useDeletePost } from './hooks/useDeletePost';
 import { DeleteModal } from './components/DeleteModal';
 import { Header } from './components/Header';
 import { PostsList } from './components/PostsList';
+import { Pagination } from '../Posts/components/Pagination';
 import { DefaultMetaTags } from '../../components/MetaTags';
+
+const ITEMS_PER_PAGE = 10; // Set the number of items per page
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
   const prefetchPost = usePrefetchPost();
 
   // Fetch user's posts using custom hook
@@ -22,11 +26,28 @@ const Dashboard = () => {
   const { deletePostMutation } = useDeletePost({
     userId: user?.id,
     onSuccess: () => {
+      // Calculate the new total number of pages after deletion
+      const newTotalItems = posts.length - 1;
+      const newTotalPages = Math.ceil(newTotalItems / ITEMS_PER_PAGE);
+      
+      // If current page is now invalid, adjust it
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(newTotalPages);
+      } else if (newTotalPages === 0) {
+        // If there are no posts left
+        setCurrentPage(1);
+      }
+      
       refetch();
       setDeleteModalOpen(false);
       setPostToDelete(null);
     }
   });
+
+  // Reset to first page when posts change significantly
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [user?.id]);
 
   // Effect to handle body scroll lock when modal is open
   useEffect(() => {
@@ -54,6 +75,13 @@ const Dashboard = () => {
       deletePostMutation.mutate(postToDelete.id);
     }
   };
+
+  // Calculate pagination
+  const totalPages = posts ? Math.ceil(posts.length / ITEMS_PER_PAGE) : 0;
+  const paginatedPosts = posts ? posts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  ) : null;
 
   if (isLoading && !posts) { // Only show loading state if we don't have cached data
     return <LoadingSpinner text="Loading dashboard..." />;
@@ -86,10 +114,21 @@ const Dashboard = () => {
 
         {/* Posts Section */}
         <PostsList 
-          posts={posts}
+          posts={paginatedPosts}
           onDeleteClick={handleDeleteClick}
           prefetchPost={prefetchPost}
         />
+
+        {/* Pagination Section */}
+        {posts && posts.length > ITEMS_PER_PAGE && (
+          <nav aria-label="Pagination" className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </nav>
+        )}
       </div>
     </>
   );
