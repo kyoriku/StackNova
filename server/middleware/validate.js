@@ -14,6 +14,16 @@ const sanitizeMarkdown = (text) => {
     return placeholder;
   });
 
+  // Also preserve blockquotes by replacing them temporarily
+  const blockquotes = [];
+  let bqIndex = 0;
+  const textWithAllPlaceholders = textWithPlaceholders.replace(/^>\s*(.*?)$/gm, match => {
+    const placeholder = `__BLOCKQUOTE_${bqIndex}__`;
+    blockquotes.push(match);
+    bqIndex++;
+    return placeholder;
+  });
+
   // Configure sanitize-html to allow markdown syntax
   const options = {
     allowedTags: [], // Strip all HTML tags
@@ -25,10 +35,15 @@ const sanitizeMarkdown = (text) => {
   };
 
   // Sanitize the text while preserving line breaks
-  let sanitized = sanitizeHtml(textWithPlaceholders, options);
+  let sanitized = sanitizeHtml(textWithAllPlaceholders, options);
 
   // Preserve consecutive newlines (limit to max 2 for paragraph breaks)
   sanitized = sanitized.replace(/\n{3,}/g, '\n\n');
+
+  // Put blockquotes back
+  blockquotes.forEach((block, i) => {
+    sanitized = sanitized.replace(`__BLOCKQUOTE_${i}__`, block);
+  });
 
   // Put code blocks back
   codeBlocks.forEach((block, i) => {
