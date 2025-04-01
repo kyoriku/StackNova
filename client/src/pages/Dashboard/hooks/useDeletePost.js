@@ -14,7 +14,8 @@ export const useDeletePost = ({ userId, onSuccess }) => {
       // Invalidate and refetch
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['userPosts', userId] }),
-        queryClient.invalidateQueries({ queryKey: ['posts'] })
+        queryClient.invalidateQueries({ queryKey: ['posts'] }),
+        queryClient.invalidateQueries({ queryKey: ['user'] }),
       ]);
       
       // Call the onSuccess callback
