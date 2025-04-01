@@ -5,7 +5,12 @@ export const usePrefetchPost = () => {
   const queryClient = useQueryClient();
 
   return useCallback((postId) => {
+    // Skip prefetching if the user has data-saving mode enabled
     if (navigator.connection && navigator.connection.saveData) return;
+    // Skip if no postId (shouldn't happen, but just in case)
+    if (!postId) return;
+    // Skip if the postId is already in the cache
+    if (queryClient.getQueryData(['post', postId.toString()])) return;
 
     let timer;
     clearTimeout(timer);
