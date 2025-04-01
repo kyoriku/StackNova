@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../../../context/AuthContext'; // Adjust path as needed
+import { useAuth } from '../../../context/AuthContext';
 
 export const usePrefetchDashboard = () => {
   const queryClient = useQueryClient();
