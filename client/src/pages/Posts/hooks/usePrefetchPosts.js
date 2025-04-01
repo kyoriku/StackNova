@@ -8,7 +8,7 @@ export const usePrefetchPosts = () => {
     // Skip prefetching if the user has data-saving mode enabled
     if (navigator.connection && navigator.connection.saveData) return;
     // Skip if the posts are already in the cache
-    if (queryClient.getQueryData(['posts'])) return;
+    // if (queryClient.getQueryData(['posts'])) return;
 
     let timer;
     clearTimeout(timer);
