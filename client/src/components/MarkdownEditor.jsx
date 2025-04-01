@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import { Highlight, themes } from 'prism-react-renderer';
+import { ExternalLink } from 'lucide-react';
 
 const languages = {
   javascript: 'javascript',
@@ -36,7 +38,7 @@ const languages = {
   cpp: 'cpp',
 };
 
-const CodeBlock = ({ children, className, showLineNumbers = true }) => {
+const CodeBlock = ({ children, className, showLineNumbers = false }) => {
   const match = /language-(\w+)/.exec(className || '');
   const lang = match && match[1];
   const language = languages[lang] || 'text';
@@ -156,7 +158,7 @@ const MarkdownEditor = ({
   rows = 16,
   preview = true,
   placeholder = defaultPlaceholder,
-  showLineNumbers = true
+  showLineNumbers = false
 }) => {
   const [showPreview, setShowPreview] = useState(false);
 
@@ -233,7 +235,7 @@ const MarkdownEditor = ({
   );
 };
 
-export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
+export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
   // Preprocess content to handle inline code and code blocks properly
   const processedContent = () => {
     // First split content into code blocks and non-code blocks
@@ -241,45 +243,65 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
     let inCodeBlock = false;
     let currentPart = '';
     let codeBlockLanguage = '';
+    let codeBlockMarker = ''; // Store the actual marker used (``` or ````)
     
-    // Split content by triple backtick lines
+    // Split content by lines
     const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const originalLine = lines[i];
+      const trimmedLine = originalLine.trim();
       
-      if (line.startsWith('```')) {
-        // Toggle code block state
+      // Check for code block markers (3 or more backticks)
+      if (/^`{3,}/.test(trimmedLine)) {
+        const match = trimmedLine.match(/^(`{3,})/);
+        const currentMarker = match[1];
+        
+        // Only toggle code block state if we're not in a code block
+        // or if the marker matches the one that started the block
         if (!inCodeBlock) {
           // End of non-code block, start of code block
           if (currentPart) {
             parts.push({ type: 'text', content: currentPart });
           }
           // Extract language from the opening code fence
-          codeBlockLanguage = line.slice(3);
+          codeBlockLanguage = trimmedLine.slice(currentMarker.length);
           currentPart = '';
           inCodeBlock = true;
-        } else {
-          // End of code block - add as a code block WITHOUT the closing ```
+          codeBlockMarker = currentMarker; // Save the marker
+        } else if (currentMarker === codeBlockMarker) {
+          // End of code block - add as a code block
           parts.push({ 
             type: 'code', 
             language: codeBlockLanguage,
-            content: currentPart 
+            content: currentPart,
+            marker: codeBlockMarker
           });
           currentPart = '';
           inCodeBlock = false;
+        } else {
+          // Different length of backticks inside a code block - treat as regular content
+          if (currentPart || i > 0) {
+            currentPart += '\n';
+          }
+          currentPart += originalLine;
         }
       } else {
         // Inside a code block or text part
         if (currentPart || i > 0) {
           currentPart += '\n';
         }
-        currentPart += lines[i]; // Use original line with whitespace
+        currentPart += originalLine; // Use original line with whitespace
       }
     }
     
     // Add any remaining content
     if (currentPart) {
-      parts.push({ type: inCodeBlock ? 'code' : 'text', content: currentPart });
+      parts.push({ 
+        type: inCodeBlock ? 'code' : 'text', 
+        content: currentPart,
+        language: inCodeBlock ? codeBlockLanguage : '',
+        marker: inCodeBlock ? codeBlockMarker : ''
+      });
     }
     
     // Reconstruct the content with proper handling of code blocks
@@ -289,8 +311,9 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
         // Process inline code in text parts only
         reconstructed += part.content.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '<span class="custom-inline-code">$1</span>');
       } else if (part.type === 'code') {
-        // Add code blocks with explicit language
-        reconstructed += `\n\`\`\`${part.language || ''}\n${part.content}\n\`\`\`\n`;
+        // Add code blocks with the same marker that was used originally
+        const marker = part.marker || '```'; // Default to triple backticks if not specified
+        reconstructed += `\n${marker}${part.language || ''}\n${part.content}\n${marker}\n`;
       }
     });
     
@@ -328,6 +351,7 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
   return (
     <ReactMarkdown
       rehypePlugins={[rehypeRaw]} // This is critical to parse the HTML in our preprocessed content
+      remarkPlugins={[remarkGfm]}
       components={{
         // Only handle code blocks here
         code({ node, inline, className, children, ...props }) {
@@ -338,16 +362,16 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
           return <CodeBlock className={className} showLineNumbers={showLineNumbers}>{children}</CodeBlock>;
         },
         p: ({ children }) => (
-          <p className="mb-4 last:mb-0 text-gray-900 dark:text-gray-100">{children}</p>
+          <p className="mt-4 mb-4 first:mt-0 last:mb-0 text-gray-900 dark:text-gray-100">{children}</p>
         ),
         h1: ({ children }) => (
-          <h1 className="text-2xl font-bold mb-4 mt-6 text-gray-900 dark:text-white">{children}</h1>
+          <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0 text-gray-900 dark:text-white">{children}</h1>
         ),
         h2: ({ children }) => (
-          <h2 className="text-xl font-bold mb-3 mt-5 text-gray-900 dark:text-white">{children}</h2>
+          <h2 className="text-xl font-bold mb-3 mt-5 first:mt-0 text-gray-900 dark:text-white">{children}</h2>
         ),
         h3: ({ children }) => (
-          <h3 className="text-lg font-bold mb-3 mt-4 text-gray-900 dark:text-white">{children}</h3>
+          <h3 className="text-lg font-bold mb-3 mt-4 first:mt-0 text-gray-900 dark:text-white">{children}</h3>
         ),
         ul: ({ children }) => (
           <ul className="list-disc pl-6 mb-4 text-gray-900 dark:text-gray-100">{children}</ul>
@@ -361,8 +385,8 @@ export const MarkdownPreview = ({ content, showLineNumbers = true }) => {
         a: ({ children, href }) => (
           <a
             href={href}
-            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 
-                     dark:hover:text-blue-300 underline"
+            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 
+            dark:hover:text-blue-500 underline"
             target="_blank"
             rel="noopener noreferrer"
           >
