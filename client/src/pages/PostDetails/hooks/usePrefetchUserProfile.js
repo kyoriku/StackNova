@@ -5,7 +5,12 @@ export const usePrefetchUserProfile = () => {
   const queryClient = useQueryClient();
 
   return useCallback((username) => {
+    // Skip prefetching if the user has data-saving mode enabled
     if (navigator.connection && navigator.connection.saveData) return;
+    // Skip if no username (shouldn't happen, but just in case)
+    if (!username) return; 
+    // Skip if the username is already in the cache
+    if (queryClient.getQueryData(['user', username])) return;
 
     let timer;
     clearTimeout(timer);
