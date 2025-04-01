@@ -8,11 +8,27 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}`
 let sequelize;
 
 // Initialize database connection based on environment
-// Creates connection using JAWSDB_URL for Heroku deployment
+// Creates connection using DATABASE_URL for Railway deployment
+// or JAWSDB_URL for Heroku deployment
 // or local credentials for development environment
-if (process.env.JAWSDB_URL) {
+if (process.env.DATABASE_URL) {
+  // Railway.app configuration
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'mysql',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
+  });
+  console.log('Using Railway MySQL configuration');
+} else if (process.env.JAWSDB_URL) {
+  // Heroku configuration (keeping for backward compatibility)
   sequelize = new Sequelize(process.env.JAWSDB_URL);
+  console.log('Using JawsDB configuration');
 } else {
+  // Local development configuration
   sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
@@ -23,6 +39,7 @@ if (process.env.JAWSDB_URL) {
       port: 3306
     }
   );
+  console.log('Using local MySQL configuration');
 }
 
 // Exports Sequelize connection instance for use throughout the application
