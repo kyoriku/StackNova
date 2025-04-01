@@ -12,7 +12,7 @@ export const usePrefetchDashboard = () => {
     // Skip if no user (shouldn't happen since this is used in authenticated context, but just in case)
     if (!user?.id) return;
     // Skip if dashboard data is already in cache
-    if (queryClient.getQueryData(['userPosts', user.id])) return;
+    // if (queryClient.getQueryData(['userPosts', user.id])) return;
 
     let timer;
     clearTimeout(timer);
