@@ -1,8 +1,20 @@
 // config/redis.js
 const { createClient } = require('redis');
 
+// Determine Redis connection URL based on environment
+const getRedisUrl = () => {
+  // For Railway.app deployment
+  if (process.env.REDIS_URL && process.env.REDIS_PASSWORD) {
+    const [host, port] = process.env.REDIS_URL.split(':');
+    return `redis://:${process.env.REDIS_PASSWORD}@${host}:${port}`;
+  }
+  
+  // Fallback to existing environment variable or default local Redis
+  return process.env.REDIS_URL || 'redis://localhost:6379';
+};
+
 const client = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379'
+  url: getRedisUrl()
 });
 
 const CACHE_TTL = 3600; // 1 hour
@@ -30,7 +42,10 @@ const connectWithRetry = async () => {
   }
 };
 
-connectWithRetry();
+// Only attempt connection if not in a test environment
+if (process.env.NODE_ENV !== 'test') {
+  connectWithRetry();
+}
 
 const redisService = {
   async get(key) {
@@ -133,19 +148,18 @@ const redisService = {
     }
   },
 
-  // Add this to your redisService object in config/redis.js
-async invalidateSitemapCache() {
-  try {
-    if (!client.isReady) return;
-    await client.del('sitemap:xml');
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('\x1b[36m%s\x1b[0m', 'Invalidated sitemap cache');
+  async invalidateSitemapCache() {
+    try {
+      if (!client.isReady) return;
+      await client.del('sitemap:xml');
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('\x1b[36m%s\x1b[0m', 'Invalidated sitemap cache');
+      }
+    } catch (error) {
+      console.error('Redis invalidate sitemap cache error:', error);
     }
-  } catch (error) {
-    console.error('Redis invalidate sitemap cache error:', error);
-  }
-},
+  },
 
   isConnected() {
     return client.isReady;
