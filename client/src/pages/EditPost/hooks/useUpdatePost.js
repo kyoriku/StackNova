@@ -27,6 +27,7 @@ export const useUpdatePost = (postId) => {
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
       queryClient.invalidateQueries({ queryKey: ['userPosts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       // Navigate back to dashboard
       navigate('/dashboard');
     },

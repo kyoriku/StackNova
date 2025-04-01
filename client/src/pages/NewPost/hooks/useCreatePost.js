@@ -26,6 +26,7 @@ export const useCreatePost = () => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['userPosts'] });
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] }),
       // Redirect to dashboard
       navigate('/dashboard');
     },

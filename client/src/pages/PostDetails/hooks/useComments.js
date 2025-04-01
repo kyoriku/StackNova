@@ -20,6 +20,7 @@ export const useComments = (postId) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
     }
   });
 
@@ -36,6 +37,7 @@ export const useComments = (postId) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       setEditingCommentId(null);
     }
   });
@@ -50,6 +52,7 @@ export const useComments = (postId) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
       queryClient.invalidateQueries({ queryKey: ['post', postId] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       setDeleteModalOpen(false);
       setCommentToDelete(null);
     }
