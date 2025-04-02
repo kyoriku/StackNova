@@ -21,7 +21,9 @@ export const usePrefetchDashboard = () => {
         queryKey: ['userPosts', user.id], // Match the exact query key from useDashboardPosts
         queryFn: async () => {
           try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/user/posts`);
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/user/posts`, {
+              credentials: 'include' // Include credentials for cross-domain sessions
+            });
             if (!response.ok) {
               // Less aggressive error handling for prefetch
               console.warn(`Failed to prefetch dashboard posts: ${response.status}`);
