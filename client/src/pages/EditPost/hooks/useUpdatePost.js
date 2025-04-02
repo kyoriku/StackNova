@@ -15,6 +15,7 @@ export const useUpdatePost = (postId) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedPost),
+        credentials: 'include' // Include credentials for cross-domain sessions
       });
       if (!response.ok) {
         const error = await response.json();
