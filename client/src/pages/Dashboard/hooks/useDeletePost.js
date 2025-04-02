@@ -7,6 +7,10 @@ export const useDeletePost = ({ userId, onSuccess }) => {
     mutationFn: async (postId) => {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }), // Send userId in the request body
         credentials: 'include' // Include credentials for cross-domain sessions
       });
       if (!response.ok) throw new Error('Failed to delete post');
