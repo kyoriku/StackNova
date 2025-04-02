@@ -6,7 +6,8 @@ export const useDeletePost = ({ userId, onSuccess }) => {
   const deletePostMutation = useMutation({
     mutationFn: async (postId) => {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include' // Include credentials for cross-domain sessions
       });
       if (!response.ok) throw new Error('Failed to delete post');
     },
