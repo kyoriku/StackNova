@@ -17,6 +17,7 @@ export const useCreatePost = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(postData),
+        credentials: 'include' // Include credentials for cross-domain sessions
       });
       if (!response.ok) {
         const error = await response.json();
