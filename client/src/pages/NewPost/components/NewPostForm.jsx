@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ExternalLink } from 'lucide-react';
 import MarkdownEditor from '../../../components/MarkdownEditor';
 import { TitleInput } from './TitleInput';
 import { FormActions } from './FormActions';
@@ -31,12 +32,27 @@ export const NewPostForm = ({ onSubmit, isSubmitting, error }) => {
       />
 
       <div>
-        <label 
-          htmlFor="content"
-          className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
-        >
-          Content
-        </label>
+        <div className="flex items-center justify-between mb-2">
+          <label 
+            htmlFor="content"
+            className="block text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Content
+          </label>
+          <a 
+            href="https://stacknova.ca/post/e8adb6bf-6d5e-4bb2-95cd-a74449e5041b" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 flex items-center gap-1 group"
+          >
+            Need help with formatting? View our guide
+            <ExternalLink 
+              size={16} 
+              className="inline-block transform transition-transform duration-200 group-hover:translate-x-0.5" 
+              aria-hidden="true" 
+            />
+          </a>
+        </div>
         <MarkdownEditor
           content={content}
           onChange={setContent}
