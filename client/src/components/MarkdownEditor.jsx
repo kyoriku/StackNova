@@ -124,6 +124,7 @@ const EditorTab = ({ active, onClick, children }) => (
       first:rounded-l-lg last:rounded-r-lg
       border-y-2 border-r-2 first:border-l-2
       transition-all duration-200
+      cursor-pointer
       ${active
         ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-blue-500 relative z-10 shadow-sm transition-none'
         : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-none'
@@ -244,18 +245,18 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
     let currentPart = '';
     let codeBlockLanguage = '';
     let codeBlockMarker = ''; // Store the actual marker used (``` or ````)
-    
+
     // Split content by lines
     const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {
       const originalLine = lines[i];
       const trimmedLine = originalLine.trim();
-      
+
       // Check for code block markers (3 or more backticks)
       if (/^`{3,}/.test(trimmedLine)) {
         const match = trimmedLine.match(/^(`{3,})/);
         const currentMarker = match[1];
-        
+
         // Only toggle code block state if we're not in a code block
         // or if the marker matches the one that started the block
         if (!inCodeBlock) {
@@ -270,8 +271,8 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
           codeBlockMarker = currentMarker; // Save the marker
         } else if (currentMarker === codeBlockMarker) {
           // End of code block - add as a code block
-          parts.push({ 
-            type: 'code', 
+          parts.push({
+            type: 'code',
             language: codeBlockLanguage,
             content: currentPart,
             marker: codeBlockMarker
@@ -293,17 +294,17 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
         currentPart += originalLine; // Use original line with whitespace
       }
     }
-    
+
     // Add any remaining content
     if (currentPart) {
-      parts.push({ 
-        type: inCodeBlock ? 'code' : 'text', 
+      parts.push({
+        type: inCodeBlock ? 'code' : 'text',
         content: currentPart,
         language: inCodeBlock ? codeBlockLanguage : '',
         marker: inCodeBlock ? codeBlockMarker : ''
       });
     }
-    
+
     // Reconstruct the content with proper handling of code blocks
     let reconstructed = '';
     parts.forEach(part => {
@@ -316,7 +317,7 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
         reconstructed += `\n${marker}${part.language || ''}\n${part.content}\n${marker}\n`;
       }
     });
-    
+
     return reconstructed;
   };
 
