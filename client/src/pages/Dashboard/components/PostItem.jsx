@@ -15,7 +15,7 @@ export const PostItem = ({ post, onDeleteClick, prefetchPost }) => (
         <Link
           to={`/post/${post.id}`}
           className="text-xl font-semibold text-blue-600 dark:text-blue-400 
-          hover:text-blue-700 dark:hover:text-blue-300"
+          hover:text-blue-700 dark:hover:text-blue-500"
           onMouseEnter={() => prefetchPost(post.id)} // Prefetch on hover
         >
           {post.title}
@@ -36,6 +36,7 @@ export const PostItem = ({ post, onDeleteClick, prefetchPost }) => (
             to={`/edit-post/${post.id}`}
             className="text-gray-700 dark:text-gray-400 hover:text-blue-500 cursor-pointer"
             aria-label={`Edit post: ${post.title}`}
+            onMouseEnter={() => prefetchPost(post.id)} // Prefetch on hover
           >
             <Edit2 size={18} aria-hidden="true" />
           </Link>
