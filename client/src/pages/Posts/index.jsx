@@ -27,7 +27,7 @@ const Posts = () => {
         description="Browse the latest programming questions, tips, and solutions shared by our community of developers."
       />
       
-      <section className="max-w-6xl mx-auto pb-8">
+      <section className="max-w-4xl mx-auto pb-8">
         <header>
           <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
             Latest Posts
