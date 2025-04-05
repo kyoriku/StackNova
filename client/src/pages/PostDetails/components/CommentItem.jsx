@@ -10,9 +10,10 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border 
     border-gray-200 dark:border-gray-700">
-      <p className="text-gray-900 dark:text-white mb-2">
+      <p className="text-gray-900 dark:text-white mb-4">
         <MarkdownPreview content={comment.comment_text} showLineNumbers={false} />
       </p>
+      <hr className='mb-4 border-gray-200 dark:border-gray-700'/>
       <div className="flex justify-between items-center">
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           <Link
