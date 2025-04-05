@@ -109,7 +109,7 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                placeholder="Password (minimum 8 characters)"
+                placeholder="Password"
                 autoComplete="new-password"
                 className="w-full pl-10 pr-4 py-3 rounded-lg
                        bg-white dark:bg-gray-700 
