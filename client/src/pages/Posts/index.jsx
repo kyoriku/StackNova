@@ -4,7 +4,7 @@ import { Pagination } from './components/Pagination';
 import { PostsContainer } from './components/PostsContainer';
 import { usePosts } from './hooks/usePosts';
 import { usePrefetchPost } from './hooks/usePrefetchPost';
-import { DefaultMetaTags } from '../../components/MetaTags';
+import { SEOMetaTags } from '../../components/MetaTags';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -22,11 +22,13 @@ const Posts = () => {
 
   return (
     <>
-      <DefaultMetaTags 
-        title="" 
-        description="Browse the latest programming questions, tips, and solutions shared by our community of developers."
+      <SEOMetaTags
+        title="Latest Posts"
+        description="Browse the latest programming questions and solutions from our developer community."
+        path="/"
+        image="/screenshots/1-StackNova-Home.jpg"
       />
-      
+
       <section className="max-w-4xl mx-auto pb-8">
         <header>
           <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
