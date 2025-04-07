@@ -55,7 +55,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
-
+const path = require('path');
 const routes = require('./routes');
 const healthRoutes = require('./routes/healthRoutes'); // Import health routes directly
 const sequelize = require('./config/connection');
@@ -67,15 +67,16 @@ const PORT = process.env.PORT || 3001;
 // Extract domain for cookie settings
 const getMainDomain = () => {
   if (process.env.NODE_ENV !== 'production') return undefined;
-  
+
   if (!process.env.FRONTEND_URL) return undefined;
-  
+
   try {
     const url = new URL(process.env.FRONTEND_URL);
     // If it's a custom domain like stacknova.ca, return .stacknova.ca
     // If it's a railway domain, return undefined
-    if (url.hostname.includes('railway.app')) return undefined;
-    
+    if (url.hostname.includes('railway.app'))
+      return undefined;
+
     // For custom domains, we prefix with a dot to include subdomains
     return '.' + url.hostname;
   } catch (e) {
@@ -100,6 +101,17 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+
+  // Explicit route for robots.txt with correct Content-Type
+  app.get('/robots.txt', (req, res) => {
+    res.set('Content-Type', 'text/plain');
+    res.status(200).sendFile(path.join(__dirname, '../client/dist/robots.txt'));
+  });
+}
+
 // Add health check routes BEFORE session middleware
 // This ensures health check works even if there are session issues
 app.use('/api', healthRoutes);
@@ -107,7 +119,7 @@ app.use('/api', healthRoutes);
 // Determine appropriate sameSite setting based on domain configuration
 const determineSameSite = () => {
   if (process.env.NODE_ENV !== 'production') return 'lax';
-  
+
   const domain = getMainDomain();
   // If we have a shared main domain (.example.com), we can use 'lax'
   // Otherwise use 'none' for cross-domain requests
@@ -147,6 +159,14 @@ app.use(session(sess));
 
 // Then add the rest of the routes that need session
 app.use(routes);
+
+// Catch-all route AFTER all other routes
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.status(200).sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+}
 
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => {
