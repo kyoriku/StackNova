@@ -1,164 +1,7 @@
-// // const express = require('express');
-// // const session = require('express-session');
-// // const cors = require('cors');
-// // require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
-
-// // const routes = require('./routes');
-// // const sequelize = require('./config/connection');
-// // const SequelizeStore = require('connect-session-sequelize')(session.Store);
-
-// // const app = express();
-// // const PORT = process.env.PORT || 3001;
-
-// // // CORS Configuration
-// // const corsOptions = {
-// //   origin: process.env.NODE_ENV === 'production'
-// //     ? process.env.FRONTEND_URL
-// //     : ['http://localhost:3000', 'http://10.88.111.4:3000'],  // Allow both local and network access
-// //   credentials: true,
-// //   optionsSuccessStatus: 200
-// // };
-
-// // app.use(cors(corsOptions));
-
-// // // Session configuration
-// // const sess = {
-// //   secret: process.env.SESSION_SECRET,
-// //   cookie: {
-// //     maxAge: 24 * 60 * 60 * 1000,
-// //     httpOnly: true,
-// //     secure: process.env.NODE_ENV === 'production',
-// //     sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-// //     path: '/',
-// //   },
-// //   resave: false,
-// //   saveUninitialized: false,
-// //   store: new SequelizeStore({
-// //     db: sequelize
-// //   }),
-// //   name: 'sessionId',
-// //   proxy: process.env.NODE_ENV === 'production'
-// // };
-
-// // console.log('Server running in', process.env.NODE_ENV || 'development', 'mode');
-
-// // app.use(session(sess));
-// // app.use(express.json());
-// // app.use(express.urlencoded({ extended: true }));
-// // app.use(routes);
-
-// // sequelize.sync({ force: false }).then(() => {
-// //   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-// // });
-
-// const express = require('express');
-// const session = require('express-session');
-// const cors = require('cors');
-// require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
-
-// const routes = require('./routes');
-// const healthRoutes = require('./routes/healthRoutes'); // Import health routes directly
-// const sequelize = require('./config/connection');
-// const SequelizeStore = require('connect-session-sequelize')(session.Store);
-
-// const app = express();
-// const PORT = process.env.PORT || 3001;
-
-// // Extract domain for cookie settings
-// const getMainDomain = () => {
-//   if (process.env.NODE_ENV !== 'production') return undefined;
-
-//   if (!process.env.FRONTEND_URL) return undefined;
-
-//   try {
-//     const url = new URL(process.env.FRONTEND_URL);
-//     // If it's a custom domain like stacknova.ca, return .stacknova.ca
-//     // If it's a railway domain, return undefined
-//     if (url.hostname.includes('railway.app')) return undefined;
-
-//     // For custom domains, we prefix with a dot to include subdomains
-//     return '.' + url.hostname;
-//   } catch (e) {
-//     console.error('Error parsing FRONTEND_URL:', e);
-//     return undefined;
-//   }
-// };
-
-// // CORS Configuration
-// const corsOptions = {
-//   origin: process.env.NODE_ENV === 'production'
-//     ? process.env.FRONTEND_URL || true // Use the frontend URL or allow all origins in production
-//     : ['http://localhost:3000'],  // Allow local network in development
-//   credentials: true,
-//   optionsSuccessStatus: 200
-// };
-
-// // Apply CORS first
-// app.use(cors(corsOptions));
-
-// // Then basic Express middleware
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// // Add health check routes BEFORE session middleware
-// // This ensures health check works even if there are session issues
-// app.use('/api', healthRoutes);
-
-// // Determine appropriate sameSite setting based on domain configuration
-// const determineSameSite = () => {
-//   if (process.env.NODE_ENV !== 'production') return 'lax';
-
-//   const domain = getMainDomain();
-//   // If we have a shared main domain (.example.com), we can use 'lax'
-//   // Otherwise use 'none' for cross-domain requests
-//   return domain ? 'lax' : 'none';
-// };
-
-// // Session configuration
-// const sess = {
-//   secret: process.env.SESSION_SECRET || 'fallback_secret_for_development_only',
-//   cookie: {
-//     maxAge: 24 * 60 * 60 * 1000,
-//     httpOnly: true,
-//     secure: process.env.NODE_ENV === 'production',
-//     sameSite: determineSameSite(),
-//     domain: getMainDomain(),
-//     path: '/',
-//   },
-//   resave: false,
-//   saveUninitialized: false,
-//   store: new SequelizeStore({
-//     db: sequelize
-//   }),
-//   name: 'sessionId',
-//   proxy: process.env.NODE_ENV === 'production'
-// };
-
-// console.log('Server running in', process.env.NODE_ENV || 'development', 'mode');
-// console.log('CORS origin configuration:', corsOptions.origin);
-// console.log('Cookie settings:', {
-//   secure: sess.cookie.secure,
-//   sameSite: sess.cookie.sameSite,
-//   domain: sess.cookie.domain || '(not set)'
-// });
-
-// // Set up session middleware
-// app.use(session(sess));
-
-// // Then add the rest of the routes that need session
-// app.use(routes);
-
-// sequelize.sync({ force: false }).then(() => {
-//   app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-//     console.log(`Health check available at: http://localhost:${PORT}/api/health`);
-//   });
-// });
-
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
-const path = require('path'); // Add path module for static file serving
+const path = require('path');
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
 const routes = require('./routes');
@@ -168,54 +11,22 @@ const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const isProd = process.env.NODE_ENV === 'production';
 
-// Extract domain for cookie settings
-const getMainDomain = () => {
-  if (process.env.NODE_ENV !== 'production') return undefined;
-
-  if (!process.env.FRONTEND_URL) return undefined;
-
-  try {
-    const url = new URL(process.env.FRONTEND_URL);
-    // If it's a custom domain like stacknova.ca, return .stacknova.ca
-    // If it's a railway domain, return undefined
-    if (url.hostname.includes('railway.app')) return undefined;
-
-    // For custom domains, we prefix with a dot to include subdomains
-    return '.' + url.hostname;
-  } catch (e) {
-    console.error('Error parsing FRONTEND_URL:', e);
-    return undefined;
-  }
-};
-
-// CORS Configuration - Simplified for single-service deployment
+// CORS configuration
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production'
-    ? [process.env.FRONTEND_URL, process.env.RAILWAY_STATIC_URL, true].filter(Boolean)[0] // Use the first non-falsy value
-    : ['http://localhost:3000'],
+  origin: isProd ? process.env.FRONTEND_URL : 'http://localhost:3000',
   credentials: true,
   optionsSuccessStatus: 200
 };
 
-// Apply CORS first
+// Apply middleware
 app.use(cors(corsOptions));
-
-// Then basic Express middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Add health check routes BEFORE session middleware
-// This ensures health check works even if there are session issues
+// Health check routes before session middleware
 app.use('/', healthRoutes);
-
-// Determine appropriate sameSite setting based on domain configuration
-const determineSameSite = () => {
-  if (process.env.NODE_ENV !== 'production') return 'lax';
-  
-  // In production, when serving from the same domain, we can use 'strict'
-  return 'strict';
-};
 
 // Session configuration
 const sess = {
@@ -223,10 +34,9 @@ const sess = {
   cookie: {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: determineSameSite(),
-    domain: getMainDomain(),
-    path: '/',
+    secure: isProd,
+    sameSite: 'strict',
+    path: '/'
   },
   resave: false,
   saveUninitialized: false,
@@ -234,42 +44,41 @@ const sess = {
     db: sequelize
   }),
   name: 'sessionId',
-  proxy: process.env.NODE_ENV === 'production'
+  proxy: isProd
 };
 
-console.log('Server running in', process.env.NODE_ENV || 'development', 'mode');
-console.log('CORS origin configuration:', corsOptions.origin);
+// Log environment info
+console.log(`Server running in ${isProd ? 'production' : 'development'} mode`);
+console.log('CORS origin:', corsOptions.origin);
 console.log('Cookie settings:', {
   secure: sess.cookie.secure,
-  sameSite: sess.cookie.sameSite,
-  domain: sess.cookie.domain || '(not set)'
+  sameSite: sess.cookie.sameSite
 });
 
 // Set up session middleware
 app.use(session(sess));
 
-// Serve static files in production BEFORE the routes
-// This ensures static files are served directly without going through routes
-if (process.env.NODE_ENV === 'production') {
+// Serve static files in production
+if (isProd) {
   app.use(express.static(path.join(__dirname, '../client/dist')));
 }
 
-// Then add all your routes
+// API routes
 app.use(routes);
 
-// The final catch-all route serves the React app for any non-API routes
-// This should come AFTER all other routes
-if (process.env.NODE_ENV === 'production') {
+// Catch-all route for SPA
+if (isProd) {
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
 
+// Start server
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Health check available at: http://localhost:${PORT}/health`);
-    if (process.env.NODE_ENV === 'production') {
+    if (isProd) {
       console.log(`Frontend served from: ${path.join(__dirname, '../client/dist')}`);
     }
   });
