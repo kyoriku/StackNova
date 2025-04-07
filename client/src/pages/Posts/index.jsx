@@ -23,7 +23,7 @@ const Posts = () => {
   return (
     <>
       <SEOMetaTags
-        title=""
+        title="Latest Posts"
         description="Browse the latest programming questions and solutions from our developer community."
         path="/"
         image="/screenshots/1-StackNova-Home.jpg"
