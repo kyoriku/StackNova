@@ -212,9 +212,9 @@ app.use('/', healthRoutes);
 // Determine appropriate sameSite setting based on domain configuration
 const determineSameSite = () => {
   if (process.env.NODE_ENV !== 'production') return 'lax';
-
-  const domain = getMainDomain();
-  return domain ? 'lax' : 'none';
+  
+  // In production, when serving from the same domain, we can use 'strict'
+  return 'strict';
 };
 
 // Session configuration
