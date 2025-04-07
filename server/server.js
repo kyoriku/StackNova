@@ -74,8 +74,7 @@ const getMainDomain = () => {
     const url = new URL(process.env.FRONTEND_URL);
     // If it's a custom domain like stacknova.ca, return .stacknova.ca
     // If it's a railway domain, return undefined
-    if (url.hostname.includes('railway.app'))
-      return undefined;
+    if (url.hostname.includes('railway.app')) return undefined;
 
     // For custom domains, we prefix with a dot to include subdomains
     return '.' + url.hostname;
