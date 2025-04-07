@@ -1,22 +1,30 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="keywords" content="programming, coding, developer forum, tech blog, code sharing">
-    <script>
-      // Check local storage or system preference immediately
-      if (
-        localStorage.theme === 'dark' || 
-        (!localStorage.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-      ) {
-        document.documentElement.classList.add('dark');
-      }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keywords" content="programming, coding, developer forum, tech blog, code sharing">
+  <meta property="og:title" content="StackNova - Developer Community" />
+  <meta property="og:description"
+    content="Share your technical insights and get answers from the developer community on StackNova" />
+  <meta property="og:image" content="https://stacknova.ca/screenshots/1-StackNova-Home.jpg" />
+  <meta property="og:url" content="https://stacknova.ca" />
+  <script>
+    // Check local storage or system preference immediately
+    if (
+      localStorage.theme === 'dark' ||
+      (!localStorage.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
