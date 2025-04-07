@@ -55,7 +55,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
-const path = require('path');
+
 const routes = require('./routes');
 const healthRoutes = require('./routes/healthRoutes'); // Import health routes directly
 const sequelize = require('./config/connection');
@@ -100,17 +100,6 @@ app.use(cors(corsOptions));
 // Then basic Express middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  // Explicit route for robots.txt with correct Content-Type
-  app.get('/robots.txt', (req, res) => {
-    res.set('Content-Type', 'text/plain');
-    res.status(200).sendFile(path.join(__dirname, '../client/dist/robots.txt'));
-  });
-}
 
 // Add health check routes BEFORE session middleware
 // This ensures health check works even if there are session issues
@@ -159,14 +148,6 @@ app.use(session(sess));
 
 // Then add the rest of the routes that need session
 app.use(routes);
-
-// Catch-all route AFTER all other routes
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.set('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).sendFile(path.join(__dirname, '../client/dist/index.html'));
-  });
-}
 
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => {
