@@ -118,9 +118,9 @@ async function generateSitemap(req) {
     }
     
     // Build the base URL from the request
-    const protocol = req.protocol;
-    const host = req.get('host');
-    const baseUrl = `${protocol}://${host}`;
+    const baseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://stacknova.ca'  // Hardcoded frontend URL for production
+      : `${req.protocol}://${req.get('host')}`;
     
     // Create a sitemap stream
     const sitemapStream = new SitemapStream({ 
