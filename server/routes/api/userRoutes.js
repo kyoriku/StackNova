@@ -1,8 +1,7 @@
-// routes/api/userRoutes.js
 const router = require('express').Router();
 const userController = require('../../controllers/userController');
-const { loginLimiter } = require('../../middleware/rateLimiter');
 const cacheMiddleware = require('../../middleware/cache');
+const { loginLimiter } = require('../../middleware/rateLimiter');
 
 router.post('/', userController.createUser);
 router.post('/login', loginLimiter, userController.login);

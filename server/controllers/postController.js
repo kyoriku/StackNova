@@ -1,4 +1,3 @@
-// controllers/postController.js
 const { Post, User, Comment } = require('../models');
 const redisService = require('../config/redis');
 
@@ -10,11 +9,11 @@ async function clearCaches(postId, userId, username, includeComments = false) {
     redisService.clearUserProfileCache(username),
     redisService.invalidateSitemapCache()
   ];
-  
+
   if (postId) {
     cacheOps.push(redisService.clearPostCache(postId, includeComments));
   }
-  
+
   return Promise.all(cacheOps);
 }
 
@@ -121,7 +120,7 @@ const postController = {
     try {
       const userId = req.session.user_id;
       const postId = req.params.id;
-      
+
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to update a post' });
       }
@@ -158,7 +157,7 @@ const postController = {
     try {
       const userId = req.session.user_id;
       const postId = req.params.id;
-      
+
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to delete a post' });
       }

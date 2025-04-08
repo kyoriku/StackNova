@@ -1,10 +1,9 @@
-// tests/benchmark.js
 const sequelize = require("../config/connection");
 const { performance } = require("perf_hooks");
 const { Post, User, Comment } = require("../models");
 const redisService = require("../config/redis");
 
-// Fetch from database - matching your controller's query
+// Fetch from database
 async function fetchFromDatabase() {
   const start = performance.now();
   try {

@@ -14,29 +14,29 @@
 //     if (cachedSitemap && client.isReady) {
 //       return cachedSitemap;
 //     }
-    
+
 //     // Build the base URL from the request
 //     const protocol = req.protocol;
 //     const host = req.get('host');
 //     const baseUrl = `${protocol}://${host}`;
-    
+
 //     // Create a sitemap stream
 //     const sitemapStream = new SitemapStream({ 
 //       hostname: baseUrl 
 //     });
-    
+
 //     // Add static routes
 //     sitemapStream.write({ 
 //       url: '/', 
 //       changefreq: 'daily', 
 //       priority: 1.0 
 //     });
-    
+
 //     // Get all published posts
 //     const posts = await Post.findAll({
 //       attributes: ['id', 'updatedAt']
 //     });
-    
+
 //     // Add post routes
 //     for (const post of posts) {
 //       sitemapStream.write({
@@ -46,12 +46,12 @@
 //         priority: 0.8
 //       });
 //     }
-    
+
 //     // Get all users
 //     const users = await User.findAll({
 //       attributes: ['username', 'updatedAt']
 //     });
-    
+
 //     // Add user profile routes
 //     for (const user of users) {
 //       sitemapStream.write({
@@ -61,19 +61,19 @@
 //         priority: 0.6
 //       });
 //     }
-    
+
 //     // End the stream
 //     sitemapStream.end();
-    
+
 //     // Generate sitemap as XML
 //     const sitemap = await streamToPromise(Readable.from(sitemapStream));
 //     const sitemapXml = sitemap.toString();
-    
+
 //     // Cache the sitemap
 //     if (redisService.isConnected()) {
 //       await redisService.set(SITEMAP_CACHE_KEY, sitemapXml, SITEMAP_CACHE_TTL);
 //     }
-    
+
 //     return sitemapXml;
 //   } catch (error) {
 //     console.error('Error generating sitemap:', error);
@@ -116,29 +116,29 @@ async function generateSitemap(req) {
     if (cachedSitemap && redisService.isConnected()) {
       return cachedSitemap;
     }
-    
+
     // Build the base URL from the request
-    const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://stacknova.ca'  // Hardcoded frontend URL for production
-      : `${req.protocol}://${req.get('host')}`;
-    
+    const protocol = req.protocol;
+    const host = req.get('host');
+    const baseUrl = `${protocol}://${host}`;
+
     // Create a sitemap stream
-    const sitemapStream = new SitemapStream({ 
-      hostname: baseUrl 
+    const sitemapStream = new SitemapStream({
+      hostname: baseUrl
     });
-    
+
     // Add static routes
-    sitemapStream.write({ 
-      url: '/', 
-      changefreq: 'daily', 
-      priority: 1.0 
+    sitemapStream.write({
+      url: '/',
+      changefreq: 'daily',
+      priority: 1.0
     });
-    
+
     // Get all posts
     const posts = await Post.findAll({
       attributes: ['id', 'updatedAt']
     });
-    
+
     // Add post routes
     for (const post of posts) {
       sitemapStream.write({
@@ -148,19 +148,19 @@ async function generateSitemap(req) {
         priority: 0.8
       });
     }
-        
+
     // End the stream
     sitemapStream.end();
-    
+
     // Generate sitemap as XML
     const sitemap = await streamToPromise(Readable.from(sitemapStream));
     const sitemapXml = sitemap.toString();
-    
+
     // Cache the sitemap
     if (redisService.isConnected()) {
       await redisService.set(SITEMAP_CACHE_KEY, sitemapXml, SITEMAP_CACHE_TTL);
     }
-    
+
     return sitemapXml;
   } catch (error) {
     console.error('Error generating sitemap:', error);
@@ -182,7 +182,7 @@ async function invalidateSitemapCache() {
   }
 }
 
-module.exports = { 
+module.exports = {
   generateSitemap,
   invalidateSitemapCache
 };

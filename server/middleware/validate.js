@@ -1,4 +1,3 @@
-// middleware/validate.js
 const { body, validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 
@@ -68,6 +67,7 @@ const validateCodeBlocks = (text) => {
   return true;
 };
 
+// Middleware to validate new post creation
 const validateNewPost = [
   body('title')
     .trim()
@@ -91,6 +91,7 @@ const validateNewPost = [
   }
 ];
 
+// Middleware to validate post updates
 const validatePostUpdate = [
   body('title')
     .trim()
@@ -114,6 +115,7 @@ const validatePostUpdate = [
   }
 ];
 
+// Middleware to validate new comment creation
 const validateNewComment = [
   body('comment_text')
     .custom(validateCodeBlocks).withMessage('Code blocks are too large')
@@ -131,6 +133,7 @@ const validateNewComment = [
   }
 ];
 
+// Middleware to validate comment updates
 const validateCommentUpdate = [
   body('comment_text')
     .custom(validateCodeBlocks).withMessage('Code blocks are too large')
