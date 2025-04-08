@@ -29,7 +29,7 @@ const Posts = () => {
         image="/screenshots/1-StackNova-Home.jpg"
       />
 
-      <section className="max-w-4xl mx-auto pb-8">
+      <section className="max-w-5xl mx-auto pb-8">
         <header>
           <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
             Latest Posts

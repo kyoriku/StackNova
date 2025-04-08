@@ -8,4 +8,4 @@ Disallow: /dashboard
 Disallow: /new-post
 Disallow: /edit-post/
 
-Sitemap: https://api.stacknova.ca/sitemap.xml
+Sitemap: https://stacknova.ca/sitemap.xml

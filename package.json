@@ -1,5 +1,5 @@
 {
-  "name": "tech-blog",
+  "name": "stacknova",
   "scripts": {
     "start": "node server/server.js",
     "dev": "concurrently \"cd server && npm run watch\" \"cd client && npm run dev\"",

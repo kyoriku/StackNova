@@ -1,5 +1,5 @@
 # StackNova
-*A full-stack developer community platform built with React and Node.js, enabling technical discussions with Markdown support and optimized data retrieval*
+*A software engineer community platform built with React and Node.js, enabling technical discussions with Markdown support and optimized data retrieval*
 
 ## Built With  
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -27,7 +27,7 @@
 - [Questions](#questions)
 
 ## Description
-StackNova is a full-stack developer community and Q&A platform that allows developers to ask questions, share knowledge, and engage in technical discussions. Built using a React frontend and Node.js/Express backend with MySQL database, the platform implements best practices for performance, security, and user experience.
+StackNova is a software engineer community and Q&A platform that allows developers to ask questions, share knowledge, and engage in technical discussions. Built using a React frontend and Node.js/Express backend with MySQL database, the platform implements best practices for performance, security, and user experience.
 
 The application features secure authentication with HTTP-only cookies, advanced search capabilities, and a responsive UI with light/dark modes powered by Tailwind CSS. StackNova leverages server-side caching with Redis and client-side optimizations with TanStack Query to deliver exceptional performance. The platform supports Markdown formatting for posts and comments, allowing developers to share code snippets with syntax highlighting through prism-react-renderer.
 
@@ -69,10 +69,10 @@ Visit the live website at: [https://stacknova.ca](https://stacknova.ca)
   * Business information exposure
 
 ## Screenshots
-![StackNova-Home](client/public/screenshots/1-StackNova-Home.jpg)
-![StackNova-Question](client/public/screenshots/2-StackNova-Question.jpg)
-![StackNova-Dashboard](client/public/screenshots/3-StackNova-Dashboard.jpg)
-![StackNova-Profile](client/public/screenshots/4-StackNova-Profile.jpg)
+![StackNova-Home](client/public/readme-screenshots/1-StackNova-Home.jpg)
+![StackNova-Question](client/public/readme-screenshots/2-StackNova-Question.jpg)
+![StackNova-Dashboard](client/public/readme-screenshots/3-StackNova-Dashboard.jpg)
+![StackNova-Profile](client/public/readme-screenshots/4-StackNova-Profile.jpg)
 
 ## Technical Details
 StackNova is built with a modern tech stack implementing several advanced patterns and features:
@@ -191,7 +191,7 @@ To run this project locally:
 
 ## Roadmap
 - [x] Favicon
-- [ ] Improve accessibility
+- [x] Improve accessibility
 - [x] Modularize code
 - [ ] Meta tags for SEO
 - [ ] Implement answer acceptance feature
