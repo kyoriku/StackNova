@@ -3,9 +3,8 @@ const PostSkeleton = () => {
     <div 
       role="status"
       aria-label="Loading post"
-      className="bg-white dark:bg-gray-800 rounded-lg p-4 
-                border border-gray-200 dark:border-gray-700
-                animate-pulse shadow-md"
+      className="bg-white dark:bg-gray-800 rounded-lg p-4 border 
+      border-gray-200 dark:border-gray-700 animate-pulse shadow-md"
     >
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
@@ -23,7 +22,7 @@ const PostSkeleton = () => {
 export const PostsSkeletonLoader = ({ count = 10 }) => {
   return (
     <div 
-      className="max-w-4xl mx-auto space-y-4"
+      className="max-w-5xl mx-auto space-y-4"
       aria-label={`Loading ${count} posts`}
       role="status"
     >

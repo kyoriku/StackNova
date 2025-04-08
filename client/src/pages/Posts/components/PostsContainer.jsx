@@ -4,7 +4,7 @@ import { PostsList } from './PostsList';
 export const PostsContainer = ({ isLoading, error, posts, prefetchPost }) => {
   if (isLoading) return <PostsSkeletonLoader />;
   if (error) return (
-    <section aria-label="Error message" className="text-red-500 text-center p-4 rounded-lg bg-red-100 dark:bg-red-900/20 dark:text-red-400 max-w-4xl mx-auto">
+    <section aria-label="Error message" className="text-red-500 text-center p-4 rounded-lg bg-red-100 dark:bg-red-900/20 dark:text-red-400 max-w-5xl mx-auto">
       <h2 className="font-medium mb-1">Error loading posts</h2>
       <p className="text-sm">{error.message}</p>
     </section>
