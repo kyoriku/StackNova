@@ -1,4 +1,3 @@
-// controllers/userController.js
 const { User, Post, Comment } = require('../models');
 
 // Common user profile query options
@@ -60,7 +59,7 @@ const userController = {
         });
       } else {
         res.status(400).json({
-          message: 'Failed to create user', 
+          message: 'Failed to create user',
           error: err.message
         });
       }
@@ -71,7 +70,7 @@ const userController = {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      
+
       if (!email || !password) {
         return res.status(400).json({
           message: 'Email and password are required'
@@ -100,7 +99,7 @@ const userController = {
     } catch (err) {
       console.error('Error logging in:', err);
       res.status(500).json({
-        message: 'Login failed', 
+        message: 'Login failed',
         error: err.message
       });
     }
@@ -135,7 +134,7 @@ const userController = {
     } catch (err) {
       console.error('Error logging out:', err);
       res.status(500).json({
-        message: 'Logout failed', 
+        message: 'Logout failed',
         error: err.message
       });
     }
@@ -174,7 +173,7 @@ const userController = {
   async getUserProfile(req, res) {
     try {
       const username = req.params.username;
-      
+
       if (!username) {
         return res.status(400).json({
           message: 'Username is required'
@@ -187,17 +186,17 @@ const userController = {
       });
 
       if (!userData) {
-        return res.status(404).json({ 
-          message: 'No user found with this username!' 
+        return res.status(404).json({
+          message: 'No user found with this username!'
         });
       }
 
       res.json(userData.get({ plain: true }));
     } catch (err) {
       console.error('Error fetching user profile:', err);
-      res.status(500).json({ 
-        message: 'Failed to get user profile', 
-        error: err.message 
+      res.status(500).json({
+        message: 'Failed to get user profile',
+        error: err.message
       });
     }
   }

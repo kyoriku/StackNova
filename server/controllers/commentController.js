@@ -1,4 +1,3 @@
-// controllers/commentController.js
 const { Comment, User } = require('../models');
 const redisService = require('../config/redis');
 
@@ -9,7 +8,7 @@ async function clearCaches(postId, userId, username) {
     redisService.clearUserProfileCache(username),
     redisService.invalidateSitemapCache()
   ];
-  
+
   if (postId) {
     cacheOps.push(redisService.clearPostCache(postId, true)); // Include comments
   }
@@ -17,7 +16,7 @@ async function clearCaches(postId, userId, username) {
   if (userId) {
     cacheOps.push(redisService.clearUserPostsCache(userId));
   }
-  
+
   return Promise.all(cacheOps);
 }
 
@@ -27,7 +26,7 @@ const commentController = {
     try {
       const userId = req.session.user_id;
       const postId = req.body.post_id;
-      
+
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to create a comment' });
       }
@@ -66,7 +65,7 @@ const commentController = {
     try {
       const userId = req.session.user_id;
       const commentId = req.params.id;
-      
+
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to update a comment' });
       }
@@ -106,7 +105,7 @@ const commentController = {
     try {
       const userId = req.session.user_id;
       const commentId = req.params.id;
-      
+
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to delete a comment' });
       }

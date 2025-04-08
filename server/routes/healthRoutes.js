@@ -1,4 +1,3 @@
-// routes/healthRoutes.js
 const router = require('express').Router();
 const sequelize = require('../config/connection');
 const redisService = require('../config/redis');
@@ -8,7 +7,7 @@ router.get('/health', async (req, res) => {
   try {
     // Check database connection
     await sequelize.authenticate();
-    
+
     // Create status object
     const status = {
       status: 'healthy',
@@ -16,14 +15,14 @@ router.get('/health', async (req, res) => {
       environment: process.env.NODE_ENV || 'development',
       database: 'Connected'
     };
-    
+
     // Check Redis connection if available
     if (redisService.isConnected()) {
       status.redis = 'Connected';
     } else {
       status.redis = 'Not connected';
     }
-    
+
     res.json(status);
   } catch (error) {
     console.error('Health check failed:', error);

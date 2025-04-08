@@ -1,4 +1,3 @@
-// config/redis.js
 const { createClient } = require('redis');
 
 // Determine Redis connection URL based on environment
@@ -8,7 +7,7 @@ const getRedisUrl = () => {
     const [host, port] = process.env.REDIS_URL.split(':');
     return `redis://:${process.env.REDIS_PASSWORD}@${host}:${port}`;
   }
-  
+
   // Fallback to existing environment variable or default local Redis
   return process.env.REDIS_URL || 'redis://localhost:6379';
 };
@@ -139,7 +138,7 @@ const redisService = {
     try {
       if (!client.isReady) return;
       await client.del(`user:profile:${username}`);
-  
+
       if (process.env.NODE_ENV === 'development') {
         console.log('\x1b[36m%s\x1b[0m', `Cleared profile cache for user:`, username);
       }
@@ -152,7 +151,7 @@ const redisService = {
     try {
       if (!client.isReady) return;
       await client.del('sitemap:xml');
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('\x1b[36m%s\x1b[0m', 'Invalidated sitemap cache');
       }
