@@ -22,7 +22,7 @@ const PostSkeleton = () => {
 export const PostsSkeletonLoader = ({ count = 10 }) => {
   return (
     <div 
-      className="max-w-5xl mx-auto space-y-4"
+      className="max-w-4xl mx-auto space-y-4"
       aria-label={`Loading ${count} posts`}
       role="status"
     >

@@ -94,7 +94,7 @@ const PostDetails = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto pb-8">
+    <div className="max-w-4xl mx-auto pb-8">
       <SEOMetaTags
         title={post.title}
         description={post.excerpt}
