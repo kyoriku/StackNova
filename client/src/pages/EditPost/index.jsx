@@ -32,7 +32,7 @@ const EditPost = () => {
         description="Update your content on StackNova."
       />
       
-      <section className="max-w-5xl mx-auto pb-8">
+      <section className="max-w-4xl mx-auto pb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
           Edit Post
         </h1>

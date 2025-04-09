@@ -1,4 +1,4 @@
-const generateExcerpt = (content, maxLength = 125) => {
+const generateExcerpt = (content, maxLength = 100) => {
   if (!content) return '';
 
   // Split into paragraphs and take the first one

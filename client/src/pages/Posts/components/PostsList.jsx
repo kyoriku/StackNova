@@ -3,7 +3,7 @@ import { PostItem } from './PostItem';
 export const PostsList = ({ posts, prefetchPost }) => (
   <section 
     aria-label="Posts list" 
-    className="max-w-5xl mx-auto"
+    className="max-w-4xl mx-auto"
   >
     <h2 className="sr-only">Blog posts</h2>
     <div role="feed" aria-busy="false" aria-label="Blog posts" className="space-y-4">

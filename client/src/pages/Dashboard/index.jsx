@@ -101,7 +101,7 @@ const Dashboard = () => {
         description="Manage your posts on StackNova."
       />
       
-      <div className="max-w-5xl mx-auto pb-8" id="dashboard-content">
+      <div className="max-w-4xl mx-auto pb-8" id="dashboard-content">
         {/* Delete Confirmation Modal */}
         <DeleteModal
           isOpen={deleteModalOpen}

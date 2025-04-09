@@ -42,7 +42,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-8">
+    <div className="max-w-4xl mx-auto pb-8">
       {user && <UserMetaTags username={user.username} />}
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
