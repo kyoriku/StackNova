@@ -3,10 +3,17 @@ import { ExternalLink } from 'lucide-react';
 import MarkdownEditor from '../../../components/MarkdownEditor';
 import { TitleInput } from './TitleInput';
 import { FormActions } from './FormActions';
+import { CharacterCounter } from '../../NewPost/components/CharacterCounter';
+import { POST_LIMITS } from '../../NewPost/constants';
 
 export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
+  // Use limits from constants
+  const MIN_CONTENT_CHARS = POST_LIMITS.CONTENT_MIN;
+  const MAX_CONTENT_CHARS = POST_LIMITS.CONTENT_MAX;
+  const MAX_TITLE_CHARS = POST_LIMITS.TITLE_MAX;
 
   // Update form when post data is loaded
   useEffect(() => {
@@ -25,7 +32,7 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
         <div
-          className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 
+          className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 
                    rounded-lg text-red-600 dark:text-red-400"
           role="alert"
         >
@@ -37,6 +44,7 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
         value={title}
         onChange={setTitle}
         disabled={isSubmitting}
+        maxChars={MAX_TITLE_CHARS}
       />
 
       <div>
@@ -66,6 +74,13 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
           onChange={setContent}
           disabled={isSubmitting}
         />
+        <div className="mt-2 flex justify-end">
+          <CharacterCounter
+            current={content.length}
+            min={MIN_CONTENT_CHARS}
+            max={MAX_CONTENT_CHARS}
+          />
+        </div>
       </div>
 
       <FormActions isSubmitting={isSubmitting} actionText="Update Post" />
