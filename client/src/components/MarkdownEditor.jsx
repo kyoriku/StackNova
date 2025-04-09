@@ -138,7 +138,7 @@ const EditorTab = ({ active, onClick, children }) => (
 
 const defaultPlaceholder = `Write your content here... Supports Markdown formatting!
 
-# Formatting Guide:
+# Formatting examples:
 - Use blank lines for paragraphs
 - **bold** or *italic* text
 - Lists with - or 1.
@@ -147,9 +147,8 @@ const defaultPlaceholder = `Write your content here... Supports Markdown formatt
 - Code blocks with language:
 
 \`\`\`javascript
-// Code blocks with syntax highlighting
-const hello = "world";
-console.log(hello);
+const greeting = "Hello, world!";
+console.log(greeting);
 \`\`\``;
 
 const MarkdownEditor = ({
@@ -229,6 +228,9 @@ const MarkdownEditor = ({
                      transition-[background,color,border] duration-0"
             placeholder={placeholder}
             disabled={disabled}
+            maxLength={25000}
+            required
+            aria-required="true"
           />
         )}
       </div>
