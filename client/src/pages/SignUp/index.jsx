@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, User, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { DefaultMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -40,9 +40,11 @@ const Signup = () => {
 
   return (
     <>
-      <DefaultMetaTags
+      <SEO
         title="Sign Up"
         description="Create your StackNova account and join our community of developers to share knowledge and find solutions."
+        canonicalPath="/signup"
+        noIndex={true} // Set noIndex to true based on robots.txt
       />
 
       <div className="max-w-md mx-auto px-4">

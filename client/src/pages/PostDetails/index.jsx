@@ -9,7 +9,7 @@ import { DeleteModal } from './components/DeleteModal';
 import { PostContent } from './components/PostContent';
 import { CommentForm } from './components/CommentForm';
 import { CommentsList } from './components/CommentsList';
-import { SEOMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 
 const PostDetails = () => {
   const { id } = useParams();
@@ -77,6 +77,47 @@ const PostDetails = () => {
     setCommentText(comment.comment_text);
   };
 
+  // Generate enhanced JSON-LD for the blog post
+  const generateJsonLd = (post) => {
+    if (!post) return null;
+    
+    return {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": post.excerpt,
+      "image": "https://stacknova.ca/screenshots/2-StackNova-Question.jpg",
+      "datePublished": post.createdAt,
+      "dateModified": post.updatedAt || post.createdAt,
+      "author": {
+        "@type": "Person",
+        "name": post.user.username
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "StackNova",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://stacknova.ca/favicon.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://stacknova.ca/post/${post.id}`
+      },
+      "commentCount": post.comments?.length || 0,
+      "comment": post.comments?.map(comment => ({
+        "@type": "Comment",
+        "text": comment.comment_text,
+        "dateCreated": comment.createdAt,
+        "author": {
+          "@type": "Person",
+          "name": comment.user.username
+        }
+      })) || []
+    };
+  };
+
   if (isLoading) {
     return <LoadingSpinner text="Loading post..." />;
   }
@@ -95,23 +136,15 @@ const PostDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto pb-8">
-      <SEOMetaTags
+      <SEO
         title={post.title}
-        description={post.excerpt}
-        path={`/post/${post.id}`}
-        image="/screenshots/2-StackNova-Question.jpg"
+        description={post.excerpt || `A question by ${post.user.username} on StackNova`}
+        canonicalPath={`/post/${post.id}`}
         type="article"
-        structuredData={{
-          "@context": "https://schema.org",
-          "@type": "BlogPosting",
-          "headline": post.title,
-          "datePublished": post.createdAt,
-          "author": {
-            "@type": "Person",
-            "name": post.user.username
-          }
-        }}
+        image="https://stacknova.ca/screenshots/2-StackNova-Question.jpg"
+        jsonLd={generateJsonLd(post)}
       />
+
       <DeleteModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}

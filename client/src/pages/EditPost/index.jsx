@@ -3,7 +3,7 @@ import { usePostData } from './hooks/usePostData';
 import { useUpdatePost } from './hooks/useUpdatePost';
 import { EditPostForm } from './components/EditPostForm';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { DefaultMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 
 const EditPost = () => {
   const { id } = useParams();
@@ -16,9 +16,11 @@ const EditPost = () => {
   if (isLoading) {
     return (
       <>
-        <DefaultMetaTags 
-          title="Edit Post" 
+        <SEO
+          title="Edit Post"
           description="Update your content on StackNova."
+          canonicalPath={`/edit-post/${id}`}
+          noIndex={true} // Set noIndex to true based on robots.txt
         />
         <LoadingSpinner text="Loading post..." />
       </>
@@ -27,9 +29,11 @@ const EditPost = () => {
 
   return (
     <>
-      <DefaultMetaTags 
-        title={post ? `Edit: ${post.title}` : "Edit Post"} 
+      <SEO
+        title={post ? `Edit: ${post.title}` : "Edit Post"}
         description="Update your content on StackNova."
+        canonicalPath={`/edit-post/${id}`}
+        noIndex={true} // Set noIndex to true based on robots.txt
       />
       
       <section className="max-w-4xl mx-auto pb-8">

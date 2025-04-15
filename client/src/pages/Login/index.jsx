@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { DefaultMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -26,9 +26,11 @@ const Login = () => {
 
   return (
     <>
-      <DefaultMetaTags
+      <SEO
         title="Login"
         description="Sign in to your StackNova account to post questions, share solutions, and engage with the developer community."
+        canonicalPath="/login"
+        noIndex={true} // Set noIndex to true based on robots.txt
       />
 
       <div className="max-w-md mx-auto px-4">
