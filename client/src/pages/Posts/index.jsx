@@ -4,7 +4,7 @@ import { Pagination } from './components/Pagination';
 import { PostsContainer } from './components/PostsContainer';
 import { usePosts } from './hooks/usePosts';
 import { usePrefetchPost } from './hooks/usePrefetchPost';
-import { SEOMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -20,13 +20,41 @@ const Posts = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedPosts = filteredPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
+  // Generate JSON-LD structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "headline": "Latest Posts - StackNova",
+    "description": "Discover and engage with the latest programming insights, technical solutions, and developer discussions on StackNova. Share your knowledge and connect with a community of passionate developers.",
+    "url": "https://stacknova.ca",
+    "mainEntity": {
+      "@type": "ItemList",
+      "itemListElement": paginatedPosts.map((post, index) => ({
+        "@type": "ListItem",
+        "position": startIndex + index + 1,
+        "item": {
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "description": post.excerpt,
+          "url": `https://stacknova.ca/post/${post.id}`,
+          "datePublished": post.createdAt,
+          "author": {
+            "@type": "Person",
+            "name": post.user.username
+          },
+          "commentCount": post.comments?.length || post.commentCount || 0
+        }
+      }))
+    }
+  };
+
   return (
     <>
-      <SEOMetaTags
+      <SEO
         title="Latest Posts"
-        description="Browse the latest programming questions and solutions from our developer community."
-        path="/"
-        image="/screenshots/1-StackNova-Home.jpg"
+        description="Discover and engage with the latest programming insights, technical solutions, and developer discussions on StackNova. Share your knowledge and connect with a community of passionate developers."
+        canonicalPath="" // Root path is the canonical URL
+        jsonLd={jsonLd}
       />
 
       <section className="max-w-4xl mx-auto pb-8">

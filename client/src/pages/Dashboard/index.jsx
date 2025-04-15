@@ -8,7 +8,7 @@ import { DeleteModal } from './components/DeleteModal';
 import { Header } from './components/Header';
 import { PostsList } from './components/PostsList';
 import { Pagination } from '../Posts/components/Pagination';
-import { DefaultMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 import { useQueryClient } from '@tanstack/react-query';
 
 const ITEMS_PER_PAGE = 10; // Set the number of items per page
@@ -96,9 +96,11 @@ const Dashboard = () => {
 
   return (
     <>
-      <DefaultMetaTags 
-        title="Dashboard" 
-        description="Manage your posts on StackNova."
+      <SEO
+        title="Dashboard"
+        description="Manage your posts and activity on StackNova."
+        canonicalPath="/dashboard"
+        noIndex={true} // Set noIndex to true based on robots.txt
       />
       
       <div className="max-w-4xl mx-auto pb-8" id="dashboard-content">

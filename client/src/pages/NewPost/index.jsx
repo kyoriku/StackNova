@@ -1,6 +1,6 @@
 import { NewPostForm } from './components/NewPostForm';
 import { useCreatePost } from './hooks/useCreatePost';
-import { DefaultMetaTags } from '../../components/MetaTags';
+import { SEO } from '../../components/SEO';
 import { POST_LIMITS } from './constants';
 
 const NewPost = () => {
@@ -8,9 +8,11 @@ const NewPost = () => {
 
   return (
     <>
-      <DefaultMetaTags
+      <SEO
         title="Create New Post"
         description="Share your programming knowledge and questions with the StackNova community."
+        canonicalPath="/new-post"
+        noIndex={true} // Set noIndex to true based on robots.txt
       />
 
       <section className="max-w-4xl mx-auto pb-8">
