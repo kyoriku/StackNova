@@ -91,7 +91,8 @@ const PostDetails = () => {
       "dateModified": post.updatedAt || post.createdAt,
       "author": {
         "@type": "Person",
-        "name": post.user.username
+        "name": post.user.username,
+        "url": `https://stacknova.ca/user/${post.user.username}`,
       },
       "publisher": {
         "@type": "Organization",

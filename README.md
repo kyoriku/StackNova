@@ -5,7 +5,7 @@
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4.svg?style=for-the-badge&logo=TailwindCSS&logoColor=white)](https://tailwindcss.com/docs/installation/using-vite)
-[![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154.svg?style=for-the-badge&logo=react-query&logoColor=white)](https://tanstack.com/query/latest/docs/framework/react/installation)
+[![React Query](https://img.shields.io/badge/TanStack%20Query-FF4154.svg?style=for-the-badge&logo=react-query&logoColor=white)](https://tanstack.com/query/latest/docs/framework/react/installation)
 [![Node.js](https://img.shields.io/badge/Node.js-339933.svg?style=for-the-badge&logo=Node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-000000.svg?style=for-the-badge&logo=Express&logoColor=white)](https://expressjs.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1.svg?style=for-the-badge&logo=MySQL&logoColor=white)](https://www.mysql.com/)
@@ -29,7 +29,7 @@
 ## Description
 StackNova is a software engineer community and Q&A platform that allows developers to ask questions, share knowledge, and engage in technical discussions. Built using a React frontend and Node.js/Express backend with MySQL database, the platform implements best practices for performance, security, and user experience.
 
-The application features secure authentication with HTTP-only cookies, advanced search capabilities, and a responsive UI with light/dark modes powered by Tailwind CSS. StackNova leverages server-side caching with Redis and client-side optimizations with TanStack Query to deliver exceptional performance. The platform supports Markdown formatting for posts and comments, allowing developers to share code snippets with syntax highlighting through prism-react-renderer.
+The application features secure authentication with HTTP-only cookies, advanced search capabilities, and a responsive UI with light/dark modes powered by Tailwind CSS. StackNova leverages server-side caching with Redis and client-side optimizations with React Query to deliver exceptional performance. The platform supports Markdown formatting for posts and comments, allowing developers to share code snippets with syntax highlighting through prism-react-renderer.
 
 ### Deployed Site
 Visit the live website at: [https://stacknova.ca](https://stacknova.ca)
@@ -43,7 +43,7 @@ Visit the live website at: [https://stacknova.ca](https://stacknova.ca)
 - **Pagination**: Displays 10 posts per page for better navigation.
 - **Responsive UI**: Adaptive design with light/dark modes powered by Tailwind CSS.
 - **Server-Side Caching**: Speeds up responses using Redis.
-- **Client-Side Caching & Prefetching**: Optimized data fetching with TanStack Query.
+- **Client-Side Caching & Prefetching**: Optimized data fetching with React Query.
 - **Rate Limiting**: Protects against excessive requests using express-rate-limit.
   * Restricts login attempts
   * Limits post submissions
@@ -80,7 +80,7 @@ StackNova is built with a modern tech stack implementing several advanced patter
 * **Frontend Architecture**:
   * React with functional components and hooks
   * Context API for state management
-  * TanStack Query for data fetching and caching
+  * React Query for data fetching and caching
   * Tailwind CSS for responsive styling
   * Dark/light mode theming
   * Code splitting for optimized loading
