@@ -33,8 +33,9 @@ export const PostItem = ({ post, prefetchPost }) => {
             </div>
             <div className="flex flex-col items-center">
               <ChevronRight
-                className="w-5 h-5 text-gray-400 flex-shrink-0 group-hover:translate-x-1 
-                group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-transform duration-200"
+                className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 
+                group-hover:translate-x-1 group-hover:text-blue-500 dark:group-hover:text-blue-400 
+                transition-transform duration-200"
                 aria-hidden="true"
               />
             </div>
