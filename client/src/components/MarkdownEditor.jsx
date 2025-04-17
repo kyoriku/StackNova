@@ -170,7 +170,7 @@ const MarkdownEditor = ({
         rows={rows}
         className="[field-sizing:content] w-full px-4 py-2 rounded-lg 
                  bg-white dark:bg-gray-800 
-                 text-gray-900 dark:text-white 
+                 text-gray-900 dark:text-gray-100 
                  border-2 border-gray-200 dark:border-gray-700
                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                  disabled:opacity-50 disabled:cursor-not-allowed
@@ -206,7 +206,7 @@ const MarkdownEditor = ({
           <div className="p-4 min-h-[24rem] prose dark:prose-invert max-w-none 
                        bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 
                        dark:border-gray-700 overflow-auto shadow-sm">
-            <div className="text-gray-900 dark:text-gray-100">
+            <div className="text-gray-900 dark:text-gray-200">
               <MarkdownPreview content={content} showLineNumbers={showLineNumbers} />
             </div>
           </div>
@@ -217,7 +217,7 @@ const MarkdownEditor = ({
             rows={rows}
             className="[field-sizing:content] w-full px-4 py-2 rounded-lg
                      bg-white dark:bg-gray-800 
-                     text-gray-900 dark:text-white 
+                     text-gray-900 dark:text-gray-100 
                      border-2 border-gray-200 dark:border-gray-700
                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                      disabled:opacity-50 disabled:cursor-not-allowed
@@ -365,25 +365,25 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
           return <CodeBlock className={className} showLineNumbers={showLineNumbers}>{children}</CodeBlock>;
         },
         p: ({ children }) => (
-          <p className="mt-4 mb-4 first:mt-0 last:mb-0 text-gray-900 dark:text-gray-100">{children}</p>
+          <p className="mt-4 mb-4 first:mt-0 last:mb-0 text-gray-900 dark:text-gray-200">{children}</p>
         ),
         h1: ({ children }) => (
-          <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0 text-gray-900 dark:text-white">{children}</h1>
+          <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0 text-gray-900 dark:text-gray-100">{children}</h1>
         ),
         h2: ({ children }) => (
-          <h2 className="text-xl font-bold mb-3 mt-5 first:mt-0 text-gray-900 dark:text-white">{children}</h2>
+          <h2 className="text-xl font-bold mb-3 mt-5 first:mt-0 text-gray-900 dark:text-gray-100">{children}</h2>
         ),
         h3: ({ children }) => (
-          <h3 className="text-lg font-bold mb-3 mt-4 first:mt-0 text-gray-900 dark:text-white">{children}</h3>
+          <h3 className="text-lg font-bold mb-3 mt-4 first:mt-0 text-gray-900 dark:text-gray-100">{children}</h3>
         ),
         ul: ({ children }) => (
-          <ul className="list-disc pl-6 mb-4 text-gray-900 dark:text-gray-100">{children}</ul>
+          <ul className="list-disc pl-6 mb-4 text-gray-900 dark:text-gray-200">{children}</ul>
         ),
         ol: ({ children }) => (
-          <ol className="list-decimal pl-6 mb-4 text-gray-900 dark:text-gray-100">{children}</ol>
+          <ol className="list-decimal pl-6 mb-4 text-gray-900 dark:text-gray-200">{children}</ol>
         ),
         li: ({ children }) => (
-          <li className="mb-1 text-gray-900 dark:text-gray-100">{children}</li>
+          <li className="mb-1 text-gray-900 dark:text-gray-200">{children}</li>
         ),
         a: ({ children, href }) => (
           <a
@@ -398,7 +398,7 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
         ),
         blockquote: ({ children }) => (
           <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 
-                                pl-4 my-4 italic text-gray-900 dark:text-gray-100">
+                                pl-4 my-4 italic text-gray-900 dark:text-gray-200">
             {children}
           </blockquote>
         ),
@@ -418,7 +418,7 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
           </th>
         ),
         td: ({ children }) => (
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
             {children}
           </td>
         ),
