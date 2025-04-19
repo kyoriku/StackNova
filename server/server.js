@@ -58,6 +58,15 @@ console.log('Cookie settings:', {
 // Set up session middleware
 app.use(session(sess));
 
+// Middleware to set headers for favicon
+app.use((req, res, next) => {
+  if (req.path === '/favicon.svg') {
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+  }
+  next();
+});
+
 // Serve static files in production
 if (isProd) {
   app.use(express.static(path.join(__dirname, '../client/dist')));
