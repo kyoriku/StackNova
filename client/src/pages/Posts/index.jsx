@@ -58,17 +58,19 @@ const Posts = () => {
       />
 
       <section className="max-w-4xl mx-auto pb-8">
-        <header>
-          <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+        <header className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+          <h1 className="text-3xl font-bold text-start text-gray-900 dark:text-white">
             Latest Posts
           </h1>
-        </header>
 
-        <SearchBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          resultsCount={filteredPosts.length}
-        />
+          <div className="w-full md:w-112">
+            <SearchBar
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              resultsCount={filteredPosts.length}
+            />
+          </div>
+        </header>
 
         <PostsContainer
           isLoading={isLoading}
