@@ -10,7 +10,7 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
   };
 
   return (
-    <section aria-label="Search posts" className="max-w-2xl mx-auto mb-1">
+    <div aria-label="Search posts" className="w-full relative">
       <form role="search" onSubmit={(e) => e.preventDefault()} className="relative">
         <label htmlFor="search-input" className="sr-only">Search posts</label>
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -23,7 +23,7 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={handleKeyDown} // Prevent Enter key from clearing input
-          className="w-full pl-10 pr-10 py-3 rounded-xl
+          className="w-full pl-10 pr-10 py-1 rounded-xl
                    bg-white dark:bg-gray-800 
                    text-gray-900 dark:text-white 
                    border-2 border-gray-200 dark:border-gray-700
@@ -46,14 +46,14 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
         )}
       </form>
 
-      {/* Fixed height container to prevent layout shift */}
-      <div className="h-8 mt-3">
+      {/* Absolutely positioned container to prevent layout shift */}
+      <div className="absolute top-full mt-1.5 right-0 w-full h-6">
         {searchTerm && (
-          <p role="status" aria-live="polite" className="text-center text-gray-600 dark:text-gray-400">
+          <p role="status" aria-live="polite" className="text-sm text-right text-gray-600 dark:text-gray-400">
             Found {resultsCount} {resultsCount === 1 ? 'post' : 'posts'}
           </p>
         )}
       </div>
-    </section>
+    </div>
   );
 };
