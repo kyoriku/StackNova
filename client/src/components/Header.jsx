@@ -31,7 +31,7 @@ const Header = () => {
       // Re-enable scrolling
       document.body.style.overflow = '';
     }
-    
+
     // Cleanup function to ensure scroll is re-enabled when component unmounts
     return () => {
       document.body.style.overflow = '';
@@ -136,9 +136,9 @@ const Header = () => {
               aria-label="Toggle theme"
             >
               {isDarkMode ? (
-                <Sun size={18} className="text-amber-500" />
+                <Sun size={18} className="text-gray-300" />
               ) : (
-                <Moon size={18} className="text-gray-600" />
+                <Moon size={18} className="text-gray-700" />
               )}
             </button>
           </div>
@@ -146,12 +146,14 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden flex flex-col space-y-4 pb-4 fixed inset-x-0 top-16 bg-white dark:bg-gray-800 shadow-lg p-4 z-50 max-h-screen overflow-y-auto">
+          <div className="md:hidden flex flex-col space-y-4 pb-4 fixed inset-x-0 top-16 
+          bg-white dark:bg-gray-800 shadow-lg p-4 z-50 max-h-screen overflow-y-auto 
+          border-b border-gray-300 dark:border-gray-700">
             <Link
               to="/"
               className={`${isActive('/')} ${linkClasses}`}
               onMouseEnter={() => prefetchPosts()}
-              
+
             >
               <Home size={18} />
               Home
@@ -207,12 +209,12 @@ const Header = () => {
             >
               {isDarkMode ? (
                 <>
-                  <Sun size={18} className="text-amber-500" />
+                  <Sun size={18} className="text-gray-300" />
                   <span className="text-gray-700 dark:text-gray-300">Light Mode</span>
                 </>
               ) : (
                 <>
-                  <Moon size={18} className="text-gray-600" />
+                  <Moon size={18} className="text-gray-700" />
                   <span className="text-gray-700 dark:text-gray-300">Dark Mode</span>
                 </>
               )}
