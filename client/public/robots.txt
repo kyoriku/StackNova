@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 Allow: /post/
-Allow: /user/
+Disallow: /user/
 Disallow: /login
 Disallow: /signup
 Disallow: /dashboard

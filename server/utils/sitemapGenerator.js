@@ -53,20 +53,20 @@ async function generateSitemap(req) {
       });
     }
 
-    // Get all users
-    const users = await User.findAll({
-      attributes: ['username', 'updatedAt']
-    });
+    // // Get all users
+    // const users = await User.findAll({
+    //   attributes: ['username', 'updatedAt']
+    // });
 
-    // Add user profile routes
-    for (const user of users) {
-      sitemapStream.write({
-        url: `/user/${user.username}`,
-        lastmod: user.updatedAt ? user.updatedAt.toISOString() : undefined,
-        changefreq: 'weekly',
-        priority: 0.6
-      });
-    }
+    // // Add user profile routes
+    // for (const user of users) {
+    //   sitemapStream.write({
+    //     url: `/user/${user.username}`,
+    //     lastmod: user.updatedAt ? user.updatedAt.toISOString() : undefined,
+    //     changefreq: 'weekly',
+    //     priority: 0.6
+    //   });
+    // }
 
     // End the stream
     sitemapStream.end();
