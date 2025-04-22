@@ -86,6 +86,7 @@ const UserProfile = () => {
         description={metaDescription}
         canonicalPath={`/user/${user.username}`}
         type="profile"
+        noIndex={true}
         jsonLd={generateJsonLd(user)}
       />
 
