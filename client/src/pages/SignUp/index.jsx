@@ -203,7 +203,7 @@ const Signup = () => {
             className="w-full py-3 bg-blue-600 text-white rounded-lg
            hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
            disabled:opacity-50 disabled:cursor-not-allowed
-           flex items-center justify-center cursor-pointer"
+           flex items-center justify-center transition-colors duration-200 cursor-pointer"
           >
             {isLoading ? (
               <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em]" />
