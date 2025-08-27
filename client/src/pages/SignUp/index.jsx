@@ -55,6 +55,12 @@ const Signup = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Username Input */}
           <div>
+            <label 
+              htmlFor="username" 
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Username
+            </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
@@ -63,8 +69,8 @@ const Signup = () => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                autoComplete="username"
+                placeholder="Choose a username"
+                autoComplete="off"
                 className="w-full pl-10 pr-4 py-3 rounded-lg
                        bg-white dark:bg-gray-700 
                        text-gray-900 dark:text-white 
@@ -78,6 +84,12 @@ const Signup = () => {
 
           {/* Email Input */}
           <div>
+            <label 
+              htmlFor="email" 
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Email
+            </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
@@ -86,8 +98,8 @@ const Signup = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                autoComplete="email"
+                placeholder="Enter your email"
+                autoComplete="username"
                 className="w-full pl-10 pr-4 py-3 rounded-lg
                        bg-white dark:bg-gray-700 
                        text-gray-900 dark:text-white 
@@ -101,6 +113,12 @@ const Signup = () => {
 
           {/* Password Input */}
           <div>
+            <label 
+              htmlFor="password" 
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            >
+              Password
+            </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
@@ -111,7 +129,7 @@ const Signup = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setPasswordFocused(true)}
                 onBlur={() => setPasswordFocused(false)}
-                placeholder="Password"
+                placeholder="Create a secure password"
                 autoComplete="new-password"
                 className="w-full pl-10 pr-4 py-3 rounded-lg
                        bg-white dark:bg-gray-700 
@@ -121,12 +139,18 @@ const Signup = () => {
                        focus:ring-blue-200 dark:focus:ring-blue-800"
                 required
                 minLength={8}
+                aria-describedby="password-requirements"
               />
             </div>
 
             {/* Password requirements - only show when password field is focused or has content */}
             {(passwordFocused || password.length > 0) && (
-              <div className="mt-6 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div 
+                id="password-requirements"
+                className="mt-6 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                role="region"
+                aria-label="Password requirements"
+              >
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password requirements:</p>
                 <div className="space-y-1">
                   <div className="flex items-center">
@@ -165,7 +189,10 @@ const Signup = () => {
           </div>
 
           {error && (
-            <div className="py-2 px-3 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-sm rounded-lg border border-red-100 dark:border-red-900/30">
+            <div 
+              className="py-2 px-3 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-sm rounded-lg border border-red-100 dark:border-red-900/30"
+              role="alert"
+            >
               {error}
             </div>
           )}
@@ -181,7 +208,7 @@ const Signup = () => {
             {isLoading ? (
               <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em]" />
             ) : (
-              'Sign Up'
+              'Sign up'
             )}
           </button>
 
