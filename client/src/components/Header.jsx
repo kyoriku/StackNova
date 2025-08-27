@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, LayoutDashboard, LogIn, LogOut, Sun, Moon, Menu, X, User } from 'lucide-react';
+import { List, LayoutDashboard, LogIn, LogOut, Sun, Moon, Menu, X, User, UserPlus } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { usePrefetchUserProfile } from '../pages/PostDetails/hooks/usePrefetchUserProfile';
@@ -56,7 +56,8 @@ const Header = () => {
   const linkClasses = "flex items-center gap-2 hover:text-blue-700 dark:hover:text-blue-400";
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-lg relative z-50">
+    <header className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 
+    dark:border-gray-700 relative z-50">
       <nav ref={navRef} className="mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo and brand */}
@@ -79,22 +80,22 @@ const Header = () => {
             className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X size={24} className="text-gray-700 dark:text-gray-300" /> : <Menu size={24} className="text-gray-700 dark:text-gray-300" />}
+            {isMenuOpen ? <X size={32} className="text-gray-700 dark:text-gray-300" /> : <Menu size={32} className="text-gray-700 dark:text-gray-300" />}
           </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link
-              to="/"
-              className={`${isActive('/')} ${linkClasses}`}
-              onMouseEnter={() => prefetchPosts()}
-            >
-              <Home size={18} />
-              Home
-            </Link>
 
             {isAuthenticated ? (
               <>
+                <Link
+                  to="/"
+                  className={`${isActive('/')} ${linkClasses}`}
+                  onMouseEnter={() => prefetchPosts()}
+                >
+                  <List size={18} />
+                  Posts
+                </Link>
                 <Link
                   to="/dashboard"
                   className={`${isActive('/dashboard')} ${linkClasses}`}
@@ -120,13 +121,22 @@ const Header = () => {
                 </button>
               </>
             ) : (
-              <Link
-                to="/login"
-                className={`${isActive('/login')} ${linkClasses}`}
-              >
-                <LogIn size={18} />
-                Login
-              </Link>
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/login"
+                  className="border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <LogIn size={18} />
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-[background-color] duration-200"
+                >
+                  <UserPlus size={18} />
+                  Sign up
+                </Link>
+              </div>
             )}
 
             {/* Theme Toggle Button */}
@@ -146,21 +156,20 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden flex flex-col space-y-4 pb-4 fixed inset-x-0 top-16 
-          bg-white dark:bg-gray-800 shadow-lg p-4 z-50 max-h-screen overflow-y-auto 
-          border-b border-gray-300 dark:border-gray-700">
-            <Link
-              to="/"
-              className={`${isActive('/')} ${linkClasses}`}
-              onMouseEnter={() => prefetchPosts()}
-
-            >
-              <Home size={18} />
-              Home
-            </Link>
+          <div className="md:hidden flex flex-col space-y-3 pb-4 fixed inset-x-0 top-16 
+  bg-white dark:bg-gray-800 shadow-lg p-4 z-50 max-h-screen overflow-y-auto 
+  border-b border-gray-300 dark:border-gray-700">
 
             {isAuthenticated ? (
               <>
+                <Link
+                  to="/"
+                  className={`${isActive('/')} ${linkClasses}`}
+                  onMouseEnter={() => prefetchPosts()}
+                >
+                  <List size={18} />
+                  Posts
+                </Link>
                 <Link
                   to="/dashboard"
                   className={`${isActive('/dashboard')} ${linkClasses}`}
@@ -189,13 +198,22 @@ const Header = () => {
                 </button>
               </>
             ) : (
-              <Link
-                to="/login"
-                className={`${isActive('/login')} ${linkClasses}`}
-              >
-                <LogIn size={18} />
-                Login
-              </Link>
+              <div className="flex flex-col space-y-3">
+                <Link
+                  to="/login"
+                  className="w-full border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-base"
+                >
+                  <LogIn size={18} />
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2 text-base font-medium transition-[background-color] duration-200"
+                >
+                  <UserPlus size={18} />
+                  Sign up
+                </Link>
+              </div>
             )}
 
             {/* Theme Toggle Button */}
@@ -204,7 +222,7 @@ const Header = () => {
                 toggleTheme();
                 setIsMenuOpen(false);
               }}
-              className="flex items-center gap-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 cursor-pointer"
+              className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gray-100 dark:bg-gray-700 cursor-pointer"
               aria-label="Toggle theme"
             >
               {isDarkMode ? (
