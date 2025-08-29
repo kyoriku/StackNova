@@ -422,7 +422,7 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
             {children}
           </td>
         ),
-        hr: ({ children }) => (
+        hr: () => (
           <hr className="my-6" />
         ),
       }}
