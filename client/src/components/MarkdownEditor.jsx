@@ -422,6 +422,9 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
             {children}
           </td>
         ),
+        hr: () => (
+          <hr className="my-6" />
+        ),
       }}
     >
       {processedContent()}
