@@ -1,16 +1,21 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model, DataTypes, Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const sequelize = require('../config/connection');
 
 class User extends Model {
-  // Method to validate password during login
+  // Method to validate password during login (only for local users)
   checkPassword(loginPw) {
+    if (!this.password) return false; // OAuth users don't have passwords
     return bcrypt.compareSync(loginPw, this.password);
+  }
+
+  // Check if user is OAuth user
+  isOAuthUser() {
+    return this.auth_provider && this.auth_provider !== 'local';
   }
 }
 
 // Initialize User model with columns and configuration
-// Includes username, email, and secure password storage
 User.init(
   {
     id: {
@@ -29,31 +34,75 @@ User.init(
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true, // Validate that the email is in the correct format
+        isEmail: true,
       },
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true, // Changed to allow null for OAuth users
       validate: {
-        len: [8], // Password must be at least 8 characters long
-        is: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/ // Password must contain at least one letter and one number
+        len: {
+          args: [8],
+          msg: "Password must be at least 8 characters long"
+        },
+        is: {
+          args: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/,
+          msg: "Password must contain at least one letter and one number"
+        },
+        // Custom validation to ensure local users have passwords
+        localUserPassword(value) {
+          if (this.auth_provider === 'local' && !value) {
+            throw new Error('Password is required for local authentication');
+          }
+        }
       },
+    },
+    // New OAuth fields
+    auth_provider: {
+      type: DataTypes.ENUM('local', 'google'),
+      defaultValue: 'local',
+      allowNull: false,
+    },
+    oauth_id: {
+      type: DataTypes.STRING,
+      allowNull: true, // Google user ID
+    },
+    avatar_url: {
+      type: DataTypes.STRING,
+      allowNull: true, // Profile picture from OAuth provider
+    },
+    display_name: {
+      type: DataTypes.STRING,
+      allowNull: true, // Full name from OAuth provider
     },
   },
   {
-    // Lifecycle hooks for password hashing
-    // Automatically hash passwords before create and update operations
     hooks: {
       beforeCreate: async (newUserData) => {
-        newUserData.password = await bcrypt.hash(newUserData.password, 12);
+        // Only hash password for local users
+        if (newUserData.auth_provider === 'local' && newUserData.password) {
+          newUserData.password = await bcrypt.hash(newUserData.password, 12);
+        }
         return newUserData;
       },
       beforeUpdate: async (updatedUserData) => {
-        updatedUserData.password = await bcrypt.hash(updatedUserData.password, 12);
+        // Only hash password for local users if password is being updated
+        if (updatedUserData.auth_provider === 'local' && updatedUserData.password && updatedUserData.changed('password')) {
+          updatedUserData.password = await bcrypt.hash(updatedUserData.password, 12);
+        }
         return updatedUserData;
       },
     },
+    // Add unique constraint for OAuth users
+    indexes: [
+      {
+        unique: true,
+        fields: ['oauth_id', 'auth_provider'],
+        where: {
+          auth_provider: { [Op.ne]: 'local' }
+        }
+      }
+    ],
     sequelize,
     timestamps: true,
     freezeTableName: true,

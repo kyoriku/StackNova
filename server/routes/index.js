@@ -4,5 +4,6 @@ const sitemapRoutes = require('./sitemapRoutes');
 
 router.use('/api', apiRoutes);
 router.use('/', sitemapRoutes);
+router.use('/auth', require('./auth'));
 
 module.exports = router;

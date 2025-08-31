@@ -1,15 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { SEO } from '../../components/SEO';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, verifySession } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Handle OAuth errors from URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const oauthError = urlParams.get('error');
+    
+    if (oauthError === 'oauth_failed') {
+      setError('Google login failed. Please try again.');
+    } else if (oauthError === 'oauth_cancelled') {
+      setError('Google login was cancelled.');
+    }
+  }, [location]);
+
+  // Check for OAuth return and verify session
+  useEffect(() => {
+    const handleOAuthReturn = async () => {
+      // If coming back from OAuth, verify session
+      if (location.state?.fromOAuth || localStorage.getItem('oauth_return_path')) {
+        const returnPath = localStorage.getItem('oauth_return_path');
+        localStorage.removeItem('oauth_return_path');
+        
+        // Verify session and redirect if authenticated
+        try {
+          await verifySession();
+          if (returnPath) {
+            navigate(returnPath, { replace: true });
+          }
+        } catch (error) {
+          console.error('OAuth session verification failed:', error);
+        }
+      }
+    };
+
+    handleOAuthReturn();
+  }, [location, verifySession, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,11 +55,12 @@ const Login = () => {
     try {
       const from = location.state?.from || '/dashboard';
       await login(email, password, from);
-      console.log('redirecting to', from);
     } catch (err) {
       setError(err.message);
     }
   };
+
+  const returnPath = location.state?.from || '/dashboard';
 
   return (
     <>
@@ -30,13 +68,30 @@ const Login = () => {
         title="Log In"
         description="Sign in to your StackNova account to post questions, share solutions, and engage with the developer community."
         canonicalPath="/login"
-        noIndex={true} // Set noIndex to true based on robots.txt
+        noIndex={true}
       />
 
       <div className="max-w-md mx-auto px-4">
         <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
           Log In
         </h1>
+
+        {/* Google Login Button */}
+        <div className="mb-6">
+          <GoogleLoginButton returnPath={returnPath} />
+        </div>
+
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200 dark:border-gray-600" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
+              Or continue with email
+            </span>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

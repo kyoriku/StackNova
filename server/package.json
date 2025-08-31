@@ -17,6 +17,8 @@
     "express-session": "^1.17.3",
     "express-validator": "^7.2.1",
     "mysql2": "^3.7.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
     "perf_hooks": "^0.0.1",
     "redis": "^4.7.0",
     "sanitize-html": "^2.14.0",
