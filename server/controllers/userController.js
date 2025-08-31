@@ -35,6 +35,56 @@ const userProfileQueryOptions = {
   ]
 };
 
+// Helper function for OAuth - improved username generation
+const generateUniqueUsername = async (email, displayName) => {
+  // Try different username strategies in order of preference
+  let candidates = [];
+  
+  // Strategy 1: Use display name if available (e.g., "John Doe" -> "johndoe")
+  if (displayName) {
+    const displayNameClean = displayName.toLowerCase()
+      .replace(/[^a-zA-Z0-9\s]/g, '')
+      .replace(/\s+/g, '');
+    if (displayNameClean.length >= 3) {
+      candidates.push(displayNameClean);
+    }
+  }
+  
+  // Strategy 2: Use email prefix (e.g., "john.doe@gmail.com" -> "johndoe")
+  const emailPrefix = email.split('@')[0]
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9]/g, '');
+  if (emailPrefix.length >= 3) {
+    candidates.push(emailPrefix);
+  }
+  
+  // Strategy 3: Fallback to "user" + random number
+  candidates.push('user');
+  
+  // Try each candidate
+  for (let baseUsername of candidates) {
+    let username = baseUsername;
+    let counter = 1;
+    
+    // Check if base username is available
+    if (!(await User.findOne({ where: { username } }))) {
+      return username;
+    }
+    
+    // Try with numbers appended
+    while (counter <= 999) {
+      username = `${baseUsername}${counter}`;
+      if (!(await User.findOne({ where: { username } }))) {
+        return username;
+      }
+      counter++;
+    }
+  }
+  
+  // Ultimate fallback
+  return `user${Date.now()}`;
+};
+
 const userController = {
   // Create new user
   async createUser(req, res) {
@@ -199,6 +249,94 @@ const userController = {
         error: err.message
       });
     }
+  },
+
+  // Handle Google OAuth callback
+  async googleCallback(req, res) {
+    try {
+      const { id, emails, photos, displayName } = req.user;
+      const email = emails[0].value;
+      
+      // Extract return path from state parameter
+      let returnPath = '/dashboard'; // default
+      try {
+        const state = req.query.state || req.session.oauth_state;
+        if (state) {
+          const decodedState = JSON.parse(atob(state));
+          returnPath = decodedState.returnPath || '/dashboard';
+          
+          // Optional: Validate timestamp for security (reject old requests)
+          const maxAge = 10 * 60 * 1000; // 10 minutes
+          if (decodedState.timestamp && (Date.now() - decodedState.timestamp > maxAge)) {
+            console.warn('OAuth state parameter expired');
+            returnPath = '/dashboard';
+          }
+        }
+        // Clean up session
+        delete req.session.oauth_state;
+      } catch (err) {
+        console.warn('Failed to decode OAuth state parameter:', err.message);
+        returnPath = '/dashboard';
+      }
+      
+      // Check if user already exists with this Google ID
+      let userData = await User.findOne({
+        where: { 
+          oauth_id: id,
+          auth_provider: 'google'
+        }
+      });
+
+      if (!userData) {
+        // Check if user exists with same email but different auth provider
+        const existingUser = await User.findOne({ where: { email } });
+        
+        if (existingUser && existingUser.auth_provider === 'local') {
+          // Link Google account to existing local user
+          await existingUser.update({
+            oauth_id: id,
+            auth_provider: 'google',
+            avatar_url: photos[0]?.value,
+            display_name: displayName
+          });
+          userData = existingUser;
+        } else if (!existingUser) {
+          // Create new user
+          const uniqueUsername = await generateUniqueUsername(email, displayName);
+          
+          userData = await User.create({
+            username: uniqueUsername,
+            email: email,
+            auth_provider: 'google',
+            oauth_id: id,
+            avatar_url: photos[0]?.value,
+            display_name: displayName,
+            password: null // No password for OAuth users
+          });
+        } else {
+          // User exists with same email but different provider - handle conflict
+          throw new Error('An account with this email already exists');
+        }
+      }
+
+      // Create session
+      req.session.save(() => {
+        req.session.user_id = userData.id;
+        req.session.logged_in = true;
+        
+        // Redirect to the original return path
+        res.redirect(`${process.env.FRONTEND_URL}${returnPath}`);
+      });
+
+    } catch (err) {
+      console.error('Google OAuth error:', err);
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`);
+    }
+  },
+
+  // Handle OAuth failure
+  async oauthFailure(req, res) {
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_cancelled`);
   }
 };
 

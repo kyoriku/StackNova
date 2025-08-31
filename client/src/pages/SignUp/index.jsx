@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, User, CheckCircle, XCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { SEO } from '../../components/SEO';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -18,6 +19,8 @@ const Signup = () => {
   const hasLetter = /[A-Za-z]/.test(password);
   const hasNumber = /\d/.test(password);
   const isPasswordValid = hasMinLength && hasLetter && hasNumber;
+
+  const returnPath = location.state?.from || '/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,11 +55,28 @@ const Signup = () => {
           Sign Up
         </h1>
 
+        {/* Google Signup Button */}
+        <div className="mb-6">
+          <GoogleLoginButton returnPath={returnPath} />
+        </div>
+
+        {/* Divider */}
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200 dark:border-gray-600" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
+              Or create an account with email
+            </span>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Username Input */}
           <div>
-            <label 
-              htmlFor="username" 
+            <label
+              htmlFor="username"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Username
@@ -84,8 +104,8 @@ const Signup = () => {
 
           {/* Email Input */}
           <div>
-            <label 
-              htmlFor="email" 
+            <label
+              htmlFor="email"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Email
@@ -113,8 +133,8 @@ const Signup = () => {
 
           {/* Password Input */}
           <div>
-            <label 
-              htmlFor="password" 
+            <label
+              htmlFor="password"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               Password
@@ -145,7 +165,7 @@ const Signup = () => {
 
             {/* Password requirements - only show when password field is focused or has content */}
             {(passwordFocused || password.length > 0) && (
-              <div 
+              <div
                 id="password-requirements"
                 className="mt-6 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
                 role="region"
@@ -189,7 +209,7 @@ const Signup = () => {
           </div>
 
           {error && (
-            <div 
+            <div
               className="py-2 px-3 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-sm rounded-lg border border-red-100 dark:border-red-900/30"
               role="alert"
             >
