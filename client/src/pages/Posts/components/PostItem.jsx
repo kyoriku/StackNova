@@ -9,10 +9,10 @@ export const PostItem = ({ post, prefetchPost }) => {
   return (
     <article className="h-full">
       <Link
-        to={`/post/${post.id}`}
-        onMouseEnter={() => prefetchPost(post.id)}
+        to={`/post/${post.slug}`}
+        onMouseEnter={() => prefetchPost(post.slug)}
         className="block group h-full"
-        aria-labelledby={`post-title-${post.id}`}
+        aria-labelledby={`post-title-${post.slug}`}
       >
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 
                       border border-gray-200 dark:border-gray-700
@@ -21,7 +21,7 @@ export const PostItem = ({ post, prefetchPost }) => {
           <div className="flex justify-between items-start gap-4">
             <div className="flex-1">
               <h2
-                id={`post-title-${post.id}`}
+                id={`post-title-${post.slug}`}
                 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-2 
                         group-hover:text-blue-700 dark:group-hover:text-blue-500"
               >

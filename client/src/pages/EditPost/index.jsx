@@ -6,11 +6,10 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { SEO } from '../../components/SEO';
 
 const EditPost = () => {
-  const { id } = useParams();
-  const { post, isLoading, error: fetchError } = usePostData(id);
-  const { error: updateError, isUpdating, updatePost } = useUpdatePost(id);
+  const { slug } = useParams(); // Changed from 'id' to 'slug'
+  const { post, isLoading, error: fetchError } = usePostData(slug);
+  const { error: updateError, isUpdating, updatePost } = useUpdatePost(slug);
 
-  // Combine errors from both hooks
   const error = fetchError || updateError;
 
   if (isLoading) {
@@ -19,8 +18,8 @@ const EditPost = () => {
         <SEO
           title="Edit Post"
           description="Update your content on StackNova."
-          canonicalPath={`/edit-post/${id}`}
-          noIndex={true} // Set noIndex to true based on robots.txt
+          canonicalPath={`/edit-post/${slug}`}
+          noIndex={true}
         />
         <LoadingSpinner text="Loading post..." />
       </>
@@ -32,8 +31,8 @@ const EditPost = () => {
       <SEO
         title={post ? `Edit: ${post.title}` : "Edit Post"}
         description="Update your content on StackNova."
-        canonicalPath={`/edit-post/${id}`}
-        noIndex={true} // Set noIndex to true based on robots.txt
+        canonicalPath={`/edit-post/${slug}`}
+        noIndex={true}
       />
       
       <section className="max-w-4xl mx-auto pb-8">

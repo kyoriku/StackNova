@@ -14,13 +14,10 @@ const UserProfile = () => {
   const { username } = useParams();
   const queryClient = useQueryClient();
 
-  // Check if we have prefetched data
   const prefetchedData = queryClient.getQueryData(['user', username]);
 
-  // Use suspense mode only for initial loading, but handle errors normally
   const { data: user, error, isError, isLoading, status } = useUserProfile(username, {
-    suspense: false, // Don't use suspense for error handling
-    // If we have prefetched data, we don't need to show loading states
+    suspense: false,
     initialData: prefetchedData
   });
 
@@ -47,18 +44,16 @@ const UserProfile = () => {
         "publishedPosts": user.posts?.map(post => ({
           "@type": "BlogPosting",
           "headline": post.title,
-          "url": `https://stacknova.ca/post/${post.id}`
+          "url": `https://stacknova.ca/post/${post.slug}`
         })) || []
       }
     };
   };
 
-  // First show loading state if not prefetched
   if (isLoading) {
     return <LoadingSpinner text="Loading profile..." />;
   }
 
-  // After loading completes, show NotFound if there was an error or no user
   if (isError || (!isLoading && !user)) {
     return (
       <NotFound

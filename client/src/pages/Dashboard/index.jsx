@@ -11,52 +11,44 @@ import { Pagination } from '../Posts/components/Pagination';
 import { SEO } from '../../components/SEO';
 import { useQueryClient } from '@tanstack/react-query';
 
-const ITEMS_PER_PAGE = 10; // Set the number of items per page
+const ITEMS_PER_PAGE = 10;
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1); // Add state for current page
+  const [currentPage, setCurrentPage] = useState(1);
   const prefetchPost = usePrefetchPost();
   const queryClient = useQueryClient();
-  
-  // Check for prefetched data
+
   const prefetchedData = queryClient.getQueryData(['userPosts', user?.id]);
-  
-  // Fetch user's posts using custom hook with suspense if no prefetched data
+
   const { data: posts, error, refetch } = useDashboardPosts(user?.id, {
     suspense: !prefetchedData
   });
-  
-  // Delete post mutation using custom hook
+
   const { deletePostMutation } = useDeletePost({
     userId: user?.id,
     onSuccess: () => {
-      // Calculate the new total number of pages after deletion
       const newTotalItems = posts.length - 1;
       const newTotalPages = Math.ceil(newTotalItems / ITEMS_PER_PAGE);
-      
-      // If current page is now invalid, adjust it
+
       if (currentPage > newTotalPages && newTotalPages > 0) {
         setCurrentPage(newTotalPages);
       } else if (newTotalPages === 0) {
-        // If there are no posts left
         setCurrentPage(1);
       }
-      
+
       refetch();
       setDeleteModalOpen(false);
       setPostToDelete(null);
     }
   });
 
-  // Reset to first page when posts change significantly
   useEffect(() => {
     setCurrentPage(1);
   }, [user?.id]);
 
-  // Effect to handle body scroll lock when modal is open
   useEffect(() => {
     if (deleteModalOpen) {
       const scrollY = window.scrollY;
@@ -79,11 +71,10 @@ const Dashboard = () => {
 
   const handleConfirmDelete = () => {
     if (postToDelete) {
-      deletePostMutation.mutate(postToDelete.id);
+      deletePostMutation.mutate(postToDelete.slug || postToDelete.id);
     }
   };
 
-  // Calculate pagination
   const totalPages = posts ? Math.ceil(posts.length / ITEMS_PER_PAGE) : 0;
   const paginatedPosts = posts ? posts.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -100,11 +91,10 @@ const Dashboard = () => {
         title="Dashboard"
         description="Manage your posts and activity on StackNova."
         canonicalPath="/dashboard"
-        noIndex={true} // Set noIndex to true based on robots.txt
+        noIndex={true}
       />
-      
+
       <div className="max-w-4xl mx-auto pb-8" id="dashboard-content">
-        {/* Delete Confirmation Modal */}
         <DeleteModal
           isOpen={deleteModalOpen}
           onClose={() => setDeleteModalOpen(false)}
@@ -114,17 +104,14 @@ const Dashboard = () => {
           itemType="Post"
         />
 
-        {/* Header Section */}
         <Header username={user?.username} />
 
-        {/* Posts Section */}
-        <PostsList 
+        <PostsList
           posts={paginatedPosts}
           onDeleteClick={handleDeleteClick}
           prefetchPost={prefetchPost}
         />
 
-        {/* Pagination Section */}
         {posts && posts.length > ITEMS_PER_PAGE && (
           <nav aria-label="Pagination" className="mt-8">
             <Pagination

@@ -1,4 +1,5 @@
 const { User, Post, Comment } = require('../models');
+const redisService = require('../config/redis'); // Add this import
 
 // Common user profile query options
 const userProfileQueryOptions = {
@@ -6,7 +7,7 @@ const userProfileQueryOptions = {
   include: [
     {
       model: Post,
-      attributes: ['id', 'title', 'content', 'excerpt', 'createdAt', 'updatedAt'],
+      attributes: ['id', 'title', 'content', 'excerpt', 'slug', 'createdAt', 'updatedAt'],
       include: [
         {
           model: User,
@@ -28,7 +29,7 @@ const userProfileQueryOptions = {
       attributes: ['id', 'comment_text', 'excerpt', 'createdAt', 'updatedAt'],
       include: [{
         model: Post,
-        attributes: ['id', 'title']
+        attributes: ['id', 'title', 'slug']
       }],
       order: [['createdAt', 'DESC']]
     }
@@ -39,7 +40,7 @@ const userProfileQueryOptions = {
 const generateUniqueUsername = async (email, displayName) => {
   // Try different username strategies in order of preference
   let candidates = [];
-  
+
   // Strategy 1: Use display name if available (e.g., "John Doe" -> "johndoe")
   if (displayName) {
     const displayNameClean = displayName.toLowerCase()
@@ -49,7 +50,7 @@ const generateUniqueUsername = async (email, displayName) => {
       candidates.push(displayNameClean);
     }
   }
-  
+
   // Strategy 2: Use email prefix (e.g., "john.doe@gmail.com" -> "johndoe")
   const emailPrefix = email.split('@')[0]
     .toLowerCase()
@@ -57,20 +58,20 @@ const generateUniqueUsername = async (email, displayName) => {
   if (emailPrefix.length >= 3) {
     candidates.push(emailPrefix);
   }
-  
+
   // Strategy 3: Fallback to "user" + random number
   candidates.push('user');
-  
+
   // Try each candidate
   for (let baseUsername of candidates) {
     let username = baseUsername;
     let counter = 1;
-    
+
     // Check if base username is available
     if (!(await User.findOne({ where: { username } }))) {
       return username;
     }
-    
+
     // Try with numbers appended
     while (counter <= 999) {
       username = `${baseUsername}${counter}`;
@@ -80,7 +81,7 @@ const generateUniqueUsername = async (email, displayName) => {
       counter++;
     }
   }
-  
+
   // Ultimate fallback
   return `user${Date.now()}`;
 };
@@ -90,6 +91,9 @@ const userController = {
   async createUser(req, res) {
     try {
       const userData = await User.create(req.body);
+
+      // Clear user profile cache for the new user
+      await redisService.clearUserProfileCache(userData.username);
 
       req.session.save(() => {
         req.session.user_id = userData.id;
@@ -256,7 +260,7 @@ const userController = {
     try {
       const { id, emails, photos, displayName } = req.user;
       const email = emails[0].value;
-      
+
       // Extract return path from state parameter
       let returnPath = '/dashboard'; // default
       try {
@@ -264,7 +268,7 @@ const userController = {
         if (state) {
           const decodedState = JSON.parse(atob(state));
           returnPath = decodedState.returnPath || '/dashboard';
-          
+
           // Optional: Validate timestamp for security (reject old requests)
           const maxAge = 10 * 60 * 1000; // 10 minutes
           if (decodedState.timestamp && (Date.now() - decodedState.timestamp > maxAge)) {
@@ -278,10 +282,10 @@ const userController = {
         console.warn('Failed to decode OAuth state parameter:', err.message);
         returnPath = '/dashboard';
       }
-      
+
       // Check if user already exists with this Google ID
       let userData = await User.findOne({
-        where: { 
+        where: {
           oauth_id: id,
           auth_provider: 'google'
         }
@@ -290,7 +294,7 @@ const userController = {
       if (!userData) {
         // Check if user exists with same email but different auth provider
         const existingUser = await User.findOne({ where: { email } });
-        
+
         if (existingUser && existingUser.auth_provider === 'local') {
           // Link Google account to existing local user
           await existingUser.update({
@@ -300,10 +304,13 @@ const userController = {
             display_name: displayName
           });
           userData = existingUser;
+
+          // Clear user profile cache after updating existing user
+          await redisService.clearUserProfileCache(userData.username);
         } else if (!existingUser) {
           // Create new user
           const uniqueUsername = await generateUniqueUsername(email, displayName);
-          
+
           userData = await User.create({
             username: uniqueUsername,
             email: email,
@@ -313,6 +320,9 @@ const userController = {
             display_name: displayName,
             password: null // No password for OAuth users
           });
+
+          // Clear user profile cache for new user
+          await redisService.clearUserProfileCache(userData.username);
         } else {
           // User exists with same email but different provider - handle conflict
           throw new Error('An account with this email already exists');
@@ -323,7 +333,7 @@ const userController = {
       req.session.save(() => {
         req.session.user_id = userData.id;
         req.session.logged_in = true;
-        
+
         // Redirect to the original return path
         res.redirect(`${process.env.FRONTEND_URL}${returnPath}`);
       });

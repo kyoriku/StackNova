@@ -8,15 +8,15 @@ export const PostItem = ({ post, onDeleteClick, prefetchPost }) => (
                dark:shadow-black/20 overflow-hidden 
                border border-gray-200 dark:border-gray-700
                hover:border-blue-500 dark:hover:border-blue-400"
-    aria-labelledby={`post-title-${post.id}`}
+    aria-labelledby={`post-title-${post.slug}`}
   >
     <div className="p-4">
-      <h3 id={`post-title-${post.id}`} className="mb-2">
+      <h3 id={`post-title-${post.slug}`} className="mb-2">
         <Link
-          to={`/post/${post.id}`}
+          to={`/post/${post.slug}`}
           className="text-xl font-semibold text-blue-600 dark:text-blue-400 
           hover:text-blue-700 dark:hover:text-blue-500"
-          onMouseEnter={() => prefetchPost(post.id)} // Prefetch on hover
+          onMouseEnter={() => prefetchPost(post.slug)}
         >
           {post.title}
         </Link>
@@ -33,10 +33,10 @@ export const PostItem = ({ post, onDeleteClick, prefetchPost }) => (
         </time>
         <div className="flex gap-2">
           <Link
-            to={`/edit-post/${post.id}`}
+            to={`/edit-post/${post.slug}`}
             className="text-gray-700 dark:text-gray-400 hover:text-blue-500 cursor-pointer"
             aria-label={`Edit post: ${post.title}`}
-            onMouseEnter={() => prefetchPost(post.id)} // Prefetch on hover
+            onMouseEnter={() => prefetchPost(post.slug)}
           >
             <Edit2 size={18} aria-hidden="true" />
           </Link>

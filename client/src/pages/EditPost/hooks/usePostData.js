@@ -3,17 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../../context/AuthContext';
 
-export const usePostData = (postId) => {
+export const usePostData = (postSlug) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [error, setError] = useState('');
 
   // Fetch existing post
   const { data: post, isLoading } = useQuery({
-    queryKey: ['post', postId],
+    queryKey: ['post', postSlug],
     queryFn: async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`);
-      if (!response.ok) throw new Error('Failed to fetch post');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/posts/${postSlug}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Post not found');
+        }
+        throw new Error('Failed to fetch post');
+      }
       return response.json();
     },
     onError: (error) => {
