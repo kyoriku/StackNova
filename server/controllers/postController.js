@@ -1,4 +1,5 @@
 const { Post, User, Comment } = require('../models');
+const { generateUniqueSlug } = require('../utils/slugUtils');
 const redisService = require('../config/redis');
 
 // Helper function to handle common Redis cache operations
@@ -11,7 +12,15 @@ async function clearCaches(postId, userId, username, includeComments = false) {
   ];
 
   if (postId) {
-    cacheOps.push(redisService.clearPostCache(postId, includeComments));
+    // Clear cache for both post ID and slug (same logic as comment controller)
+    const post = await Post.findByPk(postId, { attributes: ['id', 'slug'] });
+    if (post) {
+      cacheOps.push(redisService.clearPostCache(post.id, includeComments)); // UUID version
+      cacheOps.push(redisService.clearPostCache(post.slug, includeComments)); // Slug version
+    } else {
+      // Fallback: just clear by ID if post not found
+      cacheOps.push(redisService.clearPostCache(postId, includeComments));
+    }
   }
 
   return Promise.all(cacheOps);
@@ -34,6 +43,12 @@ const postQueryOptions = {
   ]
 };
 
+// Helper function to determine if a string is a UUID
+const isUUID = (str) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(str);
+};
+
 const postController = {
   // Get all posts
   async getAllPosts(req, res) {
@@ -51,18 +66,117 @@ const postController = {
     }
   },
 
-  // Get a single post
+  // Get a single post by slug or ID (for backward compatibility)
+  // async getSinglePost(req, res) {
+  //   try {
+  //     const identifier = req.params.identifier;
+  //     let whereClause;
+
+  //     // Determine if the identifier is a UUID (old URL format) or a slug
+  //     if (isUUID(identifier)) {
+  //       whereClause = { id: identifier };
+  //     } else {
+  //       whereClause = { slug: identifier };
+  //     }
+
+  //     const postData = await Post.findOne({
+  //       where: whereClause,
+  //       ...postQueryOptions
+  //     });
+
+  //     if (!postData) {
+  //       return res.status(404).json({ message: 'No post found with this identifier!' });
+  //     }
+
+  //     // If accessed by ID, redirect to the clean URL
+  //     if (isUUID(identifier)) {
+  //       return res.redirect(301, `/post/${postData.slug}`);
+  //     }
+
+  //     res.json(postData.get({ plain: true }));
+  //   } catch (err) {
+  //     console.error(`Error fetching post ${req.params.identifier}:`, err);
+  //     res.status(500).json({ message: 'Failed to fetch post', error: err.message });
+  //   }
+  // },
+
+  // Return data for both UUID and slug
+  // async getSinglePost(req, res) {
+  //   try {
+  //     const identifier = req.params.identifier;
+  //     let whereClause;
+
+  //     // Determine if the identifier is a UUID or a slug
+  //     if (isUUID(identifier)) {
+  //       whereClause = { id: identifier };
+  //     } else {
+  //       whereClause = { slug: identifier };
+  //     }
+
+  //     const postData = await Post.findOne({
+  //       where: whereClause,
+  //       ...postQueryOptions
+  //     });
+
+  //     if (!postData) {
+  //       return res.status(404).json({ message: 'No post found with this identifier!' });
+  //     }
+
+  //     // Just return the data - let frontend handle URL updates
+  //     res.json(postData.get({ plain: true }));
+  //   } catch (err) {
+  //     console.error(`Error fetching post ${req.params.identifier}:`, err);
+  //     res.status(500).json({ message: 'Failed to fetch post', error: err.message });
+  //   }
+  // },
+
   async getSinglePost(req, res) {
     try {
-      const postData = await Post.findByPk(req.params.id, postQueryOptions);
+      const identifier = req.params.identifier;
+      let whereClause;
 
-      if (!postData) {
-        return res.status(404).json({ message: 'No post found with this id!' });
+      // Determine if the identifier is a UUID or a slug
+      if (isUUID(identifier)) {
+        whereClause = { id: identifier };
+      } else {
+        whereClause = { slug: identifier };
       }
 
+      const postData = await Post.findOne({
+        where: whereClause,
+        ...postQueryOptions
+      });
+
+      if (!postData) {
+        return res.status(404).json({ message: 'No post found with this identifier!' });
+      }
+
+      // Handle UUID requests for SEO
+      if (isUUID(identifier)) {
+        // Check if this is a direct browser request vs API call
+        const acceptsHtml = req.headers.accept && req.headers.accept.includes('text/html');
+        const acceptsJson = req.headers.accept && req.headers.accept.includes('application/json');
+        const userAgent = req.headers['user-agent'] || '';
+
+        // Browser navigation (for SEO): Has HTML accept header and user agent, but doesn't explicitly request JSON
+        const isBrowserNavigation = acceptsHtml && userAgent && !acceptsJson;
+
+        // API call from React: Explicitly accepts JSON or has XMLHttpRequest header
+        const isApiCall = acceptsJson || req.headers['x-requested-with'] === 'XMLHttpRequest';
+
+        if (isBrowserNavigation) {
+          // SEO-friendly 301 redirect for search engines and direct browser access
+          return res.redirect(301, `/post/${postData.slug}`);
+        } else {
+          // API call - return JSON data for React to handle client-side
+          return res.json(postData.get({ plain: true }));
+        }
+      }
+
+      // Normal slug request - return JSON
       res.json(postData.get({ plain: true }));
     } catch (err) {
-      console.error(`Error fetching post ${req.params.id}:`, err);
+      console.error(`Error fetching post ${req.params.identifier}:`, err);
       res.status(500).json({ message: 'Failed to fetch post', error: err.message });
     }
   },
@@ -91,7 +205,6 @@ const postController = {
         return res.status(401).json({ message: 'You must be logged in to create a post' });
       }
 
-      // Get the user to access username
       const user = await User.findByPk(userId, {
         attributes: ['username']
       });
@@ -100,47 +213,78 @@ const postController = {
         return res.status(404).json({ message: 'User not found' });
       }
 
+      // Generate slug using utility function
+      const slug = await generateUniqueSlug(req.body.title);
+
       const newPost = await Post.create({
-        ...req.body,
+        title: req.body.title,
+        content: req.body.content,
+        slug: slug,
         user_id: userId,
+        username: user.username
       });
 
-      // Clear relevant caches
+      const postWithDetails = await Post.findByPk(newPost.id, {
+        include: [
+          {
+            model: User,
+            attributes: ['username']
+          },
+          {
+            model: Comment,
+            include: [{
+              model: User,
+              attributes: ['username']
+            }]
+          }
+        ]
+      });
+
+      // Clear relevant caches BEFORE sending response
       await clearCaches(null, userId, user.username);
 
-      res.status(201).json(newPost.get({ plain: true }));
+      res.status(201).json(postWithDetails.get({ plain: true }));
     } catch (err) {
       console.error('Error creating post:', err);
       res.status(400).json({ message: 'Failed to create post', error: err.message });
     }
   },
 
-  // Update a post
   async updatePost(req, res) {
     try {
       const userId = req.session.user_id;
-      const postId = req.params.id;
+      const identifier = req.params.identifier;
 
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to update a post' });
       }
 
+      let whereClause = { user_id: userId };
+      if (isUUID(identifier)) {
+        whereClause.id = identifier;
+      } else {
+        whereClause.slug = identifier;
+      }
+
       const post = await Post.findOne({
-        where: {
-          id: postId,
-          user_id: userId,
-        },
+        where: whereClause,
         include: [{ model: User, attributes: ['username'] }]
       });
 
       if (!post) {
-        return res.status(404).json({ message: 'No post found with this id or you are not authorized to edit it' });
+        return res.status(404).json({ message: 'No post found with this identifier or you are not authorized to edit it' });
       }
 
-      await post.update(req.body);
+      // If title is changing, generate new slug
+      const updateData = { ...req.body };
+      if (req.body.title && req.body.title !== post.title) {
+        updateData.slug = await generateUniqueSlug(req.body.title, post.id);
+      }
 
-      // Clear relevant caches
-      await clearCaches(postId, userId, post.user.username);
+      await post.update(updateData);
+
+      // Clear relevant caches BEFORE sending response
+      await clearCaches(post.id, userId, post.user.username);
 
       res.status(200).json({
         message: 'Post updated successfully!',
@@ -156,30 +300,35 @@ const postController = {
   async deletePost(req, res) {
     try {
       const userId = req.session.user_id;
-      const postId = req.params.id;
+      const identifier = req.params.identifier;
 
       if (!userId) {
         return res.status(401).json({ message: 'You must be logged in to delete a post' });
       }
 
+      // Determine if the identifier is a UUID or slug
+      let whereClause = { user_id: userId };
+      if (isUUID(identifier)) {
+        whereClause.id = identifier;
+      } else {
+        whereClause.slug = identifier;
+      }
+
       // Find the post to get the username and validate ownership
       const post = await Post.findOne({
-        where: {
-          id: postId,
-          user_id: userId,
-        },
+        where: whereClause,
         include: [{ model: User, attributes: ['username'] }]
       });
 
       if (!post) {
-        return res.status(404).json({ message: 'No post found with this id or you are not authorized to delete it' });
+        return res.status(404).json({ message: 'No post found with this identifier or you are not authorized to delete it' });
       }
 
       // Delete the post
       await post.destroy();
 
-      // Clear relevant caches
-      await clearCaches(postId, userId, post.user.username, true);
+      // Clear relevant caches BEFORE sending response
+      await clearCaches(post.id, userId, post.user.username, true);
 
       res.status(200).json({ message: 'Post deleted successfully!' });
     } catch (err) {

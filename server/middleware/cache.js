@@ -1,3 +1,4 @@
+// Updated cache.js middleware
 const redisService = require('../config/redis');
 
 const CACHE_TTL = 3600; // 1 hour
@@ -7,8 +8,12 @@ const cacheMiddleware = async (req, res, next) => {
     let cacheKey;
     if (req.path.includes('/user/posts')) {
       cacheKey = `user:${req.session.user_id}:posts`;
+    } else if (req.path.includes('/edit-post/')) {
+      // Log edit-post requests but don't cache them
+      cacheKey = `edit-post:${req.params.identifier || 'unknown'}`;
     } else if (req.baseUrl.includes('posts')) {
-      cacheKey = req.params.id ? `post:${req.params.id}` : 'posts:all';
+      // Updated to use 'identifier' parameter (which can be slug or ID)
+      cacheKey = req.params.identifier ? `post:${req.params.identifier}` : 'posts:all';
     } else if (req.baseUrl.includes('comments')) {
       cacheKey = `comments:${req.params.postId}`;
     } else if (req.baseUrl.includes('users') && req.path.includes('/profile/')) {
@@ -27,6 +32,8 @@ const cacheMiddleware = async (req, res, next) => {
     if (!cacheKey) {
       return next();
     }
+
+
 
     const cachedData = await redisService.get(cacheKey);
 
@@ -54,7 +61,6 @@ const cacheMiddleware = async (req, res, next) => {
     // Override the json method
     res.json = function (data) {
       // Only cache successful responses (status code < 400)
-      // This prevents caching "not found" or other error responses
       if (!res._customStatusCode || res._customStatusCode < 400) {
         if (process.env.NODE_ENV === 'development') {
           console.log('\x1b[36m%s\x1b[0m', `Caching successful data for: ${cacheKey}`);
@@ -64,10 +70,8 @@ const cacheMiddleware = async (req, res, next) => {
         if (process.env.NODE_ENV === 'development') {
           console.log('\x1b[31m%s\x1b[0m', `Not caching error response for: ${cacheKey} (status: ${res._customStatusCode})`);
         }
-        // Don't cache error responses
       }
 
-      // Return the original json response
       return originalJson.call(this, data);
     };
 

@@ -98,11 +98,11 @@ export const UserComments = ({ comments, prefetchPost }) => {
           )}
           <p className="text-sm text-gray-600 dark:text-gray-400">
             on <Link
-              to={`/post/${comment.post.id}`}
+              to={`/post/${comment.post.slug}`}
               className="text-blue-600 dark:text-blue-400 font-medium underline-offset-2
               hover:text-blue-700 dark:hover:text-blue-500"
-              onMouseEnter={() => prefetchPost(comment.post.id)}
-              onFocus={() => prefetchPost(comment.post.id)}
+              onMouseEnter={() => prefetchPost(comment.post.slug)}
+              onFocus={() => prefetchPost(comment.post.slug)}
             >
               {comment.post.title}
             </Link>

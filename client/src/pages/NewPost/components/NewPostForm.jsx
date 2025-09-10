@@ -9,7 +9,6 @@ export const NewPostForm = ({ onSubmit, isSubmitting, error, limits }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  // Use limits from props if available, or fallback to defaults
   const MIN_CONTENT_CHARS = limits?.CONTENT_MIN || 5;
   const MAX_CONTENT_CHARS = limits?.CONTENT_MAX || 25000;
   const MAX_TITLE_CHARS = limits?.TITLE_MAX || 100;
@@ -47,7 +46,7 @@ export const NewPostForm = ({ onSubmit, isSubmitting, error, limits }) => {
             Content
           </label>
           <a
-            href="https://stacknova.ca/post/e8adb6bf-6d5e-4bb2-95cd-a74449e5041b"
+            href="https://stacknova.ca/post/formatting-guide"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 flex items-center gap-1 group"

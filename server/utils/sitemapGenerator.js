@@ -1,6 +1,6 @@
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { Readable } = require('stream');
-const { Post, User } = require('../models');
+const { Post } = require('../models'); // Removed User since we're not using it
 const redisService = require('../config/redis');
 
 const SITEMAP_CACHE_KEY = 'sitemap:xml';
@@ -30,7 +30,7 @@ async function generateSitemap(req) {
       hostname: baseUrl
     });
 
-    // Add static routes
+    // Add homepage
     sitemapStream.write({
       url: '/',
       lastmod: new Date().toISOString(),
@@ -38,35 +38,32 @@ async function generateSitemap(req) {
       priority: 1.0
     });
 
-    // Get all posts
+    // Get all posts with slugs
     const posts = await Post.findAll({
-      attributes: ['id', 'updatedAt']
+      attributes: ['id', 'slug', 'updatedAt'],
+      where: {
+        slug: {
+          [require('sequelize').Op.not]: null // Only include posts with slugs
+        }
+      },
+      order: [['updatedAt', 'DESC']] // Most recent first
     });
 
-    // Add post routes
+    // Add post routes using slugs
     for (const post of posts) {
+      // Skip posts without slugs (shouldn't happen, but safety check)
+      if (!post.slug) {
+        console.warn(`Post ${post.id} missing slug, skipping from sitemap`);
+        continue;
+      }
+
       sitemapStream.write({
-        url: `/post/${post.id}`,
+        url: `/post/${post.slug}`,
         lastmod: post.updatedAt.toISOString(),
         changefreq: 'weekly',
         priority: 0.8
       });
     }
-
-    // // Get all users
-    // const users = await User.findAll({
-    //   attributes: ['username', 'updatedAt']
-    // });
-
-    // // Add user profile routes
-    // for (const user of users) {
-    //   sitemapStream.write({
-    //     url: `/user/${user.username}`,
-    //     lastmod: user.updatedAt ? user.updatedAt.toISOString() : undefined,
-    //     changefreq: 'weekly',
-    //     priority: 0.6
-    //   });
-    // }
 
     // End the stream
     sitemapStream.end();
@@ -80,6 +77,7 @@ async function generateSitemap(req) {
       await redisService.set(SITEMAP_CACHE_KEY, sitemapXml, SITEMAP_CACHE_TTL);
     }
 
+    console.log(`Generated sitemap with ${posts.length + 1} URLs`);
     return sitemapXml;
   } catch (error) {
     console.error('Error generating sitemap:', error);

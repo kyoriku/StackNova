@@ -19,7 +19,8 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, element: <ErrorBoundary><Posts /></ErrorBoundary> },
-      { path: "post/:id", element: <ErrorBoundary><PostDetails /></ErrorBoundary> },
+      // { path: "post/:slug", element: <ErrorBoundary><PostDetails /></ErrorBoundary> },
+      { path: "post/:identifier", element: <ErrorBoundary><PostDetails /></ErrorBoundary> },
       {
         path: "user/:username",
         element: <UserProfileWrapper />
@@ -36,7 +37,7 @@ const router = createBrowserRouter([
             element: <DashboardWrapper />
           },
           { path: "new-post", element: <ErrorBoundary><NewPost /></ErrorBoundary> },
-          { path: "edit-post/:id", element: <ErrorBoundary><EditPost /></ErrorBoundary> },
+          { path: "edit-post/:slug", element: <ErrorBoundary><EditPost /></ErrorBoundary> },
         ],
       },
       { path: "*", element: <NotFound /> }

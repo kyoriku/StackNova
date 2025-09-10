@@ -4,7 +4,6 @@ const { generateExcerpt } = require('../utils/excerptUtils');
 
 class Post extends Model { }
 
-// Initialize Post model with columns and configuration
 Post.init(
   {
     id: {
@@ -16,6 +15,15 @@ Post.init(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        len: [1, 255],
+        is: /^[a-z0-9-]+$/,
+      },
     },
     content: {
       type: DataTypes.TEXT,
@@ -36,13 +44,12 @@ Post.init(
   {
     hooks: {
       beforeCreate: async (post) => {
-        // Generate excerpt for new posts
+        // Only handle excerpt generation
         if (post.content) {
           post.excerpt = generateExcerpt(post.content);
         }
       },
       beforeUpdate: async (post) => {
-        // Regenerate excerpt if content has changed
         if (post.changed('content')) {
           post.excerpt = generateExcerpt(post.content);
         }

@@ -36,7 +36,7 @@ const Posts = () => {
           "@type": "BlogPosting",
           "headline": post.title,
           "description": post.excerpt,
-          "url": `https://stacknova.ca/post/${post.id}`,
+          "url": `https://stacknova.ca/post/${post.slug}`, // Fixed: use slug instead of id
           "datePublished": post.createdAt,
           "author": {
             "@type": "Person",
@@ -53,7 +53,7 @@ const Posts = () => {
       <SEO
         title="Latest Posts"
         description="Discover and engage with the latest programming insights, technical solutions, and developer discussions on StackNova. Share your knowledge and connect with a community of passionate developers."
-        canonicalPath="" // Root path is the canonical URL
+        canonicalPath=""
         jsonLd={jsonLd}
       />
 
