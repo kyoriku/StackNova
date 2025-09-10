@@ -56,7 +56,7 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
             Content
           </label>
           <a
-            href="/post/formatting-guide"
+            href="https://stacknova.ca/post/formatting-guide"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 flex items-center gap-1 group"
