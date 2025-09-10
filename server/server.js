@@ -75,6 +75,44 @@ if (isProd) {
 // API routes
 app.use(routes);
 
+// UUID redirect route (only in production, before catch-all)
+if (isProd) {
+  const { Post } = require('./models');
+  
+  // Helper function to check if string is UUID
+  const isUUID = (str) => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
+  app.get('/post/:identifier', async (req, res, next) => {
+    const identifier = req.params.identifier;
+    
+    // Only handle if it's a UUID
+    if (!isUUID(identifier)) {
+      return next(); // Let React handle slug URLs
+    }
+
+    try {
+      // Look up the post by UUID
+      const post = await Post.findOne({
+        where: { id: identifier },
+        attributes: ['slug']
+      });
+
+      if (!post) {
+        return next(); // Let React handle 404
+      }
+
+      // SEO-friendly 301 redirect to slug URL
+      return res.redirect(301, `/post/${post.slug}`);
+    } catch (error) {
+      console.error('Error in UUID redirect:', error);
+      return next(); // Let React handle the error
+    }
+  });
+}
+
 // Catch-all route for SPA
 if (isProd) {
   app.get('*', (req, res) => {
