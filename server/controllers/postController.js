@@ -283,12 +283,17 @@ const postController = {
 
       await post.update(updateData);
 
+      // Fetch the updated post with all relations (including comments)
+      const updatedPostWithDetails = await Post.findByPk(post.id, {
+        ...postQueryOptions // This includes User and Comments
+      });
+
       // Clear relevant caches BEFORE sending response
       await clearCaches(post.id, userId, post.user.username);
 
       res.status(200).json({
         message: 'Post updated successfully!',
-        post: post.get({ plain: true })
+        post: updatedPostWithDetails.get({ plain: true }) // Includes comments
       });
     } catch (err) {
       console.error('Error updating post:', err);
