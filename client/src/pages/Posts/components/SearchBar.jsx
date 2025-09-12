@@ -1,13 +1,30 @@
 import { Search, X } from 'lucide-react';
 
-export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
-  const clearSearch = () => setSearchTerm('');
+export const SearchBar = ({ 
+  searchTerm, 
+  setSearchTerm, 
+  resultsCount, 
+  onClear, 
+  lastBrowsePage 
+}) => {
+  const clearSearch = () => {
+    if (onClear) {
+      onClear(); // Use the parent's clear handler for URL management
+    } else {
+      setSearchTerm(''); // Fallback to direct state update
+    }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Prevent form submission behavior
     }
   };
+
+  // Generate tooltip text for clear button
+  const clearButtonTitle = lastBrowsePage 
+    ? `Clear search and return to page ${lastBrowsePage}`
+    : 'Clear search';
 
   return (
     <div aria-label="Search posts" className="w-full relative">
@@ -35,11 +52,12 @@ export const SearchBar = ({ searchTerm, setSearchTerm, resultsCount }) => {
         {searchTerm && (
           <button
             onClick={clearSearch}
+            title={clearButtonTitle}
             className="absolute inset-y-0 right-0 pr-3 flex items-center 
                        text-gray-400 hover:text-gray-600 
                        dark:hover:text-gray-300
                        cursor-pointer"
-            aria-label="Clear search"
+            aria-label={clearButtonTitle}
           >
             <X className="h-5 w-5" />
           </button>
