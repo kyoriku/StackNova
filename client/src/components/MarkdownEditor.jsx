@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Highlight, themes } from 'prism-react-renderer';
-import { ExternalLink } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 
 const languages = {
   javascript: 'javascript',
@@ -48,6 +48,19 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
     code = code.slice(0, -3);
   }
 
+  // Copy functionality
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
   // Get initial dark mode state synchronously
   const [isDark, setIsDark] = useState(() =>
     typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
@@ -80,7 +93,21 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
   };
 
   return (
-    <div className="rounded-lg overflow-hidden my-4 shadow-sm">
+    <div className="relative rounded-lg overflow-hidden my-4 shadow-sm">
+      {/* Copy Button */}
+      <button
+        onClick={copyToClipboard}
+        className="absolute top-2 right-2 z-10 p-2 rounded-md bg-transparent hover:bg-gray-800/5 dark:hover:bg-white/5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-150 focus:outline-none"
+        title={copied ? 'Copied!' : 'Copy to clipboard'}
+        aria-label={copied ? 'Copied!' : 'Copy to clipboard'}
+      >
+        {copied ? (
+          <Check size={16} className="text-green-500 dark:text-green-400" />
+        ) : (
+          <Copy size={16} />
+        )}
+      </button>
+
       <Highlight
         theme={isDark ? themes.vsDark : modifiedVsLight}
         code={code}
