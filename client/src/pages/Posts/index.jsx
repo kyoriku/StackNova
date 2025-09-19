@@ -77,7 +77,7 @@ const Posts = () => {
         ? buildURLParams(term.trim(), 1)
         : buildURLParams('', lastBrowsePage);
       setSearchParams(params);
-    }, 300),
+    }, 500),
     [lastBrowsePage]
   );
 
