@@ -78,7 +78,7 @@ const Login = () => {
 
         {/* Google Login Button */}
         <div className="mb-6">
-          <GoogleLoginButton returnPath={returnPath} />
+          <GoogleLoginButton returnPath={returnPath} text="Log in with Google" />
         </div>
 
         {/* Divider */}
@@ -88,7 +88,7 @@ const Login = () => {
           </div>
           <div className="relative flex justify-center text-sm">
             <span className="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
-              Or continue with email
+              Or
             </span>
           </div>
         </div>
