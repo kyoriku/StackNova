@@ -102,7 +102,7 @@ const Posts = () => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "headline": "Latest Posts - StackNova",
+    "headline": "StackNova",
     "description": "Discover and engage with the latest programming insights, technical solutions, and developer discussions on StackNova. Share your knowledge and connect with a community of passionate developers.",
     "url": "https://stacknova.ca",
     "mainEntity": {
@@ -129,7 +129,7 @@ const Posts = () => {
   return (
     <>
       <SEO
-      title={localSearchTerm ? `${localSearchTerm} - Search Results` : "Latest Posts"}
+      title={localSearchTerm ? `${localSearchTerm} - Search Results` : ""}
         description="Discover and engage with the latest programming insights, technical solutions, and developer discussions on StackNova. Share your knowledge and connect with a community of passionate developers."
         canonicalPath=""
         jsonLd={jsonLd}
