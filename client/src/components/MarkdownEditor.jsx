@@ -255,7 +255,7 @@ const MarkdownEditor = ({
                      transition-[background,color,border] duration-0"
             placeholder={placeholder}
             disabled={disabled}
-            maxLength={25000}
+            // maxLength={25000}
             required
             aria-required="true"
           />

@@ -1,7 +1,16 @@
 export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
   const charCount = value.length;
-  const isNearLimit = charCount > maxChars * 0.8; // 80% of max
-  const isAtLimit = charCount >= maxChars;
+  const remaining = maxChars - charCount;
+  const isOverLimit = remaining < 0;
+  const isNearLimit = remaining < 20 && remaining >= 0;
+
+  let counterColorClass = 'text-gray-500 dark:text-gray-400';
+  
+  if (isOverLimit) {
+    counterColorClass = 'text-red-600 dark:text-red-400';
+  } else if (isNearLimit) {
+    counterColorClass = 'text-yellow-600 dark:text-yellow-400';
+  }
 
   return (
     <div>
@@ -12,15 +21,12 @@ export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
         >
           Title
         </label>
-        <span
-          className={`text-xs ${isAtLimit
-            ? 'text-red-500 dark:text-red-400'
-            : isNearLimit
-              ? 'text-amber-500 dark:text-amber-400'
-              : 'text-gray-700 dark:text-gray-300'
-            }`}
+        <span 
+          className={`text-sm ${counterColorClass}`}
+          aria-label="Character count"
         >
-          {charCount}/{maxChars}
+          {charCount} / {maxChars}
+          {isOverLimit && ' (exceeds limit)'}
         </span>
       </div>
       <input
@@ -38,7 +44,6 @@ export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
         disabled={disabled}
         required
         aria-required="true"
-        maxLength={maxChars}
       />
     </div>
   );
