@@ -10,12 +10,10 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  // Use limits from constants
   const MIN_CONTENT_CHARS = POST_LIMITS.CONTENT_MIN;
   const MAX_CONTENT_CHARS = POST_LIMITS.CONTENT_MAX;
   const MAX_TITLE_CHARS = POST_LIMITS.TITLE_MAX;
 
-  // Update form when post data is loaded
   useEffect(() => {
     if (post) {
       setTitle(post.title);
@@ -28,12 +26,15 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
     onSubmit({ title, content });
   };
 
+  const titleOverLimit = title.length > MAX_TITLE_CHARS;
+  const contentOverLimit = content.length > MAX_CONTENT_CHARS;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
         <div
-          className="mb-6 p-4 bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-900/50 
-                   rounded-lg text-red-600 dark:text-red-400"
+          className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 
+          dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm"
           role="alert"
         >
           {error}
@@ -74,16 +75,19 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
           onChange={setContent}
           disabled={isSubmitting}
         />
-        <div className="mt-2 flex justify-end">
+        <div className="mt-2 flex justify-between items-center">
           <CharacterCounter
             current={content.length}
             min={MIN_CONTENT_CHARS}
             max={MAX_CONTENT_CHARS}
           />
+          <FormActions 
+            isSubmitting={isSubmitting}
+            isDisabled={titleOverLimit || contentOverLimit}
+            actionText="Update Post"
+          />
         </div>
       </div>
-
-      <FormActions isSubmitting={isSubmitting} actionText="Update Post" />
     </form>
   );
 };

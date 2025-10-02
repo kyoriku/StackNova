@@ -1,28 +1,23 @@
 export const CharacterCounter = ({ current, min, max }) => {
-  // Calculate if we're below minimum, near maximum, or at maximum
-  const isBelowMin = current < min;
-  const isNearMax = current > max * 0.8; // 80% of max
-  const isAtMax = current >= max;
+  const remaining = max - current;
+  const isOverLimit = remaining < 0;
+  const isNearLimit = remaining < 500 && remaining >= 0;
 
-  // Determine text color based on character count
-  let textColorClass = 'text-gray-700 dark:text-gray-300';
+  let textColorClass = 'text-gray-500 dark:text-gray-400';
 
-  if (isBelowMin) {
-    textColorClass = 'text-amber-500 dark:text-amber-400';
-  } else if (isAtMax) {
-    textColorClass = 'text-red-500 dark:text-red-400';
-  } else if (isNearMax) {
-    textColorClass = 'text-amber-500 dark:text-amber-400';
+  if (isOverLimit) {
+    textColorClass = 'text-red-600 dark:text-red-400';
+  } else if (isNearLimit) {
+    textColorClass = 'text-yellow-600 dark:text-yellow-400';
   }
 
   return (
-    <div className={`text-xs ${textColorClass} flex items-center gap-2`}>
-      <span>{current}/{max}</span>
-      {isBelowMin && (
-        <span className="font-medium">
-          (Min {min} required)
-        </span>
-      )}
+    <div 
+      className={`text-sm ${textColorClass}`}
+      aria-label="Character count"
+    >
+      {current} / {max}
+      {isOverLimit && ' (exceeds limit)'}
     </div>
   );
 };

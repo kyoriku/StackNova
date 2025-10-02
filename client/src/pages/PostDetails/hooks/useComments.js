@@ -17,7 +17,14 @@ export const useComments = (postSlug) => {
         body: JSON.stringify(newComment),
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to add comment');
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        const error = new Error('Failed to add comment');
+        error.response = { data: errorData };
+        throw error;
+      }
+      
       return response.json();
     },
     onSuccess: async () => {
@@ -47,7 +54,14 @@ export const useComments = (postSlug) => {
         body: JSON.stringify({ comment_text: updatedText }),
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to edit comment');
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        const error = new Error('Failed to edit comment');
+        error.response = { data: errorData };
+        throw error;
+      }
+      
       return response.json();
     },
     onSuccess: async () => {
@@ -76,7 +90,13 @@ export const useComments = (postSlug) => {
         method: 'DELETE',
         credentials: 'include'
       });
-      if (!response.ok) throw new Error('Failed to delete comment');
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const error = new Error('Failed to delete comment');
+        error.response = { data: errorData };
+        throw error;
+      }
     },
     onSuccess: async () => {
       // Force immediate cache removal for current user
