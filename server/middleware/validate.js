@@ -121,7 +121,7 @@ const validateNewComment = [
     .custom(validateCodeBlocks).withMessage('Code blocks are too large')
     .trim()
     .notEmpty().withMessage('Comment cannot be empty')
-    .isLength({ min: 2, max: 5000 }).withMessage('Comment must be between 2 and 5000 characters')
+    .isLength({ min: 2, max: 7500 }).withMessage('Comment must be between 2 and 7500 characters')
     .customSanitizer(sanitizeMarkdown),
 
   (req, res, next) => {
@@ -139,7 +139,7 @@ const validateCommentUpdate = [
     .custom(validateCodeBlocks).withMessage('Code blocks are too large')
     .trim()
     .notEmpty().withMessage('Comment cannot be empty')
-    .isLength({ max: 5000 }).withMessage('Comment must be less than 5000 characters')
+    .isLength({ max: 7500 }).withMessage('Comment must be less than 7500 characters')
     .customSanitizer(sanitizeMarkdown),
 
   (req, res, next) => {
