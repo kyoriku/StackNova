@@ -129,19 +129,32 @@ const Posts = () => {
   return (
     <>
       <SEO
-      title={localSearchTerm ? `${localSearchTerm} - Search Results` : ""}
+        title={localSearchTerm ? `${localSearchTerm} - Search Results` : ""}
         description="Discover and engage with the latest programming insights, technical solutions, and developer discussions on StackNova. Share your knowledge and connect with a community of passionate developers."
         canonicalPath=""
         jsonLd={jsonLd}
       />
 
       <section className="max-w-4xl mx-auto pb-8">
-        <header className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-          <h1 className="text-3xl font-bold text-start text-gray-900 dark:text-white">
-            {localSearchTerm ? "Search Results" : "Latest Posts"}
-          </h1>
+        <header className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+            <div>
+              <h1 className="text-4xl font-black bg-gradient-to-r 
+                           from-gray-900 via-blue-800 to-purple-800 
+                           dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
+                           bg-clip-text text-transparent mb-1">
+                {localSearchTerm ? "Search Results" : "Latest Posts"}
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                {localSearchTerm 
+                  ? `Searching for "${localSearchTerm}"`
+                  : "Discover insights from our community"
+                }
+              </p>
+            </div>
+          </div>
 
-          <div className="w-full md:w-112">
+          <div className="w-full">
             <SearchBar
               searchTerm={localSearchTerm}
               setSearchTerm={handleSearchChange}

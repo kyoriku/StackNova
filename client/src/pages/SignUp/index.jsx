@@ -14,7 +14,6 @@ const Signup = () => {
   const { signup, isLoading } = useAuth();
   const location = useLocation();
 
-  // Password requirement checks
   const hasMinLength = password.length >= 8;
   const hasLetter = /[A-Za-z]/.test(password);
   const hasNumber = /\d/.test(password);
@@ -26,14 +25,12 @@ const Signup = () => {
     e.preventDefault();
     setError('');
 
-    // Check if password meets requirements
     if (!isPasswordValid) {
       setError('Please ensure your password meets all requirements.');
       return;
     }
 
     try {
-      // Get return path from location state or default to dashboard
       const from = location.state?.from || '/dashboard';
       await signup(username, email, password, from);
     } catch (err) {
@@ -47,202 +44,252 @@ const Signup = () => {
         title="Sign Up"
         description="Create your StackNova account and join our community of developers to share knowledge and find solutions."
         canonicalPath="/signup"
-        noIndex={true} // Set noIndex to true based on robots.txt
+        noIndex={true}
       />
 
       <div className="max-w-md mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
-          Sign Up
-        </h1>
-
-        {/* Google Signup Button */}
-        <div className="mb-6">
-          <GoogleLoginButton returnPath={returnPath} text="Sign up with Google" />
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-black bg-gradient-to-r 
+                       from-gray-900 via-blue-800 to-purple-800 
+                       dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
+                       bg-clip-text text-transparent mb-2">
+            Join StackNova
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Create your account and start sharing knowledge
+          </p>
         </div>
 
-        {/* Divider */}
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200 dark:border-gray-600" />
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">
-              Or
-            </span>
-          </div>
-        </div>
+        <div className="relative bg-gradient-to-br from-white to-gray-50/50 
+                      dark:from-gray-800 dark:to-gray-800/50
+                      rounded-2xl p-6 
+                      border border-gray-200/60 dark:border-gray-700/60
+                      shadow-lg shadow-gray-900/5 dark:shadow-black/20
+                      overflow-hidden">
+          
+          {/* Decorative gradient accent */}
+          <div className="absolute top-0 right-0 w-32 h-32 
+                        bg-gradient-to-br from-blue-500/5 to-purple-500/5
+                        dark:from-blue-500/10 dark:to-purple-500/10
+                        rounded-full blur-3xl -z-0" />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Username Input */}
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Username
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                id="username"
-                name="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Choose a username"
-                autoComplete="off"
-                className="w-full pl-10 pr-4 py-3 rounded-lg
-                       bg-white dark:bg-gray-700 
-                       text-gray-900 dark:text-white 
-                       border border-gray-200 dark:border-gray-600
-                       focus:outline-none focus:border-blue-500 focus:ring-2 
-                       focus:ring-blue-200 dark:focus:ring-blue-800"
-                required
-              />
-            </div>
-          </div>
+          <div className="relative z-10 space-y-6">
+            {/* Google Signup Button */}
+            <GoogleLoginButton returnPath={returnPath} text="Sign up with Google" />
 
-          {/* Email Input */}
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Email
-            </label>
+            {/* Divider */}
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                autoComplete="username"
-                className="w-full pl-10 pr-4 py-3 rounded-lg
-                       bg-white dark:bg-gray-700 
-                       text-gray-900 dark:text-white 
-                       border border-gray-200 dark:border-gray-600
-                       focus:outline-none focus:border-blue-500 focus:ring-2 
-                       focus:ring-blue-200 dark:focus:ring-blue-800"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Password Input */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onFocus={() => setPasswordFocused(true)}
-                onBlur={() => setPasswordFocused(false)}
-                placeholder="Create a secure password"
-                autoComplete="new-password"
-                className="w-full pl-10 pr-4 py-3 rounded-lg
-                       bg-white dark:bg-gray-700 
-                       text-gray-900 dark:text-white 
-                       border border-gray-200 dark:border-gray-600
-                       focus:outline-none focus:border-blue-500 focus:ring-2 
-                       focus:ring-blue-200 dark:focus:ring-blue-800"
-                required
-                minLength={8}
-                aria-describedby="password-requirements"
-              />
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-gradient-to-br from-white to-gray-50/50 
+                               dark:from-gray-800 dark:to-gray-800/50
+                               text-gray-500 dark:text-gray-400 font-medium">
+                  Or sign up with email
+                </span>
+              </div>
             </div>
 
-            {/* Password requirements - only show when password field is focused or has content */}
-            {(passwordFocused || password.length > 0) && (
-              <div
-                id="password-requirements"
-                className="mt-6 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-                role="region"
-                aria-label="Password requirements"
-              >
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password requirements:</p>
-                <div className="space-y-1">
-                  <div className="flex items-center">
-                    {hasMinLength ? (
-                      <CheckCircle className="text-green-600 dark:text-green-500 mr-2" size={16} />
-                    ) : (
-                      <XCircle className="text-gray-600 dark:text-gray-400 mr-2" size={16} />
-                    )}
-                    <span className={`text-sm ${hasMinLength ? 'text-green-600 dark:text-green-500' : 'text-gray-600 dark:text-gray-400'}`}>
-                      Minimum 8 characters
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    {hasLetter ? (
-                      <CheckCircle className="text-green-600 dark:text-green-500 mr-2" size={16} />
-                    ) : (
-                      <XCircle className="text-gray-600 dark:text-gray-400 mr-2" size={16} />
-                    )}
-                    <span className={`text-sm ${hasLetter ? 'text-green-600 dark:text-green-500' : 'text-gray-600 dark:text-gray-400'}`}>
-                      At least one letter
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    {hasNumber ? (
-                      <CheckCircle className="text-green-600 dark:text-green-500 mr-2" size={16} />
-                    ) : (
-                      <XCircle className="text-gray-600 dark:text-gray-400 mr-2" size={16} />
-                    )}
-                    <span className={`text-sm ${hasNumber ? 'text-green-600 dark:text-green-500' : 'text-gray-600 dark:text-gray-400'}`}>
-                      At least one number
-                    </span>
-                  </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Username Input */}
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Username
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 z-10" size={18} />
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Choose a username"
+                    autoComplete="off"
+                    className="w-full pl-11 pr-4 py-3 rounded-xl
+                           bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
+                           text-gray-900 dark:text-gray-100 
+                           border-2 border-gray-200 dark:border-gray-700
+                           focus:outline-none focus:border-blue-500 dark:focus:border-blue-400
+                           focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
+                           placeholder:text-gray-400 dark:placeholder:text-gray-500
+                           transition-all duration-200"
+                    required
+                  />
                 </div>
               </div>
-            )}
+
+              {/* Email Input */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 z-10" size={18} />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    autoComplete="username"
+                    className="w-full pl-11 pr-4 py-3 rounded-xl
+                           bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
+                           text-gray-900 dark:text-gray-100 
+                           border-2 border-gray-200 dark:border-gray-700
+                           focus:outline-none focus:border-blue-500 dark:focus:border-blue-400
+                           focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
+                           placeholder:text-gray-400 dark:placeholder:text-gray-500
+                           transition-all duration-200"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 z-10" size={18} />
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
+                    placeholder="Create a secure password"
+                    autoComplete="new-password"
+                    className="w-full pl-11 pr-4 py-3 rounded-xl
+                           bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
+                           text-gray-900 dark:text-gray-100 
+                           border-2 border-gray-200 dark:border-gray-700
+                           focus:outline-none focus:border-blue-500 dark:focus:border-blue-400
+                           focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
+                           placeholder:text-gray-400 dark:placeholder:text-gray-500
+                           transition-all duration-200"
+                    required
+                    minLength={8}
+                    aria-describedby="password-requirements"
+                  />
+                </div>
+
+                {/* Password requirements */}
+                {(passwordFocused || password.length > 0) && (
+                  <div
+                    id="password-requirements"
+                    className="mt-3 p-3 rounded-xl
+                             bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
+                             border border-gray-200 dark:border-gray-700"
+                    role="region"
+                    aria-label="Password requirements"
+                  >
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Password requirements:
+                    </p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center">
+                        {hasMinLength ? (
+                          <CheckCircle className="text-green-600 dark:text-green-400 mr-2 flex-shrink-0" size={16} />
+                        ) : (
+                          <XCircle className="text-gray-400 dark:text-gray-500 mr-2 flex-shrink-0" size={16} />
+                        )}
+                        <span className={`text-sm ${hasMinLength ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
+                          Minimum 8 characters
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        {hasLetter ? (
+                          <CheckCircle className="text-green-600 dark:text-green-400 mr-2 flex-shrink-0" size={16} />
+                        ) : (
+                          <XCircle className="text-gray-400 dark:text-gray-500 mr-2 flex-shrink-0" size={16} />
+                        )}
+                        <span className={`text-sm ${hasLetter ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
+                          At least one letter
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        {hasNumber ? (
+                          <CheckCircle className="text-green-600 dark:text-green-400 mr-2 flex-shrink-0" size={16} />
+                        ) : (
+                          <XCircle className="text-gray-400 dark:text-gray-500 mr-2 flex-shrink-0" size={16} />
+                        )}
+                        <span className={`text-sm ${hasNumber ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-600 dark:text-gray-400'}`}>
+                          At least one number
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {error && (
+                <div className="p-4 rounded-2xl
+                              bg-gradient-to-br from-red-50 to-red-100/50
+                              dark:from-red-900/20 dark:to-red-900/10
+                              border-2 border-red-200 dark:border-red-800/50
+                              shadow-sm shadow-red-500/10 dark:shadow-black/20"
+                     role="alert">
+                  <p className="text-red-700 dark:text-red-300 text-sm font-medium text-center">
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading || (!isPasswordValid && password.length > 0)}
+                className="w-full py-3 rounded-xl
+                         bg-gradient-to-r from-blue-500 to-purple-500
+                         dark:from-blue-600 dark:to-purple-600
+                         text-white font-semibold
+                         hover:shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-500/40
+                         hover:scale-105
+                         focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
+                         disabled:opacity-50 disabled:cursor-not-allowed
+                         disabled:hover:scale-100 disabled:hover:shadow-none
+                         flex items-center justify-center 
+                         transition-all duration-200 cursor-pointer"
+              >
+                {isLoading ? (
+                  <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em]" />
+                ) : (
+                  'Sign up'
+                )}
+              </button>
+            </form>
+
+            <p className="text-center text-gray-600 dark:text-gray-400 text-sm">
+              Already have an account?{' '}
+              <Link
+                to="/login"
+                state={location.state}
+                className="font-semibold text-transparent bg-clip-text 
+                         bg-gradient-to-r from-blue-600 to-purple-600
+                         dark:from-blue-400 dark:to-purple-400
+                         hover:from-blue-700 hover:to-purple-700
+                         dark:hover:from-blue-300 dark:hover:to-purple-300
+                         transition-all duration-200"
+              >
+                Log in
+              </Link>
+            </p>
           </div>
-
-          {error && (
-            <div
-              className="py-2 px-3 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 text-sm rounded-lg border border-red-100 dark:border-red-900/30"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading || !isPasswordValid && password.length > 0}
-            className="w-full py-3 bg-blue-600 text-white rounded-lg
-           hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
-           disabled:opacity-50 disabled:cursor-not-allowed
-           flex items-center justify-center transition-colors duration-200 cursor-pointer"
-          >
-            {isLoading ? (
-              <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em]" />
-            ) : (
-              'Sign up'
-            )}
-          </button>
-
-          <p className="text-center text-gray-600 dark:text-gray-400">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              state={location.state} // Pass along the return path
-              className="text-blue-600 hover:text-blue-700"
-            >
-              Log in
-            </Link>
-          </p>
-        </form>
+        </div>
       </div>
     </>
   );

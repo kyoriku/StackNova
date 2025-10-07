@@ -11,6 +11,7 @@ import { CommentForm } from './components/CommentForm';
 import { CommentsList } from './components/CommentsList';
 import { SEO } from '../../components/SEO';
 import { useQueryClient } from '@tanstack/react-query';
+import { LogIn } from 'lucide-react';
 
 const PostDetails = () => {
   const { identifier } = useParams();
@@ -96,8 +97,8 @@ const PostDetails = () => {
           setCommentError('');
         },
         onError: (error) => {
-          const message = error.response?.data?.errors?.[0]?.msg || 
-                         'Failed to update comment. Please try again.';
+          const message = error.response?.data?.errors?.[0]?.msg ||
+            'Failed to update comment. Please try again.';
           setCommentError(message);
         }
       });
@@ -111,8 +112,8 @@ const PostDetails = () => {
           setCommentError('');
         },
         onError: (error) => {
-          const message = error.response?.data?.errors?.[0]?.msg || 
-                         'Failed to post comment. Please try again.';
+          const message = error.response?.data?.errors?.[0]?.msg ||
+            'Failed to post comment. Please try again.';
           setCommentError(message);
         }
       });
@@ -220,18 +221,42 @@ const PostDetails = () => {
           error={commentError}
         />
       ) : (
-        <div className="mb-8 p-4 bg-white dark:bg-gray-800 rounded-lg text-center border 
-        border-gray-200 dark:border-gray-700">
-          <p className="text-gray-900 dark:text-white">
-            You must be logged in to comment.{' '}
-            <Link
-              to="/login"
-              state={{ from: location.pathname }}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-500"
-            >
-              Log in here.
-            </Link>
-          </p>
+        <div className="mb-8 relative bg-gradient-to-br from-white to-blue-50/50 
+                      dark:from-gray-800 dark:to-gray-800/50
+                      rounded-2xl p-4 sm:p-6 text-center 
+                      border border-gray-200/60 dark:border-gray-700/60
+                      shadow-sm shadow-gray-900/5 dark:shadow-black/20
+                      overflow-hidden">
+          
+          {/* Background gradient accent */}
+          <div className="absolute top-0 right-0 w-32 h-32 
+                        bg-gradient-to-br from-blue-500/10 to-purple-500/10
+                        dark:from-blue-500/20 dark:to-purple-500/20
+                        rounded-full blur-3xl -z-0" />
+          
+          <div className="relative z-10 flex flex-col items-center gap-3">
+            <div className="w-12 h-12 rounded-full 
+                          bg-gradient-to-br from-blue-100 to-purple-100
+                          dark:from-blue-900/30 dark:to-purple-900/30
+                          flex items-center justify-center">
+              <LogIn className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <p className="text-gray-900 dark:text-gray-100">
+              You must be logged in to comment.{' '}
+              <Link
+                to="/login"
+                state={{ from: location.pathname }}
+                className="font-semibold text-transparent bg-clip-text 
+                         bg-gradient-to-r from-blue-600 to-purple-600
+                         dark:from-blue-400 dark:to-purple-400
+                         hover:from-blue-700 hover:to-purple-700
+                         dark:hover:from-blue-300 dark:hover:to-purple-300
+                         transition-all duration-200"
+              >
+                Log in here.
+              </Link>
+            </p>
+          </div>
         </div>
       )}
 

@@ -6,7 +6,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { SEO } from '../../components/SEO';
 
 const EditPost = () => {
-  const { slug } = useParams(); // Changed from 'id' to 'slug'
+  const { slug } = useParams();
   const { post, isLoading, error: fetchError } = usePostData(slug);
   const { error: updateError, isUpdating, updatePost } = useUpdatePost(slug);
 
@@ -34,11 +34,19 @@ const EditPost = () => {
         canonicalPath={`/edit-post/${slug}`}
         noIndex={true}
       />
-      
+
       <section className="max-w-4xl mx-auto pb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Edit Post
-        </h1>
+        <div className="mb-8">
+          <h1 className="text-4xl font-black bg-gradient-to-r 
+                       from-gray-900 via-blue-800 to-purple-800 
+                       dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
+                       bg-clip-text text-transparent mb-1">
+            Edit Post
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Update your content
+          </p>
+        </div>
 
         <EditPostForm
           post={post}
