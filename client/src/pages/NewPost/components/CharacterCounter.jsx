@@ -12,8 +12,8 @@ export const CharacterCounter = ({ current, min, max }) => {
   }
 
   return (
-    <div 
-      className={`text-sm ${textColorClass}`}
+    <div
+      className={`text-sm font-semibold ${textColorClass}`}
       aria-label="Character count"
     >
       {current} / {max}

@@ -23,7 +23,6 @@ const UserProfile = () => {
 
   const prefetchPost = usePrefetchPost();
 
-  // Generate JSON-LD structured data for user profile
   const generateJsonLd = (user) => {
     if (!user) return null;
 
@@ -86,9 +85,15 @@ const UserProfile = () => {
       />
 
       <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        <h1 className="text-4xl font-black bg-gradient-to-r 
+                     from-gray-900 via-blue-800 to-purple-800 
+                     dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
+                     bg-clip-text text-transparent mb-1">
           {user.username}'s Profile
         </h1>
+        <p className="text-gray-600 dark:text-gray-400">
+          Member activity and contributions
+        </p>
       </header>
 
       <UserStats stats={userStats} />

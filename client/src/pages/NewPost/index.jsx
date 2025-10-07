@@ -12,13 +12,21 @@ const NewPost = () => {
         title="Create New Post"
         description="Share your programming knowledge and questions with the StackNova community."
         canonicalPath="/new-post"
-        noIndex={true} // Set noIndex to true based on robots.txt
+        noIndex={true}
       />
 
       <section className="max-w-4xl mx-auto pb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Create New Post
-        </h1>
+        <div className="mb-8">
+          <h1 className="text-4xl font-black bg-gradient-to-r 
+                       from-gray-900 via-blue-800 to-purple-800 
+                       dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
+                       bg-clip-text text-transparent mb-1">
+            Create New Post
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Share your knowledge with the community
+          </p>
+        </div>
 
         <NewPostForm
           onSubmit={createPost}

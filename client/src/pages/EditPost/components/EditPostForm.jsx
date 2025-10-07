@@ -30,64 +30,89 @@ export const EditPostForm = ({ post, onSubmit, isSubmitting, error }) => {
   const contentOverLimit = content.length > MAX_CONTENT_CHARS;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div
-          className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 
-          dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm"
-          role="alert"
-        >
-          {error}
-        </div>
-      )}
+    <div className="relative bg-white/40 dark:bg-gray-800/40 
+              backdrop-blur-xl
+              rounded-2xl p-4 sm:p-6
+              border border-white/60 dark:border-gray-700/60
+              shadow-2xl shadow-gray-900/10 dark:shadow-black/50
+              overflow-hidden
+              ring-1 ring-black/5 dark:ring-white/5">
 
-      <TitleInput
-        value={title}
-        onChange={setTitle}
-        disabled={isSubmitting}
-        maxChars={MAX_TITLE_CHARS}
-      />
+      {/* Decorative gradient accent */}
+      <div className="absolute top-0 right-0 w-32 h-32 
+                    bg-gradient-to-br from-blue-500/5 to-purple-500/5
+                    dark:from-blue-500/10 dark:to-purple-500/10
+                    rounded-full blur-3xl -z-0" />
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label
-            htmlFor="content"
-            className="block text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Content
-          </label>
-          <a
-            href="https://stacknova.ca/post/formatting-guide"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 flex items-center gap-1 group"
-          >
-            Need help with formatting? View our guide
-            <ExternalLink
-              size={16}
-              className="inline-block transform transition-transform duration-200 group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
-          </a>
-        </div>
-        <MarkdownEditor
-          content={content}
-          onChange={setContent}
+      <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
+        {error && (
+          <div className="p-4 rounded-2xl
+                        bg-gradient-to-br from-red-50 to-red-100/50
+                        dark:from-red-900/20 dark:to-red-900/10
+                        border-2 border-red-200 dark:border-red-800/50
+                        shadow-sm shadow-red-500/10 dark:shadow-black/20"
+            role="alert">
+            <p className="text-red-700 dark:text-red-300 text-sm font-medium">
+              {error}
+            </p>
+          </div>
+        )}
+
+        <TitleInput
+          value={title}
+          onChange={setTitle}
           disabled={isSubmitting}
+          maxChars={MAX_TITLE_CHARS}
         />
-        <div className="mt-2 flex justify-between items-center">
-          <CharacterCounter
-            current={content.length}
-            min={MIN_CONTENT_CHARS}
-            max={MAX_CONTENT_CHARS}
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label
+              htmlFor="content"
+              className="block text-sm font-semibold text-gray-900 dark:text-gray-300"
+            >
+              Content
+            </label>
+            <a
+              href="https://stacknova.ca/post/formatting-guide"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold
+                       text-transparent bg-clip-text 
+                       bg-gradient-to-r from-blue-600 to-purple-600
+                       dark:from-blue-400 dark:to-purple-400
+                       hover:from-blue-700 hover:to-purple-700
+                       dark:hover:from-blue-300 dark:hover:to-purple-300
+                       flex items-center gap-1 group
+                       transition-all duration-200"
+            >
+              Need help with formatting?
+              <ExternalLink
+                size={14}
+                className="inline-block transform transition-transform duration-200 group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </a>
+          </div>
+          <MarkdownEditor
+            content={content}
+            onChange={setContent}
+            disabled={isSubmitting}
           />
-          <FormActions 
-            isSubmitting={isSubmitting}
-            isDisabled={titleOverLimit || contentOverLimit}
-            actionText="Update Post"
-          />
+          <div className="mt-3 flex justify-between items-center">
+            <CharacterCounter
+              current={content.length}
+              min={MIN_CONTENT_CHARS}
+              max={MAX_CONTENT_CHARS}
+            />
+            <FormActions
+              isSubmitting={isSubmitting}
+              isDisabled={titleOverLimit || contentOverLimit}
+              actionText="Update Post"
+            />
+          </div>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
