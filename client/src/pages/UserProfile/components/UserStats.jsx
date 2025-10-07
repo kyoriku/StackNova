@@ -11,7 +11,7 @@ export const UserStats = ({ stats }) => (
                   overflow-hidden
                   group hover:border-blue-300 dark:hover:border-blue-500/50
                   transition-all duration-300">
-      
+
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-gray-600 dark:text-gray-400 text-sm font-semibold">
@@ -45,7 +45,7 @@ export const UserStats = ({ stats }) => (
                   overflow-hidden
                   group hover:border-purple-300 dark:hover:border-purple-500/50
                   transition-all duration-300">
-      
+
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-gray-600 dark:text-gray-400 text-sm font-semibold">
@@ -80,7 +80,7 @@ export const UserStats = ({ stats }) => (
                   group hover:border-blue-300 dark:hover:border-blue-500/50
                   transition-all duration-300
                   col-span-2 sm:col-span-2 md:col-span-1">
-      
+
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-gray-600 dark:text-gray-400 text-sm font-semibold">

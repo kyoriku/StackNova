@@ -28,7 +28,7 @@ export const PostItem = ({ post, prefetchPost }) => {
                       hover:before:from-blue-500/5 hover:before:to-purple-500/5
                       dark:hover:before:from-blue-500/10 dark:hover:before:to-purple-500/10
                       before:transition-all before:duration-300">
-          
+
           {/* Content wrapper */}
           <div className="relative z-10">
             <h2
@@ -42,7 +42,7 @@ export const PostItem = ({ post, prefetchPost }) => {
             >
               {post.title}
             </h2>
-            
+
             <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 
                         leading-relaxed">
               {post.excerpt}
@@ -60,14 +60,14 @@ export const PostItem = ({ post, prefetchPost }) => {
                   {post.user.username}
                 </span>
               </div>
-              
-              <time 
-                dateTime={post.createdAt} 
+
+              <time
+                dateTime={post.createdAt}
                 className="text-gray-500 dark:text-gray-400 font-medium text-sm"
               >
                 {format(new Date(post.createdAt), 'MMM d, yyyy')}
               </time>
-              
+
               <div className="ml-auto flex items-center gap-1.5
                             px-2.5 py-1 rounded-full
                             bg-gradient-to-r from-blue-50 to-purple-50

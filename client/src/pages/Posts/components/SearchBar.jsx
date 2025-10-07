@@ -1,11 +1,11 @@
 import { Search, X } from 'lucide-react';
 
-export const SearchBar = ({ 
-  searchTerm, 
-  setSearchTerm, 
-  resultsCount, 
-  onClear, 
-  lastBrowsePage 
+export const SearchBar = ({
+  searchTerm,
+  setSearchTerm,
+  resultsCount,
+  onClear,
+  lastBrowsePage
 }) => {
   const clearSearch = () => {
     if (onClear) {
@@ -21,7 +21,7 @@ export const SearchBar = ({
     }
   };
 
-  const clearButtonTitle = lastBrowsePage 
+  const clearButtonTitle = lastBrowsePage
     ? `Clear search and return to page ${lastBrowsePage}`
     : 'Clear search';
 
@@ -31,7 +31,7 @@ export const SearchBar = ({
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 
                     rounded-2xl opacity-0 group-hover:opacity-100 blur-xl 
                     transition-opacity duration-500 -z-10" />
-      
+
       <div role="search" className="relative">
         <label htmlFor="search-input" className="sr-only">Search posts</label>
         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
@@ -74,8 +74,8 @@ export const SearchBar = ({
 
       <div className="absolute top-full mt-1.5 right-0 w-full h-6">
         {searchTerm && (
-          <p role="status" aria-live="polite" 
-             className="text-sm text-right text-gray-600 dark:text-gray-400 font-semibold">
+          <p role="status" aria-live="polite"
+            className="text-sm text-right text-gray-600 dark:text-gray-400 font-semibold">
             {resultsCount} {resultsCount === 1 ? 'result' : 'results'}
           </p>
         )}

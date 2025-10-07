@@ -10,8 +10,8 @@ function NotFound({
   linkTo = "/"
 }) {
   const seoTitle = code === "404" ? "Page Not Found - 404" : `${title} - ${code}`;
-  
-  const seoDescription = message || 
+
+  const seoDescription = message ||
     "The page you're looking for doesn't exist or has been moved. Please navigate back to the home page.";
 
   return (
@@ -21,7 +21,7 @@ function NotFound({
         description={seoDescription}
         noIndex={true}
       />
-      
+
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-16rem)] px-4">
         <div className="relative bg-gradient-to-br from-white to-gray-50/50 
                       dark:from-gray-800 dark:to-gray-800/50
@@ -29,7 +29,7 @@ function NotFound({
                       border border-gray-200/60 dark:border-gray-700/60
                       shadow-xl shadow-gray-900/5 dark:shadow-black/20
                       overflow-hidden">
-          
+
           {/* Decorative gradient accents */}
           <div className="absolute top-0 left-1/4 w-32 h-32 
                         bg-gradient-to-br from-blue-500/10 to-purple-500/10
@@ -39,7 +39,7 @@ function NotFound({
                         bg-gradient-to-br from-purple-500/10 to-blue-500/10
                         dark:from-purple-500/20 dark:to-blue-500/20
                         rounded-full blur-3xl -z-0" />
-          
+
           <div className="relative z-10">
             {/* Error icon */}
             <div className="inline-flex items-center justify-center w-20 h-20 
@@ -48,7 +48,7 @@ function NotFound({
                           shadow-lg shadow-gray-900/5 dark:shadow-black/20">
               <AlertCircle className="w-10 h-10 text-gray-400 dark:text-gray-500" />
             </div>
-            
+
             {/* Error code */}
             <h1 className="text-7xl font-black bg-gradient-to-r 
                          from-gray-900 via-blue-800 to-purple-800 
@@ -56,19 +56,19 @@ function NotFound({
                          bg-clip-text text-transparent mb-4">
               {code}
             </h1>
-            
+
             {/* Title */}
             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
               {title}
             </p>
-            
+
             {/* Message */}
             {message && (
               <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto leading-relaxed">
                 {message}
               </p>
             )}
-            
+
             {/* Action button */}
             <Link
               to={linkTo}

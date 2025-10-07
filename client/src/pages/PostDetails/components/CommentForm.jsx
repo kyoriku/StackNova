@@ -15,8 +15,8 @@ export const CommentForm = ({
 
   return (
     <div className="mb-8">
-      <h4 
-        id="comment-form" 
+      <h4
+        id="comment-form"
         className="text-2xl font-black bg-gradient-to-r 
                  from-gray-900 via-blue-800 to-purple-800 
                  dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
@@ -24,7 +24,7 @@ export const CommentForm = ({
       >
         {isEditing ? 'Edit your comment' : 'Add a comment'}
       </h4>
-      
+
       <form onSubmit={onSubmit}>
         <MarkdownEditor
           content={commentText}
@@ -52,12 +52,11 @@ export const CommentForm = ({
         {/* Character counter on left, buttons on right */}
         <div className="mt-3 flex justify-between items-center">
           {/* Character counter */}
-          <div 
-            className={`text-sm font-semibold ${
-              isOverLimit ? 'text-red-600 dark:text-red-400' : 
-              remaining < 500 ? 'text-yellow-600 dark:text-yellow-400' : 
-              'text-gray-500 dark:text-gray-400'
-            }`}
+          <div
+            className={`text-sm font-semibold ${isOverLimit ? 'text-red-600 dark:text-red-400' :
+                remaining < 500 ? 'text-yellow-600 dark:text-yellow-400' :
+                  'text-gray-500 dark:text-gray-400'
+              }`}
             aria-label="Character count"
           >
             {commentText.length} / {maxLength}

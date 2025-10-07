@@ -22,8 +22,8 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       >
         Previous
       </button>
-      
-      <div 
+
+      <div
         className="px-4 py-2.5 text-gray-600 dark:text-gray-400 font-semibold text-sm
                  bg-white dark:bg-gray-800 rounded-xl 
                  shadow-sm border-2 border-gray-100 dark:border-gray-700"
@@ -41,7 +41,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           {totalPages}
         </span>
       </div>
-      
+
       <button
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage === totalPages}

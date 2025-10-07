@@ -4,10 +4,10 @@ import { AlertCircle, Frown } from 'lucide-react';
 
 export const PostsContainer = ({ isLoading, error, posts, prefetchPost }) => {
   if (isLoading) return <PostsSkeletonLoader />;
-  
+
   if (error) return (
-    <section 
-      aria-label="Error message" 
+    <section
+      aria-label="Error message"
       className="p-6 rounded-2xl 
                bg-gradient-to-br from-red-50 to-red-100/50
                dark:from-red-900/20 dark:to-red-900/10
@@ -31,7 +31,7 @@ export const PostsContainer = ({ isLoading, error, posts, prefetchPost }) => {
       </div>
     </section>
   );
-  
+
   if (posts.length === 0) return (
     <div className="text-center py-16">
       <div className="inline-flex items-center justify-center w-16 h-16 

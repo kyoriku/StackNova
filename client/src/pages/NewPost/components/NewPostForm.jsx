@@ -29,7 +29,7 @@ export const NewPostForm = ({ onSubmit, isSubmitting, error, limits }) => {
               shadow-2xl shadow-gray-900/10 dark:shadow-black/50
               overflow-hidden
               ring-1 ring-black/5 dark:ring-white/5">
-      
+
       {/* Decorative gradient accent */}
       <div className="absolute top-0 right-0 w-32 h-32 
                     bg-gradient-to-br from-blue-500/5 to-purple-500/5
@@ -43,7 +43,7 @@ export const NewPostForm = ({ onSubmit, isSubmitting, error, limits }) => {
                         dark:from-red-900/20 dark:to-red-900/10
                         border-2 border-red-200 dark:border-red-800/50
                         shadow-sm shadow-red-500/10 dark:shadow-black/20"
-               role="alert">
+            role="alert">
             <p className="text-red-700 dark:text-red-300 text-sm font-medium">
               {error}
             </p>
@@ -97,7 +97,7 @@ export const NewPostForm = ({ onSubmit, isSubmitting, error, limits }) => {
               min={MIN_CONTENT_CHARS}
               max={MAX_CONTENT_CHARS}
             />
-            <FormActions 
+            <FormActions
               isSubmitting={isSubmitting}
               isDisabled={titleOverLimit || contentOverLimit}
             />

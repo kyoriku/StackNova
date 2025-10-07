@@ -1,6 +1,6 @@
 const PostSkeleton = () => {
   return (
-    <div 
+    <div
       role="status"
       aria-label="Loading post"
       className="relative bg-gradient-to-br from-white to-gray-50/50 
@@ -15,7 +15,7 @@ const PostSkeleton = () => {
         <div className="h-6 bg-gradient-to-r from-gray-200 to-gray-300 
                       dark:from-gray-700 dark:to-gray-600 
                       rounded-lg w-3/4" />
-        
+
         {/* Excerpt skeleton - 2 lines */}
         <div className="space-y-2">
           <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 
@@ -25,7 +25,7 @@ const PostSkeleton = () => {
                         dark:from-gray-700 dark:to-gray-600 
                         rounded w-5/6" /> */}
         </div>
-        
+
         {/* Meta info skeleton */}
         <div className="flex justify-between items-center pt-1">
           <div className="flex items-center gap-3">
@@ -41,7 +41,7 @@ const PostSkeleton = () => {
                         rounded-full w-14" />
         </div>
       </div>
-      
+
       {/* Decorative corner accent */}
       <div className="absolute top-0 right-0 w-32 h-32 
                     bg-gradient-to-br from-blue-500/5 to-purple-500/5
@@ -53,7 +53,7 @@ const PostSkeleton = () => {
 
 export const PostsSkeletonLoader = ({ count = 10 }) => {
   return (
-    <div 
+    <div
       className="space-y-4"
       aria-label={`Loading ${count} posts`}
       role="status"

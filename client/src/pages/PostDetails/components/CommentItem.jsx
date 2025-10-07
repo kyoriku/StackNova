@@ -14,14 +14,14 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
                   border border-gray-200/60 dark:border-gray-700/60
                   shadow-sm shadow-gray-900/5 dark:shadow-black/20
                   overflow-hidden">
-      
+
       <div className="relative z-10">
         <div className="text-gray-900 dark:text-gray-100 mb-4 prose dark:prose-invert max-w-none">
           <MarkdownPreview content={comment.comment_text} showLineNumbers={false} />
         </div>
-        
-        <hr className='mb-4 border-gray-200/60 dark:border-gray-700/60'/>
-        
+
+        <hr className='mb-4 border-gray-200/60 dark:border-gray-700/60' />
+
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3 text-sm">
             <div className="flex items-center gap-2 
@@ -39,12 +39,12 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
                 {comment.user.username}
               </Link>
             </div>
-            
+
             <time dateTime={comment.createdAt} className="text-gray-500 dark:text-gray-400 font-medium text-xs">
               {format(new Date(comment.createdAt), 'MMMM d, yyyy')}
             </time>
           </div>
-          
+
           {comment.user_id === currentUserId && (
             <div className="flex gap-2">
               <button

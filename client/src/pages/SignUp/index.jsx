@@ -66,7 +66,7 @@ const Signup = () => {
                       border border-gray-200/60 dark:border-gray-700/60
                       shadow-lg shadow-gray-900/5 dark:shadow-black/20
                       overflow-hidden">
-          
+
           {/* Decorative gradient accent */}
           <div className="absolute top-0 right-0 w-32 h-32 
                         bg-gradient-to-br from-blue-500/5 to-purple-500/5
@@ -243,7 +243,7 @@ const Signup = () => {
                               dark:from-red-900/20 dark:to-red-900/10
                               border-2 border-red-200 dark:border-red-800/50
                               shadow-sm shadow-red-500/10 dark:shadow-black/20"
-                     role="alert">
+                  role="alert">
                   <p className="text-red-700 dark:text-red-300 text-sm font-medium text-center">
                     {error}
                   </p>

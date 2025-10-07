@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 
 export const FormActions = ({ isSubmitting, isDisabled }) => {
   const navigate = useNavigate();
-  
+
   return (
     <div className="flex gap-2">
       <button

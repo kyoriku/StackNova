@@ -30,7 +30,7 @@ export const CommentsList = ({
           <MessageSquare size={24} className="text-gray-900 dark:text-gray-100" />
           Comments
         </h2>
-        
+
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
@@ -49,7 +49,7 @@ export const CommentsList = ({
           <option value="oldest">Oldest First</option>
         </select>
       </div>
-      
+
       <div className="space-y-4">
         {sortedComments.map((comment, index) => (
           <div
@@ -70,7 +70,7 @@ export const CommentsList = ({
           </div>
         ))}
       </div>
-      
+
       <style>{`
         @keyframes fadeInUp {
           from {

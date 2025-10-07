@@ -5,7 +5,7 @@ export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
   const isNearLimit = remaining < 20 && remaining >= 0;
 
   let counterColorClass = 'text-gray-500 dark:text-gray-400';
-  
+
   if (isOverLimit) {
     counterColorClass = 'text-red-600 dark:text-red-400';
   } else if (isNearLimit) {
@@ -21,7 +21,7 @@ export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
         >
           Title
         </label>
-        <span 
+        <span
           className={`text-sm font-semibold ${counterColorClass}`}
           aria-label="Character count"
         >

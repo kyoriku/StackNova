@@ -1,10 +1,10 @@
 import { X, AlertTriangle } from 'lucide-react';
 
-export const DeleteModal = ({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  isDeleting 
+export const DeleteModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  isDeleting
 }) => {
   if (!isOpen) return null;
 
@@ -17,13 +17,13 @@ export const DeleteModal = ({
                     shadow-2xl shadow-gray-900/10 dark:shadow-black/40
                     border-2 border-gray-200/60 dark:border-gray-700/60
                     overflow-hidden">
-        
+
         {/* Background gradient accent */}
         <div className="absolute top-0 right-0 w-32 h-32 
                       bg-gradient-to-br from-red-500/10 to-red-600/10
                       dark:from-red-500/20 dark:to-red-600/20
                       rounded-full blur-3xl -z-0" />
-        
+
         <div className="relative z-10">
           <div className="flex justify-between items-start mb-4">
             <div className="flex items-center gap-3">
@@ -48,11 +48,11 @@ export const DeleteModal = ({
               <X size={20} />
             </button>
           </div>
-          
+
           <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
             Are you sure you want to delete this comment? This action cannot be undone.
           </p>
-          
+
           <div className="flex justify-end gap-2">
             <button
               onClick={onClose}
