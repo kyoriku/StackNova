@@ -40,7 +40,7 @@ export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
                  border-2 border-gray-200 dark:border-gray-700
                  focus:outline-none focus:border-blue-500 dark:focus:border-blue-400
                  focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
-                 placeholder:text-gray-400 dark:placeholder:text-gray-500
+                 placeholder:text-gray-500 dark:placeholder:text-gray-400
                  disabled:opacity-50 disabled:cursor-not-allowed
                  transition-all duration-200
                  shadow-sm shadow-gray-900/5 dark:shadow-black/20"

@@ -47,7 +47,7 @@ const Signup = () => {
         noIndex={true}
       />
 
-      <div className="max-w-md mx-auto px-4">
+      <div className="max-w-md mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-black bg-gradient-to-r 
                        from-gray-900 via-blue-800 to-purple-800 
@@ -62,7 +62,7 @@ const Signup = () => {
 
         <div className="relative bg-gradient-to-br from-white to-gray-50/50 
                       dark:from-gray-800 dark:to-gray-800/50
-                      rounded-2xl p-6 
+                      rounded-2xl p-4 sm:p-6
                       border border-gray-200/60 dark:border-gray-700/60
                       shadow-lg shadow-gray-900/5 dark:shadow-black/20
                       overflow-hidden">
