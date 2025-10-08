@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import { Highlight, themes } from 'prism-react-renderer';
 import { Copy, Check } from 'lucide-react';
@@ -48,26 +47,44 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
     code = code.slice(0, -3);
   }
 
-  // Copy functionality
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand('copy');
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+          console.error('Fallback copy failed: ', err);
+        }
+
+        document.body.removeChild(textArea);
+      }
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
   };
 
-  // Get initial dark mode state synchronously
   const [isDark, setIsDark] = useState(() =>
     typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
   );
 
   useEffect(() => {
-    // Only set up observer for theme changes
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
@@ -88,16 +105,29 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
     ...themes.vsLight,
     plain: {
       ...themes.vsLight.plain,
-      backgroundColor: '#f5f7f9'
+      backgroundColor: '#f6f8fa'
+    }
+  };
+
+  const modifiedVsDark = {
+    ...themes.vsDark,
+    plain: {
+      ...themes.vsDark.plain,
+      backgroundColor: '#0d1117'
     }
   };
 
   return (
-    <div className="relative rounded-lg overflow-hidden my-4 shadow-sm">
-      {/* Copy Button */}
+    <div className="relative rounded-md overflow-hidden my-4 border border-gray-200 dark:border-gray-700/60">
       <button
+        type="button"
         onClick={copyToClipboard}
-        className="absolute top-2 right-2 z-10 p-2 rounded-md bg-transparent hover:bg-gray-800/5 dark:hover:bg-white/5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors duration-150 focus:outline-none cursor-pointer"
+        className="absolute top-2 right-2 z-10 p-1.5 rounded-md
+                 bg-transparent hover:bg-gray-700/20 dark:hover:bg-gray-600/30
+                 text-gray-500 hover:text-gray-700 
+                 dark:text-gray-400 dark:hover:text-gray-200 
+                 transition-colors duration-150 
+                 focus:outline-none cursor-pointer"
         title={copied ? 'Copied!' : 'Copy to clipboard'}
         aria-label={copied ? 'Copied!' : 'Copy to clipboard'}
       >
@@ -109,13 +139,13 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
       </button>
 
       <Highlight
-        theme={isDark ? themes.vsDark : modifiedVsLight}
+        theme={isDark ? modifiedVsDark : modifiedVsLight}
         code={code}
         language={language}
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <div className="origin-left">
-            <pre className={className + ' p-4 overflow-auto text-sm'} style={style}>
+            <pre className={className + ' p-4 overflow-auto text-[85%] leading-6'} style={style}>
               {tokens.map((line, i) => (
                 <div
                   key={i}
@@ -147,16 +177,13 @@ const EditorTab = ({ active, onClick, children }) => (
     type="button"
     onClick={onClick}
     className={`
-      px-6 py-2.5 font-semibold text-sm
-      first:rounded-l-lg last:rounded-r-lg
-      border-y-2 border-r-2 first:border-l-2
-      transition-all duration-200
-      cursor-pointer
+      relative px-6 py-2.5 font-semibold text-sm mb-2 
+      transition-all duration-200 cursor-pointer dark:focus:ring-blue-400
+      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 
       ${active
-        ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-blue-500 relative z-10 shadow-sm transition-none'
-        : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 transition-none'
+        ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl z-10 shadow-sm'
+        : 'bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'
       }
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900
     `}
   >
     {children}
@@ -185,7 +212,9 @@ const MarkdownEditor = ({
   rows = 16,
   preview = true,
   placeholder = defaultPlaceholder,
-  showLineNumbers = false
+  showLineNumbers = false,
+  previewClassName = "",
+  minHeight = "24rem"
 }) => {
   const [showPreview, setShowPreview] = useState(false);
 
@@ -195,16 +224,18 @@ const MarkdownEditor = ({
         value={content}
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
-        className="[field-sizing:content] w-full px-4 py-2 rounded-lg 
-                 bg-white dark:bg-gray-800 
+        className="[field-sizing:content] w-full px-4 py-3 rounded-xl
+                 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
                  text-gray-900 dark:text-gray-100 
                  border-2 border-gray-200 dark:border-gray-700
-                 focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                 focus:outline-none focus:border-blue-500 dark:focus:border-blue-400
+                 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
                  disabled:opacity-50 disabled:cursor-not-allowed
                  font-mono text-sm
                  min-h-[6rem]
-                 [&::placeholder]:text-gray-500 dark:[&::placeholder]:text-gray-400
-                 transition-[background,color,border] duration-0"
+                 shadow-sm shadow-gray-900/5 dark:shadow-black/20
+                 placeholder:text-gray-500 dark:placeholder:text-gray-400
+                 transition-all duration-200"
         placeholder={placeholder}
         disabled={disabled}
       />
@@ -213,7 +244,7 @@ const MarkdownEditor = ({
 
   return (
     <div className="w-full">
-      <div className="flex mb-3 -space-x-px">
+      <div className="flex gap-2">
         <EditorTab
           active={!showPreview}
           onClick={() => setShowPreview(false)}
@@ -230,32 +261,38 @@ const MarkdownEditor = ({
 
       <div className="relative">
         {showPreview ? (
-          <div className="p-4 min-h-[24rem] prose dark:prose-invert max-w-none 
-                       bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 
-                       dark:border-gray-700 overflow-auto shadow-sm">
-            <div className="text-gray-900 dark:text-gray-200">
-              <MarkdownPreview content={content} showLineNumbers={showLineNumbers} />
-            </div>
+          <div
+            style={{ minHeight }}
+            className={previewClassName || `p-4 sm:p-6 max-w-none 
+                       bg-white dark:bg-gray-900 
+                       rounded-xl
+                       border-2 border-gray-200 dark:border-gray-700
+                       overflow-auto 
+                       shadow-sm shadow-gray-900/5 dark:shadow-black/20
+                       font-sans text-[16px] leading-6 text-gray-900 dark:text-gray-100`}>
+            <MarkdownPreview content={content} showLineNumbers={showLineNumbers} />
           </div>
         ) : (
           <textarea
             value={content}
             onChange={(e) => onChange(e.target.value)}
             rows={rows}
-            className="[field-sizing:content] w-full px-4 py-2 rounded-lg
-                     bg-white dark:bg-gray-800 
+            style={{ minHeight }}
+            className="[field-sizing:content] w-full px-4 py-3
+                     bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
                      text-gray-900 dark:text-gray-100 
                      border-2 border-gray-200 dark:border-gray-700
-                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     rounded-xl
+                     focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 
+                     focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
                      disabled:opacity-50 disabled:cursor-not-allowed
-                     shadow-sm
+                     shadow-sm shadow-gray-900/5 dark:shadow-black/20
                      font-mono text-sm
-                     resize-y min-h-[24rem]
-                     [&::placeholder]:text-gray-500 dark:[&::placeholder]:text-gray-400
-                     transition-[background,color,border] duration-0"
+                     resize-y
+                     placeholder:text-gray-500 dark:placeholder:text-gray-400
+                     transition-all duration-200"
             placeholder={placeholder}
             disabled={disabled}
-            // maxLength={25000}
             required
             aria-required="true"
           />
@@ -266,109 +303,17 @@ const MarkdownEditor = ({
 };
 
 export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
-  // Preprocess content to handle inline code and code blocks properly
-  const processedContent = () => {
-    // First split content into code blocks and non-code blocks
-    const parts = [];
-    let inCodeBlock = false;
-    let currentPart = '';
-    let codeBlockLanguage = '';
-    let codeBlockMarker = ''; // Store the actual marker used (``` or ````)
-
-    // Split content by lines
-    const lines = content.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      const originalLine = lines[i];
-      const trimmedLine = originalLine.trim();
-
-      // Check for code block markers (3 or more backticks)
-      if (/^`{3,}/.test(trimmedLine)) {
-        const match = trimmedLine.match(/^(`{3,})/);
-        const currentMarker = match[1];
-
-        // Only toggle code block state if we're not in a code block
-        // or if the marker matches the one that started the block
-        if (!inCodeBlock) {
-          // End of non-code block, start of code block
-          if (currentPart) {
-            parts.push({ type: 'text', content: currentPart });
-          }
-          // Extract language from the opening code fence
-          codeBlockLanguage = trimmedLine.slice(currentMarker.length);
-          currentPart = '';
-          inCodeBlock = true;
-          codeBlockMarker = currentMarker; // Save the marker
-        } else if (currentMarker === codeBlockMarker) {
-          // End of code block - add as a code block
-          parts.push({
-            type: 'code',
-            language: codeBlockLanguage,
-            content: currentPart,
-            marker: codeBlockMarker
-          });
-          currentPart = '';
-          inCodeBlock = false;
-        } else {
-          // Different length of backticks inside a code block - treat as regular content
-          if (currentPart || i > 0) {
-            currentPart += '\n';
-          }
-          currentPart += originalLine;
-        }
-      } else {
-        // Inside a code block or text part
-        if (currentPart || i > 0) {
-          currentPart += '\n';
-        }
-        currentPart += originalLine; // Use original line with whitespace
-      }
-    }
-
-    // Add any remaining content
-    if (currentPart) {
-      parts.push({
-        type: inCodeBlock ? 'code' : 'text',
-        content: currentPart,
-        language: inCodeBlock ? codeBlockLanguage : '',
-        marker: inCodeBlock ? codeBlockMarker : ''
-      });
-    }
-
-    // Reconstruct the content with proper handling of code blocks
-    let reconstructed = '';
-    parts.forEach(part => {
-      if (part.type === 'text') {
-        // Process inline code in text parts only
-        reconstructed += part.content.replace(/(?<!`)`([^`\n]+)`(?!`)/g, '<span class="custom-inline-code">$1</span>');
-      } else if (part.type === 'code') {
-        // Add code blocks with the same marker that was used originally
-        const marker = part.marker || '```'; // Default to triple backticks if not specified
-        reconstructed += `\n${marker}${part.language || ''}\n${part.content}\n${marker}\n`;
-      }
-    });
-
-    return reconstructed;
-  };
-
-  // CSS for the custom inline code
   useEffect(() => {
     const style = document.createElement('style');
     style.id = 'inline-code-css';
     style.textContent = `
-      .custom-inline-code {
-        display: inline;
-        background-color: #f3f4f6;
-        padding: 0.1rem 0.4rem;
-        border-radius: 0.25rem;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-        font-size: 0.875rem;
-        color: #111827;
-        white-space: normal;
+      /* Remove bottom margin from nested lists */
+      .markdown-list .markdown-list {
+        margin-bottom: 0;
       }
-      
-      .dark .custom-inline-code {
-        background-color: #374151;
-        color: #ffffff;
+
+      .markdown-list .markdown-list li:first-child {
+        margin-top: 0;
       }
     `;
     document.head.appendChild(style);
@@ -380,43 +325,78 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
 
   return (
     <ReactMarkdown
-      rehypePlugins={[rehypeRaw]} // This is critical to parse the HTML in our preprocessed content
       remarkPlugins={[remarkGfm]}
       components={{
-        // Only handle code blocks here
         code({ node, inline, className, children, ...props }) {
-          if (inline) {
-            // We're already handling inline code via preprocessing
-            return null;
+          const hasNewlines = String(children).includes('\n');
+          const isInline = !className && !hasNewlines;
+
+          if (isInline) {
+            return (
+              <code className="inline bg-gray-200/60 dark:bg-gray-700 px-[0.4em] py-[0.2em] rounded-md font-mono text-[85%] text-gray-900 dark:text-gray-100">
+                {children}
+              </code>
+            );
           }
           return <CodeBlock className={className} showLineNumbers={showLineNumbers}>{children}</CodeBlock>;
         },
         p: ({ children }) => (
-          <p className="mt-4 mb-4 first:mt-0 last:mb-0 text-gray-900 dark:text-gray-200">{children}</p>
+          <p className="mb-4 text-[16px]">{children}</p>
         ),
         h1: ({ children }) => (
-          <h1 className="text-2xl font-bold mb-4 mt-6 first:mt-0 text-gray-900 dark:text-gray-100">{children}</h1>
+          <h1 className="text-[2em] font-semibold pb-2 mb-4 mt-6 first:mt-0 border-b border-gray-300 dark:border-gray-700">
+            {children}
+          </h1>
         ),
         h2: ({ children }) => (
-          <h2 className="text-xl font-bold mb-3 mt-5 first:mt-0 text-gray-900 dark:text-gray-100">{children}</h2>
+          <h2 className="text-[1.5em] font-semibold pb-2 mb-4 mt-6 first:mt-0 border-b border-gray-300 dark:border-gray-700">
+            {children}
+          </h2>
         ),
         h3: ({ children }) => (
-          <h3 className="text-lg font-bold mb-3 mt-4 first:mt-0 text-gray-900 dark:text-gray-100">{children}</h3>
+          <h3 className="text-[1.25em] font-semibold mb-4 mt-6 first:mt-0">{children}</h3>
+        ),
+        h4: ({ children }) => (
+          <h4 className="text-[1em] font-semibold mb-4 mt-6 first:mt-0">{children}</h4>
+        ),
+        h5: ({ children }) => (
+          <h5 className="text-[0.875em] font-semibold mb-4 mt-6 first:mt-0">{children}</h5>
+        ),
+        h6: ({ children }) => (
+          <h6 className="text-[0.85em] font-semibold mb-4 mt-6 first:mt-0 text-gray-600 dark:text-gray-400">{children}</h6>
+        ),
+        strong: ({ children }) => (
+          <strong className="font-semibold">{children}</strong>
+        ),
+        em: ({ children }) => (
+          <em className="italic">{children}</em>
         ),
         ul: ({ children }) => (
-          <ul className="list-disc pl-6 mb-4 text-gray-900 dark:text-gray-200">{children}</ul>
+          <ul className="markdown-list list-disc pl-8 mb-4">{children}</ul>
         ),
         ol: ({ children }) => (
-          <ol className="list-decimal pl-6 mb-4 text-gray-900 dark:text-gray-200">{children}</ol>
+          <ol className="markdown-list list-decimal pl-8 mb-4">{children}</ol>
         ),
         li: ({ children }) => (
-          <li className="mb-1 text-gray-900 dark:text-gray-200">{children}</li>
+          <li className="mt-1">{children}</li>
         ),
+        input: ({ type, checked, disabled }) => {
+          if (type === 'checkbox') {
+            return (
+              <input
+                type="checkbox"
+                checked={checked}
+                disabled
+                className="mr-2 align-middle"
+              />
+            );
+          }
+          return null;
+        },
         a: ({ children, href }) => (
           <a
             href={href}
-            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 
-            dark:hover:text-blue-500 underline"
+            className="text-[#0969da] hover:underline dark:text-[#2f81f7]"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -424,14 +404,14 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
           </a>
         ),
         blockquote: ({ children }) => (
-          <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 
-                                pl-4 my-4 italic text-gray-900 dark:text-gray-200">
+          <blockquote className="border-l-[0.25em] border-gray-300 dark:border-gray-600 
+                                pl-4 my-4 text-gray-600 dark:text-gray-400">
             {children}
           </blockquote>
         ),
         table: ({ children }) => (
           <div className="overflow-x-auto mb-4">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <table className="border-collapse w-full">
               {children}
             </table>
           </div>
@@ -439,22 +419,28 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
         thead: ({ children }) => (
           <thead className="bg-gray-50 dark:bg-gray-800">{children}</thead>
         ),
+        tbody: ({ children }) => (
+          <tbody className="bg-white dark:bg-gray-900">{children}</tbody>
+        ),
+        tr: ({ children }) => (
+          <tr className="border-t border-gray-300 dark:border-gray-700">{children}</tr>
+        ),
         th: ({ children }) => (
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <th className="px-3 py-2 text-left font-semibold border border-gray-300 dark:border-gray-700">
             {children}
           </th>
         ),
         td: ({ children }) => (
-          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+          <td className="px-3 py-2 border border-gray-300 dark:border-gray-700">
             {children}
           </td>
         ),
         hr: () => (
-          <hr className="my-6" />
+          <hr className="my-6 border-t border-gray-300 dark:border-gray-700" />
         ),
       }}
     >
-      {processedContent()}
+      {content}
     </ReactMarkdown>
   );
 };
