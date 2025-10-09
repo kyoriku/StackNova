@@ -8,6 +8,7 @@ const routes = require('./routes');
 const healthRoutes = require('./routes/healthRoutes');
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const { apiLimiter, readLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -57,6 +58,11 @@ console.log('Cookie settings:', {
 
 // Set up session middleware
 app.use(session(sess));
+
+// Apply general rate limiters to ALL routes
+app.use(apiLimiter);  // 1000 requests per 15min per IP
+app.use(readLimiter); // 100 GET requests per minute
+
 
 // Middleware to set headers for favicon
 app.use((req, res, next) => {
