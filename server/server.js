@@ -3,13 +3,12 @@ const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
-
 const routes = require('./routes');
 const healthRoutes = require('./routes/healthRoutes');
 const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const { apiLimiter, readLimiter } = require('./middleware/rateLimiter');
-
+const { checkBannedIP, botHoneypot } = require('./middleware/botHoneypot');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === 'production';
@@ -68,6 +67,28 @@ app.use(session(sess));
 app.use(apiLimiter);  // 1000 requests per 15min per IP
 app.use(readLimiter); // 100 GET requests per minute
 
+// DEVELOPMENT ONLY: Route to unban yourself (MUST be before checkBannedIP!)
+if (!isProd) {
+  app.post('/api/dev/unban-me', async (req, res) => {
+    const { createClient } = require('redis');
+    const client = createClient({
+      url: process.env.REDIS_URL || 'redis://localhost:6379'
+    });
+    
+    try {
+      await client.connect();
+      await client.del(`badbot:${req.ip}`);
+      await client.del(`bot_attempts:${req.ip}`);
+      await client.quit();
+      res.json({ message: 'You are unbanned!', ip: req.ip });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+}
+
+// Check if IP is banned before processing any routes
+app.use(checkBannedIP);
 
 // Middleware to set headers for favicon
 app.use((req, res, next) => {
@@ -85,6 +106,9 @@ if (isProd) {
 
 // API routes
 app.use(routes);
+
+// Catch non-existent API routes (honeypot)
+app.use(botHoneypot);
 
 // UUID redirect route (only in production, before catch-all)
 if (isProd) {
@@ -124,12 +148,15 @@ if (isProd) {
   });
 }
 
-// Catch-all route for SPA
-if (isProd) {
-  app.get('*', (req, res) => {
+// Catch-all route for SPA (production and development)
+app.get('*', (req, res) => {
+  if (isProd) {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-  });
-}
+  } else {
+    // In dev, return 404 for unknown routes
+    res.status(404).json({ error: 'Not Found' });
+  }
+});
 
 // Start server
 sequelize.sync({ force: false }).then(() => {
