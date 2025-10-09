@@ -49,6 +49,7 @@ const getBanDuration = (attemptCount) => {
   if (attemptCount >= 3) return 3600;      // 1 hour
   return 0;                                // No ban until 3+ violations
 };
+
 // Track suspicious activity
 const trackSuspiciousActivity = async (ip, path, severity = 'low') => {
   if (!redisService.isConnected()) return;
@@ -58,14 +59,18 @@ const trackSuspiciousActivity = async (ip, path, severity = 'low') => {
     const currentAttempts = await redisService.get(key) || 0;
     const newAttempts = currentAttempts + (severity === 'high' ? 3 : 1);
     
-    // Store attempt count with 24 hour expiry (resets if they behave)
-    await redisService.set(key, newAttempts, 86400);
+    // Apply ban based on attempt count
+    const banDuration = getBanDuration(newAttempts);
+    
+    // Counter TTL = ban duration + 7 day buffer (minimum 7 days)
+    // This ensures violations persist longer than the ban, enabling escalation
+    const counterTTL = Math.max(604800, banDuration + 604800);
+    
+    // Store attempt count with extended TTL
+    await redisService.set(key, newAttempts, counterTTL);
     
     // Log the activity
     console.log(`\x1b[31m[SUSPICIOUS ACTIVITY]\x1b[0m ${ip} → ${path} (Attempt ${newAttempts}, Severity: ${severity})`);
-    
-    // Apply ban based on attempt count
-    const banDuration = getBanDuration(newAttempts);
     
     if (banDuration > 0) {
       await redisService.set(`badbot:${ip}`, true, banDuration);
