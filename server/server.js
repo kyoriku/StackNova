@@ -14,6 +14,11 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === 'production';
 
+// Trust proxy - required for Railway/Heroku/etc to get real client IPs
+if (isProd) {
+  app.set('trust proxy', 1); // Trust first proxy
+}
+
 // CORS configuration
 const corsOptions = {
   origin: isProd ? process.env.FRONTEND_URL : 'http://localhost:3000',
@@ -84,7 +89,7 @@ app.use(routes);
 // UUID redirect route (only in production, before catch-all)
 if (isProd) {
   const { Post } = require('./models');
-  
+
   // Helper function to check if string is UUID
   const isUUID = (str) => {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -93,7 +98,7 @@ if (isProd) {
 
   app.get('/post/:identifier', async (req, res, next) => {
     const identifier = req.params.identifier;
-    
+
     // Only handle if it's a UUID
     if (!isUUID(identifier)) {
       return next(); // Let React handle slug URLs
