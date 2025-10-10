@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 import { Edit2, Trash2, Calendar } from 'lucide-react';
+import { ResponsiveDate } from '../../../components/ResponsiveDate';
 
 export const PostItem = ({ post, onDeleteClick, prefetchPost }) => (
   <article
@@ -43,12 +43,10 @@ export const PostItem = ({ post, onDeleteClick, prefetchPost }) => (
                       bg-gray-100 dark:bg-gray-700/50
                       transition-colors duration-300">
           <Calendar className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-          <time
-            dateTime={post.createdAt}
-            className="text-gray-500 dark:text-gray-400 text-xs font-medium"
-          >
-            {format(new Date(post.createdAt), 'MMM d, yyyy')}
-          </time>
+          <ResponsiveDate
+            date={post.createdAt}
+            className="text-gray-500 dark:text-gray-400 text-sm font-medium"
+          />
         </div>
 
         <div className="flex gap-2">

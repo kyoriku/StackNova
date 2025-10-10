@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 import { User } from 'lucide-react';
 import { MarkdownPreview } from '../../../components/MarkdownEditor';
 import { usePrefetchUserProfile } from '../hooks/usePrefetchUserProfile';
+import { ResponsiveDate } from '../../../components/ResponsiveDate';
 
 export const PostContent = ({ post }) => {
   const prefetchUserProfile = usePrefetchUserProfile();
@@ -38,7 +38,7 @@ export const PostContent = ({ post }) => {
               <User className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               <Link
                 to={`/user/${post.user.username}`}
-                className="font-semibold text-gray-700 dark:text-gray-200 text-xs
+                className="font-semibold text-gray-700 dark:text-gray-200 text-sm
                          hover:text-blue-600 dark:hover:text-blue-400
                          transition-colors duration-200"
                 onMouseEnter={() => prefetchUserProfile(post.user.username)}
@@ -47,9 +47,10 @@ export const PostContent = ({ post }) => {
               </Link>
             </div>
 
-            <time dateTime={post.createdAt} className="text-gray-500 dark:text-gray-400 font-medium text-xs">
-              {format(new Date(post.createdAt), 'MMMM d, yyyy')}
-            </time>
+            <ResponsiveDate
+              date={post.createdAt}
+              className="text-gray-500 dark:text-gray-400 font-medium text-sm"
+            />
           </div>
         </div>
 

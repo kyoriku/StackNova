@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 import { Edit2, Trash2, User } from 'lucide-react';
 import { MarkdownPreview } from '../../../components/MarkdownEditor';
 import { usePrefetchUserProfile } from '../hooks/usePrefetchUserProfile';
+import { ResponsiveDate } from '../../../components/ResponsiveDate';
 
 export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditingAny }) => {
   const prefetchUserProfile = usePrefetchUserProfile();
@@ -31,7 +31,7 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
               <User className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               <Link
                 to={`/user/${comment.user.username}`}
-                className="font-semibold text-gray-700 dark:text-gray-200 text-xs
+                className="font-semibold text-gray-700 dark:text-gray-200 text-sm
                          hover:text-blue-600 dark:hover:text-blue-400
                          transition-colors duration-200"
                 onMouseEnter={() => prefetchUserProfile(comment.user.username)}
@@ -40,9 +40,10 @@ export const CommentItem = ({ comment, currentUserId, onEdit, onDelete, isEditin
               </Link>
             </div>
 
-            <time dateTime={comment.createdAt} className="text-gray-500 dark:text-gray-400 font-medium text-xs">
-              {format(new Date(comment.createdAt), 'MMMM d, yyyy')}
-            </time>
+            <ResponsiveDate
+              date={comment.createdAt}
+              className="text-gray-500 dark:text-gray-400 font-medium text-sm"
+            />
           </div>
 
           {comment.user_id === currentUserId && (
