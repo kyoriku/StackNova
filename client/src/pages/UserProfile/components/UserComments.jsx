@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 import { MessageSquare } from 'lucide-react';
 import { MarkdownPreview } from '../../../components/MarkdownEditor';
 import { Pagination } from '../../../pages/Posts/components/Pagination';
+import { ResponsiveDate } from '../../../components/ResponsiveDate';
 
 export const UserComments = ({ comments, prefetchPost }) => {
   const ITEMS_PER_PAGE = 5;
@@ -163,9 +163,10 @@ export const UserComments = ({ comments, prefetchPost }) => {
                   {comment.post.title}
                 </Link>
                 <span className="text-gray-400 dark:text-gray-500" aria-hidden="true">•</span>
-                <time dateTime={comment.createdAt} className="font-medium">
-                  {format(new Date(comment.createdAt), 'MMM d, yyyy')}
-                </time>
+                <ResponsiveDate
+                  date={comment.createdAt}
+                  className="font-medium"
+                />
               </div>
             </div>
 
