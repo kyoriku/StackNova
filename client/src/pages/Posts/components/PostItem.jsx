@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 import { MessageSquare, User } from 'lucide-react';
+import { ResponsiveDate } from '../../../components/ResponsiveDate';
 
 export const PostItem = ({ post, prefetchPost }) => {
   const commentCount = post.comments?.length || post.commentCount || 0;
@@ -61,12 +61,10 @@ export const PostItem = ({ post, prefetchPost }) => {
                 </span>
               </div>
 
-              <time
-                dateTime={post.createdAt}
+              <ResponsiveDate 
+                date={post.createdAt}
                 className="text-gray-500 dark:text-gray-400 font-medium text-sm"
-              >
-                {format(new Date(post.createdAt), 'MMM d, yyyy')}
-              </time>
+              />
 
               <div className="ml-auto flex items-center gap-1.5
                             px-2.5 py-1 rounded-full
