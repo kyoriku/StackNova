@@ -30,10 +30,19 @@ export const CommentForm = ({
           content={commentText}
           onChange={setCommentText}
           rows={6}
-          preview={false}
+          preview={true}
           showLineNumbers={false}
           placeholder="Type your comment here..."
           disabled={isSubmitting}
+          minHeight="170px"
+          previewClassName="p-6 max-w-none 
+                   bg-gradient-to-br from-white to-gray-50/50 
+                   dark:from-gray-800 dark:to-gray-800/50
+                   rounded-xl
+                   border-2 border-blue-500 dark:border-blue-400
+                   overflow-auto 
+                   shadow-sm shadow-gray-900/5 dark:shadow-black/20
+                   font-sans text-[16px] leading-6 text-gray-900 dark:text-gray-100"
         />
 
         {/* Error message */}
@@ -54,8 +63,8 @@ export const CommentForm = ({
           {/* Character counter */}
           <div
             className={`text-sm font-semibold ${isOverLimit ? 'text-red-600 dark:text-red-400' :
-                remaining < 500 ? 'text-yellow-600 dark:text-yellow-400' :
-                  'text-gray-500 dark:text-gray-400'
+              remaining < 500 ? 'text-yellow-600 dark:text-yellow-400' :
+                'text-gray-500 dark:text-gray-400'
               }`}
             aria-label="Character count"
           >
