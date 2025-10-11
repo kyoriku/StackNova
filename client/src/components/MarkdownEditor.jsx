@@ -113,7 +113,8 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
     ...themes.vsDark,
     plain: {
       ...themes.vsDark.plain,
-      backgroundColor: '#0d1117'
+      // backgroundColor: '#0d1117'
+      backgroundColor: '#141b24'
     }
   };
 
@@ -182,7 +183,7 @@ const EditorTab = ({ active, onClick, children }) => (
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 
       ${active
         ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl z-10 shadow-sm'
-        : 'bg-gray-200 dark:bg-gray-900 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400'
+        : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'
       }
     `}
   >
