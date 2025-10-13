@@ -1,5 +1,5 @@
 const { Comment, User, Post } = require('../models'); // Add Post model
-const redisService = require('../config/redis');
+const redisService = require('../config/redisCache');
 
 // Helper function to handle common Redis cache operations
 async function clearCaches(postId, userId, username) {

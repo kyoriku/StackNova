@@ -1,4 +1,4 @@
-const redisService = require('../config/redis');
+const redisService = require('../config/redisCache');
 
 // Paths that are NEVER legitimate - immediate long ban
 const obviousBotPaths = [
@@ -28,6 +28,13 @@ const obviousBotPaths = [
 // File extensions that indicate bot scanning
 const suspiciousExtensions = ['.php', '.asp', '.aspx', '.jsp', '.xml'];
 
+// Extract subnet from IP (first 3 octets)
+const getSubnet = (ip) => {
+  const parts = ip.split('.');
+  if (parts.length !== 4) return ip; // Invalid IP, return as-is
+  return `${parts[0]}.${parts[1]}.${parts[2]}`;
+};
+
 // Check if IP is currently banned
 const isBanned = async (ip) => {
   if (!redisService.isConnected()) return false;
@@ -42,44 +49,77 @@ const isBanned = async (ip) => {
 };
 
 // Get escalating ban duration based on number of violations
-const getBanDuration = (attemptCount) => {
+const getBanDuration = (attemptCount, isHighSeverity = false) => {
+  // High severity paths (/.env, /wp-admin, etc) = immediate 7-day ban
+  if (isHighSeverity && attemptCount >= 1) return 604800;  // 7 days immediately
+  
+  // Progressive escalation for lower severity
   if (attemptCount >= 10) return 2592000;  // 30 days
   if (attemptCount >= 7) return 604800;    // 7 days  
-  if (attemptCount >= 5) return 86400;     // 1 day
-  if (attemptCount >= 3) return 3600;      // 1 hour
-  return 0;                                // No ban until 3+ violations
+  if (attemptCount >= 4) return 86400;     // 1 day (lowered from 5)
+  if (attemptCount >= 2) return 3600;      // 1 hour (lowered from 3)
+  return 0;                                // No ban until 2+ violations
 };
 
-// Track suspicious activity
+// Track suspicious activity with subnet awareness
 const trackSuspiciousActivity = async (ip, path, severity = 'low') => {
   if (!redisService.isConnected()) return;
   
   try {
+    // Track individual IP violations
     const key = `bot_attempts:${ip}`;
     const currentAttempts = await redisService.get(key) || 0;
-    const newAttempts = currentAttempts + (severity === 'high' ? 3 : 1);
+    const isFirstOffense = currentAttempts === 0;
+    const multiplier = severity === 'high' ? 3 : 1;
+    const newAttempts = currentAttempts + multiplier;
     
-    // Apply ban based on attempt count
-    const banDuration = getBanDuration(newAttempts);
+    // Track subnet violations to detect IP rotation
+    const subnet = getSubnet(ip);
+    const subnetKey = `bot_subnet:${subnet}`;
+    const subnetAttempts = await redisService.get(subnetKey) || 0;
+    const newSubnetAttempts = subnetAttempts + multiplier;
+    
+    // If subnet has many violations, escalate severity automatically
+    // This catches bots rotating IPs within the same subnet
+    if (newSubnetAttempts >= 15 && severity !== 'high') {
+      severity = 'high';
+      console.log(`\x1b[33m[SUBNET PATTERN DETECTED]\x1b[0m ${subnet}.x has ${newSubnetAttempts} total violations across multiple IPs`);
+    }
+    
+    // Determine ban duration
+    const isHighSeverity = severity === 'high';
+    const banDuration = getBanDuration(newAttempts, isHighSeverity);
     
     // Counter TTL = ban duration + 7 day buffer (minimum 7 days)
     // This ensures violations persist longer than the ban, enabling escalation
     const counterTTL = Math.max(604800, banDuration + 604800);
     
-    // Store attempt count with extended TTL
+    // Store attempt counts with extended TTL
     await redisService.set(key, newAttempts, counterTTL);
+    await redisService.set(subnetKey, newSubnetAttempts, 604800); // 7 days
     
-    // Log the activity
-    console.log(`\x1b[31m[SUSPICIOUS ACTIVITY]\x1b[0m ${ip} → ${path} (Attempt ${newAttempts}, Severity: ${severity})`);
+    // Log the activity with clear messaging
+    const attemptDisplay = isHighSeverity && isFirstOffense 
+      ? `1st offense (weighted as ${newAttempts})`
+      : `${newAttempts} attempts`;
+    
+    console.log(`\x1b[31m[SUSPICIOUS ACTIVITY]\x1b[0m ${ip} (${subnet}.x) → ${path} (${attemptDisplay}, Subnet: ${newSubnetAttempts}, Severity: ${severity})`);
     
     if (banDuration > 0) {
       await redisService.set(`badbot:${ip}`, true, banDuration);
       const banHours = Math.round(banDuration / 3600);
-      console.log(`\x1b[31m[IP BANNED]\x1b[0m ${ip} banned for ${banHours} hours (${newAttempts} violations)`);
+      const banDays = Math.round(banDuration / 86400);
+      const banDisplay = banDays >= 1 ? `${banDays} days` : `${banHours} hours`;
+      
+      const banReason = isHighSeverity && isFirstOffense
+        ? `immediate ${severity}-severity ban`
+        : `${newAttempts} violations`;
+      
+      console.log(`\x1b[31m[IP BANNED]\x1b[0m ${ip} banned for ${banDisplay} (${banReason})`);
       
       // Production monitoring - track ban metrics
       if (process.env.NODE_ENV === 'production') {
-        console.log(`\x1b[34m[BAN METRICS]\x1b[0m IP: ${ip}, Path: ${path}, Attempts: ${newAttempts}, Ban: ${banHours}h, Severity: ${severity}`);
+        console.log(`\x1b[34m[BAN METRICS]\x1b[0m IP: ${ip}, Subnet: ${subnet}.x, Path: ${path}, Weighted: ${newAttempts}, Ban: ${banDisplay}, Severity: ${severity}, FirstOffense: ${isFirstOffense}`);
         // Future: Add Sentry, LogRocket, or analytics service here
       }
     }
@@ -137,5 +177,6 @@ const botHoneypot = async (req, res, next) => {
 module.exports = {
   checkBannedIP,
   botHoneypot,
-  isBanned
+  isBanned,
+  trackSuspiciousActivity  // Export for use in rate limiters
 };

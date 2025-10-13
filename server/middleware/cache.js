@@ -1,5 +1,4 @@
-// Updated cache.js middleware
-const redisService = require('../config/redis');
+const redisService = require('../config/redisCache');
 
 const CACHE_TTL = 3600; // 1 hour
 

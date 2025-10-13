@@ -397,7 +397,7 @@
 // module.exports = userController;
 
 const { User, Post, Comment } = require('../models');
-const redisService = require('../config/redis');
+const redisService = require('../config/redisCache');
 const sequelize = require('../config/connection');
 
 // Common user profile query options

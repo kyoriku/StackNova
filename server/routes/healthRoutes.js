@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const sequelize = require('../config/connection');
-const redisService = require('../config/redis');
+const redisService = require('../config/redisCache');
 
 // Health check endpoint for Railway deployment monitoring
 router.get('/health', async (req, res) => {
