@@ -1,6 +1,6 @@
 const { Post, User, Comment } = require('../models');
 const { generateUniqueSlug } = require('../utils/slugUtils');
-const redisService = require('../config/redis');
+const redisService = require('../config/redisCache');
 
 // Helper function to handle common Redis cache operations
 async function clearCaches(postId, userId, username, includeComments = false) {

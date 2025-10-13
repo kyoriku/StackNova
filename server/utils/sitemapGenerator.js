@@ -1,7 +1,7 @@
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { Readable } = require('stream');
-const { Post } = require('../models'); // Removed User since we're not using it
-const redisService = require('../config/redis');
+const { Post } = require('../models');
+const redisService = require('../config/redisCache');
 
 const SITEMAP_CACHE_KEY = 'sitemap:xml';
 const SITEMAP_CACHE_TTL = 86400; // 24 hours
