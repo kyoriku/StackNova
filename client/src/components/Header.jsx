@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { List, LayoutDashboard, LogIn, LogOut, Sun, Moon, Menu, X, User, UserPlus } from 'lucide-react';
+import { List, LayoutDashboard, LogIn, LogOut, Sun, Moon, Monitor, Menu, X, User, UserPlus, ChevronDown } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { usePrefetchUserProfile } from '../pages/PostDetails/hooks/usePrefetchUserProfile';
@@ -9,9 +9,11 @@ import { usePrefetchPosts } from '../pages/Posts/hooks/usePrefetchPosts';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const navRef = useRef(null);
+  const themeMenuRef = useRef(null);
   const location = useLocation();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { user, logout, isAuthenticated } = useAuth();
   const prefetchUserProfile = usePrefetchUserProfile();
   const prefetchDashboard = usePrefetchDashboard();
@@ -38,6 +40,9 @@ const Header = () => {
       if (navRef.current && !navRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
+      if (themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+        setShowThemeMenu(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -49,14 +54,150 @@ const Header = () => {
   };
 
   const linkClasses = (path) => {
-  const active = isActive(path);
-  return `flex items-center gap-2 px-3 py-2 rounded-xl font-semibold
-          transition-all duration-200
-          focus:outline-none
-          ${active 
-            ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/30' 
-            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 border border-transparent'}`;
-};
+    const active = isActive(path);
+    return `flex items-center gap-2 px-3 py-2 rounded-xl font-semibold
+            transition-all duration-200
+            focus:outline-none
+            ${active
+        ? 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/30'
+        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 border border-transparent'}`;
+  };
+
+  const getThemeIcon = () => {
+    switch (theme) {
+      case 'light':
+        return <Sun size={18} className="text-gray-700 dark:text-gray-300" />;
+      case 'dark':
+        return <Moon size={18} className="text-gray-700 dark:text-gray-300" />;
+      default:
+        return <Monitor size={18} className="text-gray-700 dark:text-gray-300" />;
+    }
+  };
+
+  const ThemeToggleDesktop = () => (
+    <div className="relative" ref={themeMenuRef}>
+      <button
+        onClick={() => setShowThemeMenu(!showThemeMenu)}
+        className="flex items-center gap-1.5 px-2.5 h-10 rounded-xl 
+               bg-gray-100 dark:bg-gray-700/50 
+               hover:bg-gray-200 dark:hover:bg-gray-600/50
+               cursor-pointer transition-all duration-200
+               hover:scale-105"
+        aria-label={`Current theme: ${theme}. Click to change theme`}
+        aria-expanded={showThemeMenu}
+      >
+        {getThemeIcon()}
+        <ChevronDown
+          size={14}
+          className={`text-gray-700 dark:text-gray-300 transition-transform duration-200 ${showThemeMenu ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {showThemeMenu && (
+        <div className="absolute right-0 mt-2 w-40 
+                    bg-white dark:bg-gray-800 
+                    rounded-xl shadow-lg border border-gray-200 dark:border-gray-700
+                    overflow-hidden z-50"
+          role="menu">
+          <button
+            onClick={() => {
+              setTheme('light');
+              setShowThemeMenu(false);
+            }}
+            role="menuitem"
+            className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left
+                    transition-colors duration-150 cursor-pointer
+                    ${theme === 'light'
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}
+          >
+            <div className="flex items-center gap-3">
+              <Sun size={18} />
+              <span className="font-medium">Light</span>
+            </div>
+            {theme === 'light' && <span className="text-sm">✓</span>}
+          </button>
+          <button
+            onClick={() => {
+              setTheme('dark');
+              setShowThemeMenu(false);
+            }}
+            role="menuitem"
+            className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left
+                    transition-colors duration-150 cursor-pointer
+                    ${theme === 'dark'
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}
+          >
+            <div className="flex items-center gap-3">
+              <Moon size={18} />
+              <span className="font-medium">Dark</span>
+            </div>
+            {theme === 'dark' && <span className="text-sm">✓</span>}
+          </button>
+          <button
+            onClick={() => {
+              setTheme('auto');
+              setShowThemeMenu(false);
+            }}
+            role="menuitem"
+            className={`w-full flex items-center justify-between gap-3 px-4 py-3 text-left
+                    transition-colors duration-150 cursor-pointer
+                    ${theme === 'auto' || !theme
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}
+          >
+            <div className="flex items-center gap-3">
+              <Monitor size={18} />
+              <span className="font-medium">Auto</span>
+            </div>
+            {(theme === 'auto' || !theme) && <span className="text-sm">✓</span>}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const ThemeToggleMobile = () => (
+    <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-700/30 rounded-xl">
+      <button
+        onClick={() => setTheme('light')}
+        className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg
+                font-medium transition-all duration-200 cursor-pointer
+                ${theme === 'light'
+            ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+            : 'text-gray-600 dark:text-gray-400'}`}
+        aria-label="Switch to light theme"
+      >
+        <Sun size={16} />
+        <span className="text-xs">Light</span>
+      </button>
+      <button
+        onClick={() => setTheme('dark')}
+        className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg
+                font-medium transition-all duration-200 cursor-pointer
+                ${theme === 'dark'
+            ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+            : 'text-gray-600 dark:text-gray-400'}`}
+        aria-label="Switch to dark theme"
+      >
+        <Moon size={16} />
+        <span className="text-xs">Dark</span>
+      </button>
+      <button
+        onClick={() => setTheme('auto')}
+        className={`flex-1 flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg
+                font-medium transition-all duration-200 cursor-pointer
+                ${theme === 'auto' || !theme
+            ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm'
+            : 'text-gray-600 dark:text-gray-400'}`}
+        aria-label="Switch to automatic theme"
+      >
+        <Monitor size={16} />
+        <span className="text-xs">Auto</span>
+      </button>
+    </div>
+  );
 
   return (
     <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
@@ -171,21 +312,7 @@ const Header = () => {
             )}
 
             {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-2.5 rounded-xl 
-                       bg-gray-100 dark:bg-gray-700/50 
-                       hover:bg-gray-200 dark:hover:bg-gray-600/50
-                       cursor-pointer transition-all duration-200
-                       hover:scale-105"
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? (
-                <Sun size={18} className="text-gray-700 dark:text-gray-300" />
-              ) : (
-                <Moon size={18} className="text-gray-700" />
-              )}
-            </button>
+            <ThemeToggleDesktop />
           </div>
         </div>
 
@@ -267,30 +394,8 @@ const Header = () => {
               </div>
             )}
 
-            {/* Theme Toggle Button */}
-            <button
-              onClick={() => {
-                toggleTheme();
-                setIsMenuOpen(false);
-              }}
-              className="flex items-center justify-center gap-2 p-3 rounded-xl 
-                       bg-gray-100 dark:bg-gray-700/50 
-                       hover:bg-gray-200 dark:hover:bg-gray-600/50
-                       cursor-pointer transition-all duration-200"
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? (
-                <>
-                  <Sun size={18} className="text-gray-700 dark:text-gray-300" />
-                  <span className="text-gray-700 dark:text-gray-300 font-semibold">Light Mode</span>
-                </>
-              ) : (
-                <>
-                  <Moon size={18} className="text-gray-700" />
-                  <span className="text-gray-700 dark:text-gray-300 font-semibold">Dark Mode</span>
-                </>
-              )}
-            </button>
+            {/* Theme Toggle for Mobile */}
+            <ThemeToggleMobile />
           </div>
         )}
       </nav>
