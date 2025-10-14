@@ -9,16 +9,32 @@
   <meta name="author" content="Austin Graham" />
   <meta name="geo.region" content="CA-ON" />
   <meta name="geo.placename" content="Toronto" />
-  <meta name="keywords" content="programming, coding, web development, javascript, react, node.js, python, sql, developer forum, tech blog, code sharing, software engineering, frontend, backend, full stack, coding tips, programming questions, developer community, web technologies">
+  <meta name="keywords"
+    content="programming, coding, web development, javascript, react, node.js, python, sql, developer forum, tech blog, code sharing, software engineering, frontend, backend, full stack, coding tips, programming questions, developer community, web technologies">
 
   <!-- Dark mode script -->
   <script>
-    if (
-      localStorage.theme === 'dark' ||
-      (!localStorage.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
-      document.documentElement.classList.add('dark');
+    // Function to update theme
+    function updateTheme() {
+      const theme = localStorage.theme;
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (theme === 'dark' || (theme === 'auto' && systemPrefersDark) || (!theme && systemPrefersDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
+
+    // Apply theme immediately
+    updateTheme();
+
+    // Listen for system theme changes (works for both 'auto' and no preference set)
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (!localStorage.theme || localStorage.theme === 'auto') {
+        updateTheme();
+      }
+    });
   </script>
 </head>
 
