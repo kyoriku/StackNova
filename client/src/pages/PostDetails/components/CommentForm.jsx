@@ -39,7 +39,7 @@ export const CommentForm = ({
                    bg-gradient-to-br from-white to-gray-50/50 
                    dark:from-gray-800 dark:to-gray-800/50
                    rounded-xl
-                   border-2 border-blue-500 dark:border-blue-400
+                   border-2 border-gray-200 dark:border-gray-700
                    overflow-auto 
                    shadow-sm shadow-gray-900/5 dark:shadow-black/20
                    font-sans text-[16px] leading-6 text-gray-900 dark:text-gray-100"
