@@ -55,6 +55,18 @@ Post.init(
         }
       },
     },
+    // Performance indexes
+    indexes: [
+      {
+        fields: ['user_id'] // Speeds up fetching all posts by a user
+      },
+      {
+        fields: ['created_at'] // Speeds up sorting all posts by date
+      },
+      {
+        fields: ['user_id', 'created_at'] // Composite: user's posts sorted by date (most efficient)
+      }
+    ],
     sequelize,
     timestamps: true,
     freezeTableName: true,
