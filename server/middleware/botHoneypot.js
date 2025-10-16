@@ -1,32 +1,89 @@
 const redisService = require('../config/redisCache');
 
 // Paths that are NEVER legitimate - immediate long ban
+// Note: Uses startsWith() so prefixes catch all variants
 const obviousBotPaths = [
-  '/.git',
-  '/.env',
-  '/.aws',
+  // Version control & environment
+  '/.git',              // Catches /.git/config, /.git/HEAD, etc.
+  '/.env',              // Catches /.env, /.env.local, /.env.production, etc.
+  '/.aws',              // Catches /.aws/credentials, /.aws/config, etc.
   '/.ssh',
+  '/.config',
+  '/.htaccess',
+  '/.DS_Store',
+  // WordPress
   '/wp-admin',
   '/wp-login',
   '/wp-includes',
   '/wp-content',
   '/wordpress',
   '/xmlrpc.php',
+  // Database management
   '/phpMyAdmin',
   '/phpmyadmin',
-  '/admin/config',
-  '/backup',
-  '/.config',
-  '/web.config',
+  // Admin panels & config
+  '/admin',             // Catches /admin/config, /administrator, /admin.php, etc.
+  // Cloud metadata (AWS, GCP, Azure)
+  '/latest',            // AWS metadata (catches /latest/meta-data, /latest/api/token, etc.)
+  '/metadata',          // GCP/Azure metadata (catches all /metadata/* paths)
+  '/computeMetadata',   // GCP compute metadata
+  // Backup files
+  '/backup',            // Catches /backup.sql, /backup, etc.
+  '/database',          // Catches /database.sql, etc.
+  '/dump',              // Catches /dump.sql, etc.
+  // Config files
+  '/config',            // Catches /config.json, /config.php, /web.config, etc.
   '/composer.json',
   '/package.json',
-  '/.htaccess',
+  // Common app entry points (exposed source)
   '/server.js',
-  '/app.js'
+  '/app.js',
+  // Monorepo paths
+  '/apps/.env',
+  '/services/.env',
+  '/packages/.env',
+  // Framework-specific
+  '/laravel',
+  // Common backdoors & shells
+  '/shell',
+  '/c99',
+  '/r57',
+  '/phpinfo',
+  // CI/CD & deployment configs
+  '/.github',           // GitHub Actions, workflows
+  '/.gitlab-ci',        // GitLab CI
+  '/azure-pipelines',   // Azure Pipelines
+  '/netlify.toml',
+  '/vercel.json',
+  // Infrastructure as Code
+  '/terraform',         // Terraform configs
+  '/.terraform',        // Terraform state
+  '/.kube',             // Kubernetes configs
+  '/kubernetes',        // Kubernetes manifests
+  // Docker
+  '/docker-compose',    // Docker Compose files
+  '/Dockerfile',
+  // Source maps (leak source code)
+  '/app.js.map',
+  '/bundle.js.map',
+  '/main.js.map',
+  '/vendor.js.map'
 ];
 
 // File extensions that indicate bot scanning
-const suspiciousExtensions = ['.php', '.asp', '.aspx', '.jsp', '.xml'];
+const suspiciousExtensions = [
+  '.php',
+  '.asp', 
+  '.aspx', 
+  '.jsp',
+  '.xml',
+  '.yaml',        // Kubernetes, Docker Compose configs
+  '.yml',         // CI/CD configs (GitHub Actions, GitLab)
+  '.map',         // Source maps (leak entire source code)
+  '.toml',        // Config files (Netlify, Cargo, Poetry)
+  '.tfvars',      // Terraform variables (infrastructure secrets)
+  '.tfstate'      // Terraform state (infrastructure details)
+];
 
 // Extract subnet from IP (first 3 octets)
 const getSubnet = (ip) => {

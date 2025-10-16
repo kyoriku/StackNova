@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { SEO } from '../../components/SEO';
 import GoogleLoginButton from '../../components/GoogleLoginButton';
@@ -8,10 +8,21 @@ import GoogleLoginButton from '../../components/GoogleLoginButton';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [sessionMessage, setSessionMessage] = useState('');
   const { login, isLoading, verifySession } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Check for session expiration message on mount
+  useEffect(() => {
+    const message = sessionStorage.getItem('loginMessage');
+    if (message) {
+      setSessionMessage(message);
+      sessionStorage.removeItem('loginMessage');
+    }
+  }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -47,13 +58,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSessionMessage(''); // Clear session message when attempting login
 
     try {
       const from = location.state?.from || '/dashboard';
-      await login(email, password, from);
+      await login(email, password, from, rememberMe);
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  // Clear session message when user starts typing
+  const handleInputChange = (setter) => (e) => {
+    if (sessionMessage) {
+      setSessionMessage('');
+    }
+    setter(e.target.value);
   };
 
   const returnPath = location.state?.from || '/dashboard';
@@ -79,6 +99,29 @@ const Login = () => {
             Log in to continue to StackNova
           </p>
         </div>
+
+        {/* Session expired message */}
+        {sessionMessage && (
+          <div className="mb-6 p-4 rounded-2xl 
+                        bg-gradient-to-br from-amber-50 to-amber-100/50
+                        dark:from-amber-900/20 dark:to-amber-900/10
+                        border-2 border-amber-200 dark:border-amber-800/50
+                        shadow-lg shadow-amber-500/10 dark:shadow-black/20
+                        animate-fadeIn">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 rounded-full 
+                            bg-amber-100 dark:bg-amber-900/30
+                            flex items-center justify-center">
+                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
+                  {sessionMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="relative bg-gradient-to-br from-white to-gray-50/50 
                       dark:from-gray-800 dark:to-gray-800/50
@@ -126,7 +169,7 @@ const Login = () => {
                     name="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleInputChange(setEmail)}
                     placeholder="Enter your email"
                     autoComplete="email"
                     className="w-full pl-11 pr-4 py-3 rounded-xl
@@ -156,7 +199,7 @@ const Login = () => {
                     name="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handleInputChange(setPassword)}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     className="w-full pl-11 pr-4 py-3 rounded-xl
@@ -170,6 +213,30 @@ const Login = () => {
                     required
                   />
                 </div>
+              </div>
+
+              {/* Remember Me checkbox */}
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded 
+                           border-2 border-gray-300 dark:border-gray-600
+                           text-blue-600 dark:text-blue-500
+                           bg-white dark:bg-gray-800
+                           focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30
+                           focus:ring-offset-0
+                           transition-all duration-200 cursor-pointer"
+                />
+                <label
+                  htmlFor="remember-me"
+                  className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300
+                           cursor-pointer select-none"
+                >
+                  Remember me for 30 days
+                </label>
               </div>
 
               {error && (
@@ -226,6 +293,22 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </>
   );
 };

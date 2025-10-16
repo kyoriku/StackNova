@@ -13,6 +13,7 @@ const { sessionSecurity, checkInactivity } = require('./middleware/sessionSecuri
 const { checkBannedIP, botHoneypot } = require('./middleware/botHoneypot');
 const uuidRedirect = require('./middleware/uuidRedirect');
 const faviconHeaders = require('./middleware/favicon');
+const { errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -46,8 +47,8 @@ createSessionConfig(isProd).then((sessionConfig) => {
   app.use(session(sessionConfig));
 
   // Session security
-  app.use(sessionSecurity);
-  app.use(checkInactivity);
+  app.use('/api', sessionSecurity);
+  app.use('/api', checkInactivity);
 
   // Rate limiting
   app.use(apiLimiter);
@@ -88,6 +89,9 @@ createSessionConfig(isProd).then((sessionConfig) => {
       res.status(404).json({ error: 'Not Found' });
     }
   });
+
+  // Error handling
+  app.use(errorHandler);
 
   // Start server
   sequelize.sync({ force: false }).then(() => {

@@ -1,5 +1,7 @@
-const { Comment, User, Post } = require('../models'); // Add Post model
+const { Comment, User, Post } = require('../models');
 const redisService = require('../config/redisCache');
+const { AppError, asyncHandler } = require('../middleware/errorHandler');
+const ERROR_CODES = require('../constants/errorCodes');
 
 // Helper function to handle common Redis cache operations
 async function clearCaches(postId, userId, username) {
@@ -31,123 +33,171 @@ async function clearCaches(postId, userId, username) {
 
 const commentController = {
   // Create a new comment
-  async createComment(req, res) {
-    try {
-      const userId = req.session.user_id;
-      const postId = req.body.post_id;
+  createComment: asyncHandler(async (req, res) => {
+    const userId = req.session.user_id;
+    const postId = req.body.post_id;
 
-      if (!userId) {
-        return res.status(401).json({ message: 'You must be logged in to create a comment' });
-      }
-
-      if (!postId) {
-        return res.status(400).json({ message: 'Post ID is required' });
-      }
-
-      // Get the user to access username
-      const user = await User.findByPk(userId, {
-        attributes: ['username']
-      });
-
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      const newComment = await Comment.create({
-        comment_text: req.body.comment_text,
-        user_id: userId,
-        post_id: postId
-      });
-
-      // Clear relevant caches
-      await clearCaches(postId, userId, user.username);
-
-      res.status(201).json(newComment.get({ plain: true }));
-    } catch (err) {
-      console.error('Error creating comment:', err);
-      res.status(400).json({ message: 'Failed to create comment', error: err.message });
+    // Check authentication
+    if (!userId) {
+      throw new AppError(
+        'You must be logged in to create a comment',
+        401,
+        ERROR_CODES.UNAUTHORIZED
+      );
     }
-  },
+
+    // Check required fields
+    if (!postId) {
+      throw new AppError(
+        'Post ID is required',
+        400,
+        ERROR_CODES.INVALID_INPUT
+      );
+    }
+
+    if (!req.body.comment_text || !req.body.comment_text.trim()) {
+      throw new AppError(
+        'Comment text is required',
+        400,
+        ERROR_CODES.INVALID_INPUT
+      );
+    }
+
+    // Verify user exists
+    const user = await User.findByPk(userId, {
+      attributes: ['username']
+    });
+
+    if (!user) {
+      throw new AppError(
+        'User not found',
+        404,
+        ERROR_CODES.USER_NOT_FOUND
+      );
+    }
+
+    // Verify post exists
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      throw new AppError(
+        'Post not found',
+        404,
+        ERROR_CODES.POST_NOT_FOUND
+      );
+    }
+
+    // Create the comment
+    const newComment = await Comment.create({
+      comment_text: req.body.comment_text,
+      user_id: userId,
+      post_id: postId
+    });
+
+    // Clear relevant caches
+    await clearCaches(postId, userId, user.username);
+
+    res.status(201).json(newComment.get({ plain: true }));
+  }),
 
   // Update a comment
-  async updateComment(req, res) {
-    try {
-      const userId = req.session.user_id;
-      const commentId = req.params.id;
+  updateComment: asyncHandler(async (req, res) => {
+    const userId = req.session.user_id;
+    const commentId = req.params.id;
 
-      if (!userId) {
-        return res.status(401).json({ message: 'You must be logged in to update a comment' });
-      }
-
-      const comment = await Comment.findOne({
-        where: {
-          id: commentId,
-          user_id: userId
-        },
-        include: [{
-          model: User,
-          attributes: ['username']
-        }]
-      });
-
-      if (!comment) {
-        return res.status(404).json({ message: 'No comment found with this id or you are not authorized to edit it' });
-      }
-
-      await comment.update({ comment_text: req.body.comment_text });
-
-      // Clear relevant caches
-      await clearCaches(comment.post_id, userId, comment.user.username);
-
-      res.status(200).json({
-        message: 'Comment updated successfully',
-        comment: comment.get({ plain: true })
-      });
-    } catch (err) {
-      console.error('Error updating comment:', err);
-      res.status(500).json({ message: 'Failed to update comment', error: err.message });
+    // Check authentication
+    if (!userId) {
+      throw new AppError(
+        'You must be logged in to update a comment',
+        401,
+        ERROR_CODES.UNAUTHORIZED
+      );
     }
-  },
+
+    if (!req.body.comment_text || !req.body.comment_text.trim()) {
+      throw new AppError(
+        'Comment text is required',
+        400,
+        ERROR_CODES.INVALID_INPUT
+      );
+    }
+
+    // Find comment and verify ownership
+    const comment = await Comment.findOne({
+      where: {
+        id: commentId,
+        user_id: userId
+      },
+      include: [{
+        model: User,
+        attributes: ['username']
+      }]
+    });
+
+    if (!comment) {
+      throw new AppError(
+        'Comment not found or you are not authorized to edit it',
+        404,
+        ERROR_CODES.COMMENT_NOT_FOUND
+      );
+    }
+
+    // Update the comment
+    await comment.update({ comment_text: req.body.comment_text });
+
+    // Clear relevant caches
+    await clearCaches(comment.post_id, userId, comment.user.username);
+
+    res.status(200).json({
+      message: 'Comment updated successfully',
+      comment: comment.get({ plain: true })
+    });
+  }),
 
   // Delete a comment
-  async deleteComment(req, res) {
-    try {
-      const userId = req.session.user_id;
-      const commentId = req.params.id;
+  deleteComment: asyncHandler(async (req, res) => {
+    const userId = req.session.user_id;
+    const commentId = req.params.id;
 
-      if (!userId) {
-        return res.status(401).json({ message: 'You must be logged in to delete a comment' });
-      }
-
-      const comment = await Comment.findOne({
-        where: {
-          id: commentId,
-          user_id: userId
-        },
-        include: [{
-          model: User,
-          attributes: ['username']
-        }]
-      });
-
-      if (!comment) {
-        return res.status(404).json({ message: 'No comment found with this id or you are not authorized to delete it' });
-      }
-
-      const postId = comment.post_id;
-      const username = comment.user.username;
-
-      await comment.destroy();
-
-      // Clear relevant caches
-      await clearCaches(postId, userId, username);
-
-      res.status(200).json({ message: 'Comment deleted successfully' });
-    } catch (err) {
-      console.error('Error deleting comment:', err);
-      res.status(500).json({ message: 'Failed to delete comment', error: err.message });
+    // Check authentication
+    if (!userId) {
+      throw new AppError(
+        'You must be logged in to delete a comment',
+        401,
+        ERROR_CODES.UNAUTHORIZED
+      );
     }
-  }
+
+    // Find comment and verify ownership
+    const comment = await Comment.findOne({
+      where: {
+        id: commentId,
+        user_id: userId
+      },
+      include: [{
+        model: User,
+        attributes: ['username']
+      }]
+    });
+
+    if (!comment) {
+      throw new AppError(
+        'Comment not found or you are not authorized to delete it',
+        404,
+        ERROR_CODES.COMMENT_NOT_FOUND
+      );
+    }
+
+    const postId = comment.post_id;
+    const username = comment.user.username;
+
+    // Delete the comment
+    await comment.destroy();
+
+    // Clear relevant caches
+    await clearCaches(postId, userId, username);
+
+    res.status(200).json({ message: 'Comment deleted successfully' });
+  })
 };
 
 module.exports = commentController;
