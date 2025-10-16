@@ -52,6 +52,24 @@ Comment.init(
         }
       },
     },
+    // Performance indexes
+    indexes: [
+      {
+        fields: ['post_id'] // Speeds up loading all comments for a post
+      },
+      {
+        fields: ['user_id'] // Speeds up loading all comments by a user
+      },
+      {
+        fields: ['created_at'] // Speeds up sorting comments by date
+      },
+      {
+        fields: ['post_id', 'created_at'] // Composite: post's comments sorted by date (most efficient)
+      },
+      {
+        fields: ['user_id', 'created_at'] // Composite: user's comments sorted by date
+      }
+    ],
     sequelize,
     timestamps: true,
     freezeTableName: true,
