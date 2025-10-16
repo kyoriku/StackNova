@@ -13,5 +13,6 @@ router.get('/profile/:username', cacheMiddleware, userController.getUserProfile)
 // Protected routes (require authentication)
 router.post('/logout', withAuth, userController.logout);
 router.post('/logout-all', withAuth, userController.logoutAllDevices);
+router.get('/heartbeat', withAuth, userController.heartbeat);
 
 module.exports = router;
