@@ -102,7 +102,7 @@ export const UserComments = ({ comments, prefetchPost }) => {
         <div
           key={comment.id}
           style={{
-            animation: 'fadeInUp 0.5s ease-out forwards',
+            animation: 'fadeInUp 0.25s ease-out forwards',
             animationDelay: `${index * 0.05}s`,
             opacity: 0
           }}
