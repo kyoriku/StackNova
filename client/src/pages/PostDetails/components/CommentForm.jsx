@@ -35,7 +35,7 @@ export const CommentForm = ({
           placeholder="Type your comment here..."
           disabled={isSubmitting}
           minHeight="170px"
-          previewClassName="p-6 max-w-none 
+          previewClassName="p-6 mb-4.5 max-w-none 
                    bg-gradient-to-br from-white to-gray-50/50 
                    dark:from-gray-800 dark:to-gray-800/50
                    rounded-xl
