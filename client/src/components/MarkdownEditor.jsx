@@ -264,7 +264,7 @@ const MarkdownEditor = ({
         {showPreview ? (
           <div
             style={{ minHeight }}
-            className={previewClassName || `p-4 sm:p-6 max-w-none 
+            className={previewClassName || `p-4 mb-4.5 sm:p-6 max-w-none 
                        bg-gradient-to-br from-white to-gray-50/50 
                        dark:from-gray-800 dark:to-gray-800/50
                        rounded-xl
