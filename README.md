@@ -69,10 +69,10 @@ Visit the live website at: [https://stacknova.ca](https://stacknova.ca)
   * Business information exposure
 
 ## Screenshots
-![StackNova-Home](client/public/readme-screenshots/1-StackNova-Home.jpg)
-![StackNova-Question](client/public/readme-screenshots/2-StackNova-Question.jpg)
-![StackNova-Dashboard](client/public/readme-screenshots/3-StackNova-Dashboard.jpg)
-![StackNova-Profile](client/public/readme-screenshots/4-StackNova-Profile.jpg)
+![Home Page](client/public/readme-screenshots/home.png)
+![Post Details](client/public/readme-screenshots/post.png)
+![User Dashboard](client/public/readme-screenshots/dashboard.png)
+![User Profile](client/public/readme-screenshots/profile.png)
 
 ## Technical Details
 StackNova is built with a modern tech stack implementing several advanced patterns and features:
@@ -193,10 +193,10 @@ To run this project locally:
 - [x] Favicon
 - [x] Improve accessibility
 - [x] Modularize code
-- [ ] Meta tags for SEO
+- [x] Meta tags for SEO
+- [x] Integrate social login options
 - [ ] Implement answer acceptance feature
 - [ ] Add user reputation system
-- [ ] Integrate social login options
 - [ ] Add real-time notifications
 
 ## Contributing
