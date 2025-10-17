@@ -35,7 +35,8 @@ export const TitleInput = ({ value, onChange, disabled, maxChars = 100 }) => {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-3 rounded-xl
-                 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
+                 bg-gradient-to-br from-white to-gray-50/50 
+                 dark:from-gray-800 dark:to-gray-800/50
                  text-gray-900 dark:text-gray-100 
                  border-2 border-gray-200 dark:border-gray-700
                  focus:outline-none focus:border-blue-500 dark:focus:border-blue-400

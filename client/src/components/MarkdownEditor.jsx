@@ -265,7 +265,8 @@ const MarkdownEditor = ({
           <div
             style={{ minHeight }}
             className={previewClassName || `p-4 sm:p-6 max-w-none 
-                       bg-white dark:bg-gray-900 
+                       bg-gradient-to-br from-white to-gray-50/50 
+                       dark:from-gray-800 dark:to-gray-800/50
                        rounded-xl
                        border-2 border-gray-200 dark:border-gray-700
                        overflow-auto 
@@ -280,7 +281,8 @@ const MarkdownEditor = ({
             rows={rows}
             style={{ minHeight }}
             className="[field-sizing:content] w-full px-4 py-3
-                     bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm
+                     bg-gradient-to-br from-white to-gray-50/50 
+                     dark:from-gray-800 dark:to-gray-800/50
                      text-gray-900 dark:text-gray-100 
                      border-2 border-gray-200 dark:border-gray-700
                      rounded-xl
