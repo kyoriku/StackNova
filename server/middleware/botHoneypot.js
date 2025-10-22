@@ -188,6 +188,15 @@ const trackSuspiciousActivity = async (ip, path, severity = 'low') => {
 
 // Middleware to check for banned IPs
 const checkBannedIP = async (req, res, next) => {
+  // Whitelist localhost during development
+  const isLocalhost = req.ip === '::1' || 
+                      req.ip === '::ffff:127.0.0.1' || 
+                      req.ip === '127.0.0.1';
+  
+  if (isLocalhost && process.env.NODE_ENV !== 'production') {
+    return next();
+  }
+  
   const banned = await isBanned(req.ip);
   
   if (banned) {
@@ -203,6 +212,17 @@ const checkBannedIP = async (req, res, next) => {
 
 // Honeypot middleware for detecting bots
 const botHoneypot = async (req, res, next) => {
+  // Whitelist dev routes and localhost
+  const isLocalhost = req.ip === '::1' || 
+                      req.ip === '::ffff:127.0.0.1' || 
+                      req.ip === '127.0.0.1';
+  
+  const isDevRoute = req.path.startsWith('/api/dev/');
+  
+  if ((isLocalhost || isDevRoute) && process.env.NODE_ENV !== 'production') {
+    return next();
+  }
+
   // Check for obvious bot/attacker paths (NEVER legitimate)
   const isObviousBot = obviousBotPaths.some(path => 
     req.path.toLowerCase().startsWith(path.toLowerCase())

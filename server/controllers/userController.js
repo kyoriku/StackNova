@@ -92,22 +92,6 @@ const generateUniqueUsername = async (email, displayName) => {
 };
 
 const userController = {
-  heartbeat: asyncHandler(async (req, res) => {
-    if (!req.session.user_id) {
-      throw new AppError(
-        'No active session',
-        401,
-        ERROR_CODES.UNAUTHORIZED
-      );
-    }
-
-    res.status(200).json({
-      active: true,
-      userId: req.session.user_id,
-      lastActivity: req.session.lastActivity
-    });
-  }),
-
   // Create new user with session regeneration
   createUser: asyncHandler(async (req, res, next) => {
     const userData = await User.create(req.body);
@@ -218,6 +202,11 @@ const userController = {
         ERROR_CODES.UNAUTHORIZED
       );
     }
+  //     // Check if session exists and is logged in
+  // if (!req.session || !req.session.logged_in) {
+  //   // Session already gone - this is fine, return success
+  //   return res.status(204).end();
+  // }
 
     // Destroy session
     req.session.destroy((err) => {
@@ -312,6 +301,22 @@ const userController = {
       rememberMe: req.session.rememberMe || false
     });
   }),
+
+  heartbeat: asyncHandler(async (req, res) => {
+  // Return active session info, or indicate no session
+  if (!req.session || !req.session.user_id) {
+    return res.status(401).json({
+      active: false,
+      message: 'No active session'
+    });
+  }
+
+  res.status(200).json({
+    active: true,
+    userId: req.session.user_id,
+    lastActivity: req.session.lastActivity
+  });
+}),
 
   // Get user profile
   getUserProfile: asyncHandler(async (req, res) => {
@@ -413,20 +418,20 @@ const userController = {
     req.session.regenerate((err) => {
       if (err) {
         console.error('Session regeneration error:', err);
-        return res.redirect(`${process.env.FRONTEND_URL}/login?error=session_error`);
+        return res.redirect(`${process.env.CLIENT_URL}/login?error=session_error`);
       }
 
       setSessionData(req, userData.id);
 
       req.session.save(() => {
-        res.redirect(`${process.env.FRONTEND_URL}${returnPath}`);
+        res.redirect(`${process.env.CLIENT_URL}${returnPath}`);
       });
     });
   }),
 
   // Handle OAuth failure
   oauthFailure: asyncHandler(async (req, res) => {
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_cancelled`);
+    res.redirect(`${process.env.CLIENT_URL}/login?error=oauth_cancelled`);
   })
 };
 

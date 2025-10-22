@@ -1,5 +1,5 @@
 const { Post, User, Comment } = require('../models');
-const { generateUniqueSlug } = require('../utils/slugUtils');
+const { generateSlug, findNextCounter } = require('../utils/slugUtils');
 const redisService = require('../config/redisCache');
 const { AppError, asyncHandler } = require('../middleware/errorHandler');
 const ERROR_CODES = require('../constants/errorCodes');
@@ -155,16 +155,61 @@ const postController = {
       );
     }
 
-    // Generate slug using utility function
-    const slug = await generateUniqueSlug(req.body.title);
+    const baseSlug = generateSlug(req.body.title);
+    let newPost;
+    let attempts = 0;
+    const maxRetries = 5;
 
-    const newPost = await Post.create({
-      title: req.body.title,
-      content: req.body.content,
-      slug: slug,
-      user_id: userId,
-      username: user.username
-    });
+    while (attempts < maxRetries) {
+      try {
+        let slug;
+
+        if (attempts === 0) {
+          // First attempt: try clean slug
+          slug = baseSlug;
+        } else {
+          // Retry: find next available counter
+          const counter = await findNextCounter(baseSlug);
+          slug = `${baseSlug}-${counter}`;
+        }
+
+        // Try to create post
+        newPost = await Post.create({
+          title: req.body.title,
+          content: req.body.content,
+          slug: slug,
+          user_id: userId,
+          username: user.username
+        });
+
+        break; // Success! Exit retry loop
+
+      } catch (error) {
+        attempts++;
+
+        // Check if it's a unique constraint error on slug
+        if (error.name === 'SequelizeUniqueConstraintError' &&
+          error.fields?.slug &&
+          attempts < maxRetries) {
+          // Slug collision - retry with counter
+          // Small random delay to reduce thundering herd
+          await new Promise(resolve => setTimeout(resolve, Math.random() * 50));
+          continue;
+        }
+
+        // If not a slug error or out of retries, throw
+        throw error;
+      }
+    }
+
+    // If we exhausted retries
+    if (!newPost) {
+      throw new AppError(
+        'Failed to create post after multiple attempts. Please try again.',
+        500,
+        ERROR_CODES.INTERNAL_ERROR
+      );
+    }
 
     const postWithDetails = await Post.findByPk(newPost.id, {
       include: [
@@ -182,7 +227,7 @@ const postController = {
       ]
     });
 
-    // Clear relevant caches BEFORE sending response
+    // Clear relevant caches
     await clearCaches(null, userId, user.username);
 
     res.status(201).json(postWithDetails.get({ plain: true }));
@@ -220,13 +265,61 @@ const postController = {
       );
     }
 
-    // If title is changing, generate new slug
+    // If title is changing, generate new slug with retry logic
     const updateData = { ...req.body };
-    if (req.body.title && req.body.title !== post.title) {
-      updateData.slug = await generateUniqueSlug(req.body.title, post.id);
-    }
 
-    await post.update(updateData);
+    if (req.body.title && req.body.title !== post.title) {
+      const baseSlug = generateSlug(req.body.title);
+      let attempts = 0;
+      const maxRetries = 5;
+      let newSlug = null;
+
+      while (attempts < maxRetries) {
+        try {
+          if (attempts === 0) {
+            // First attempt: try clean slug
+            newSlug = baseSlug;
+          } else {
+            // Retry: find next available counter (excluding current post)
+            const counter = await findNextCounter(baseSlug, post.id);
+            newSlug = `${baseSlug}-${counter}`;
+          }
+
+          // Try to update with new slug
+          updateData.slug = newSlug;
+          await post.update(updateData);
+
+          break; // Success! Exit retry loop
+
+        } catch (error) {
+          attempts++;
+
+          // Check if it's a unique constraint error on slug
+          if (error.name === 'SequelizeUniqueConstraintError' &&
+            error.fields?.slug &&
+            attempts < maxRetries) {
+            // Slug collision - retry with counter
+            await new Promise(resolve => setTimeout(resolve, Math.random() * 50));
+            continue;
+          }
+
+          // If not a slug error or out of retries, throw
+          throw error;
+        }
+      }
+
+      // If we exhausted retries
+      if (attempts >= maxRetries && !newSlug) {
+        throw new AppError(
+          'Failed to update post after multiple attempts. Please try again.',
+          500,
+          ERROR_CODES.INTERNAL_ERROR
+        );
+      }
+    } else {
+      // Title not changing, just update other fields
+      await post.update(updateData);
+    }
 
     // Fetch the updated post with all relations
     const updatedPostWithDetails = await Post.findByPk(post.id, {

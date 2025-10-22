@@ -39,7 +39,10 @@ const sessionSecurity = (req, res, next) => {
 
   // Only flag if browser family completely changes
   if (sessionBrowser !== currentBrowser) {
-    console.warn(`Security: Browser changed from ${sessionBrowser} to ${currentBrowser} for user ${req.session.user_id}`);
+    console.warn(
+      `Security violation: Browser changed from ${sessionBrowser} to ${currentBrowser}`,
+      `for user ${req.session.user_id}`
+    );
 
     req.session.destroy((err) => {
       if (err) console.error('Session destroy error:', err);
@@ -57,6 +60,7 @@ const sessionSecurity = (req, res, next) => {
 
 // Check for session inactivity timeout
 const checkInactivity = (req, res, next) => {
+  // console.log('checkInactivity running for:', req.path);
   if (req.session.logged_in) {
     // Skip inactivity check if remember me is active
     if (req.session.rememberMe) {
@@ -72,7 +76,13 @@ const checkInactivity = (req, res, next) => {
       const inactiveTime = now - req.session.lastActivity;
 
       if (inactiveTime > INACTIVITY_TIMEOUT) {
-        console.log(`Session expired due to inactivity for user ${req.session.user_id}`);
+        const inactiveMinutes = Math.floor(inactiveTime / 1000 / 60);
+        
+        // Use console.info for expected behavior (not an error)
+        console.info(
+          `Session timeout: user ${req.session.user_id}`,
+          `inactive for ${inactiveMinutes}m (limit: ${INACTIVITY_TIMEOUT / 1000 / 60}m)`
+        );
 
         req.session.destroy((err) => {
           if (err) console.error('Session destroy error:', err);

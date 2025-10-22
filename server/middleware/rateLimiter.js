@@ -11,6 +11,14 @@ const getRedisUrl = () => {
   return process.env.REDIS_URL || 'redis://localhost:6379';
 };
 
+// Helper function to skip rate limiting for localhost in development
+const skipLocalhost = (req) => {
+  const isLocalhost = req.ip === '::1' || 
+                      req.ip === '::ffff:127.0.0.1' || 
+                      req.ip === '127.0.0.1';
+  return isLocalhost && process.env.NODE_ENV !== 'production';
+};
+
 // Create Redis client for rate limiting
 const redisClient = createClient({
   url: getRedisUrl(),
@@ -44,6 +52,7 @@ if (process.env.NODE_ENV !== 'test') {
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000, // limit each IP to 1000 requests per windowMs
+  skip: skipLocalhost,
   standardHeaders: true,
   legacyHeaders: false,
   store: new RedisStore({
@@ -62,6 +71,7 @@ const apiLimiter = rateLimit({
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 15, // limit each IP to 15 requests per windowMs
+  skip: skipLocalhost,
   standardHeaders: true,
   legacyHeaders: false,
   store: new RedisStore({
@@ -82,6 +92,7 @@ const loginLimiter = rateLimit({
 const postLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 25, // limit each IP to 25 requests per windowMs
+  skip: skipLocalhost,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
@@ -104,6 +115,7 @@ const postLimiter = rateLimit({
 const commentLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 50, // limit each IP to 50 requests per windowMs
+  skip: skipLocalhost,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => {
@@ -126,6 +138,7 @@ const commentLimiter = rateLimit({
 const oauthLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // limit each IP to 10 requests per windowMs
+  skip: skipLocalhost,
   standardHeaders: true,
   legacyHeaders: false,
   store: new RedisStore({
@@ -146,6 +159,7 @@ const oauthLimiter = rateLimit({
 const readLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 100, // limit each IP to 100 requests per windowMs
+  skip: skipLocalhost,
   standardHeaders: true,
   legacyHeaders: false,
   store: new RedisStore({
@@ -158,7 +172,10 @@ const readLimiter = rateLimit({
       error: 'Too many requests. Please slow down.'
     });
   },
-  skip: (req) => req.method !== 'GET'
+  skip: (req) => {
+    // Skip for non-GET requests OR localhost in development
+    return req.method !== 'GET' || skipLocalhost(req);
+  }
 });
 
 module.exports = {

@@ -9,7 +9,7 @@ const sequelize = require('./config/connection');
 const createSessionConfig = require('./config/session');
 const getHelmetConfig = require('./config/helmet');
 const { apiLimiter, readLimiter } = require('./middleware/rateLimiter');
-const { sessionSecurity, checkInactivity } = require('./middleware/sessionSecurity');
+// const { sessionSecurity, checkInactivity } = require('./middleware/sessionSecurity');
 const { checkBannedIP, botHoneypot } = require('./middleware/botHoneypot');
 const uuidRedirect = require('./middleware/uuidRedirect');
 const faviconHeaders = require('./middleware/favicon');
@@ -26,7 +26,7 @@ if (isProd) {
 
 // CORS configuration
 const corsOptions = {
-  origin: isProd ? process.env.FRONTEND_URL : 'http://localhost:3000',
+  origin: isProd ? process.env.CLIENT_URL : 'http://localhost:3000',
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -47,8 +47,8 @@ createSessionConfig(isProd).then((sessionConfig) => {
   app.use(session(sessionConfig));
 
   // Session security
-  app.use('/api', sessionSecurity);
-  app.use('/api', checkInactivity);
+  // app.use('/api', sessionSecurity);
+  // app.use('/api', checkInactivity);
 
   // Rate limiting
   app.use(apiLimiter);
