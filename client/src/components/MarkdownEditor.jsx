@@ -113,7 +113,6 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
     ...themes.vsDark,
     plain: {
       ...themes.vsDark.plain,
-      // backgroundColor: '#0d1117'
       backgroundColor: '#141b24'
     }
   };
@@ -173,24 +172,6 @@ const CodeBlock = ({ children, className, showLineNumbers = false }) => {
   );
 };
 
-const EditorTab = ({ active, onClick, children }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className={`
-      relative px-6 py-2.5 font-semibold text-sm mb-2 
-      transition-all duration-200 cursor-pointer dark:focus:ring-blue-400
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 
-      ${active
-        ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl z-10 shadow-sm'
-        : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'
-      }
-    `}
-  >
-    {children}
-  </button>
-);
-
 const defaultPlaceholder = `Write your content here... Supports Markdown formatting!
 
 # Formatting examples:
@@ -245,19 +226,30 @@ const MarkdownEditor = ({
 
   return (
     <div className="w-full">
-      <div className="flex gap-2">
-        <EditorTab
-          active={!showPreview}
+      {/* New pill-style tabs */}
+      <div className="inline-flex items-center gap-2 bg-gray-200 dark:bg-gray-700/50 p-2 rounded-full mb-2">
+        <button
+          type="button"
           onClick={() => setShowPreview(false)}
+          className={`px-6 py-2 rounded-full font-semibold transition-all cursor-pointer text-sm
+            ${!showPreview 
+              ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.1)]' 
+              : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
         >
           Write
-        </EditorTab>
-        <EditorTab
-          active={showPreview}
+        </button>
+        <button
+          type="button"
           onClick={() => setShowPreview(true)}
+          className={`px-6 py-2 rounded-full font-semibold transition-all cursor-pointer text-sm
+            ${showPreview 
+              ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.1)]' 
+              : 'bg-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+            }`}
         >
           Preview
-        </EditorTab>
+        </button>
       </div>
 
       <div className="relative">
