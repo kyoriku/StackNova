@@ -63,6 +63,7 @@ A software engineer community platform where developers ask questions, share kno
 - Redis for server-side caching and sessions
 - React Query for client-side caching and prefetching
 - Performance benchmarking with perf_hooks
+- Load tested with k6 (50 concurrent users)
 
 **Features**
 - Search by title, content, author, date, or comments
