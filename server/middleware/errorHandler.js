@@ -11,16 +11,42 @@ class AppError extends Error {
 
 // Error handler middleware
 const errorHandler = (err, req, res, next) => {
-  // Log full error server-side for debugging
-  console.error('Error occurred:', {
-    message: err.message,
-    stack: err.stack,
-    code: err.code,
-    path: req.path,
-    method: req.method,
-    ip: req.ip,
-    userId: req.session?.user_id
-  });
+  // Define which errors are expected and shouldn't be logged as errors
+  const isExpectedAuthError =
+    err.code === 'UNAUTHORIZED' &&
+    (req.path === '/api/users/heartbeat' || req.path === '/api/users/logout');
+
+  const isExpectedSessionTimeout =
+    err.code === 'SESSION_TIMEOUT' &&
+    req.path === '/api/users/logout'; // Logout after timeout is expected
+
+  const isSessionTimeoutOnOtherRoute =
+    err.code === 'SESSION_TIMEOUT' &&
+    req.path !== '/api/users/logout';
+
+  // Log appropriately based on error type
+  if (isExpectedAuthError || isExpectedSessionTimeout) {
+    // These are normal - don't log at all
+    // Frontend is just cleaning up after expiration
+  } else if (isSessionTimeoutOnOtherRoute) {
+    // Session timeouts on other routes are informational
+    console.info('Session timeout:', {
+      path: req.path,
+      userId: req.session?.user_id || 'unknown',
+      message: err.message
+    });
+  } else {
+    // Actual errors - log with full detail
+    console.error('Error occurred:', {
+      message: err.message,
+      stack: err.stack,
+      code: err.code,
+      path: req.path,
+      method: req.method,
+      ip: req.ip,
+      userId: req.session?.user_id
+    });
+  }
 
   // Default error values
   let statusCode = err.statusCode || 500;
