@@ -46,24 +46,23 @@ A software engineer community platform where developers ask questions, share kno
 **Backend**
 - Node.js/Express REST API
 - Express-session with HTTP-only cookies
-- Google OAuth integration
+- Session storage in Redis (connect-redis)
+- Google OAuth integration (Passport.js)
 - Bcrypt password hashing
-- Rate limiting (express-rate-limit)
+- Rate limiting with Redis store (express-rate-limit, rate-limit-redis)
 - Input validation (express-validator) and sanitization (sanitize-html)
 - Helmet.js security headers
 
 **Database**
 - MySQL with Sequelize ORM
 - Models: User, Post, Comment with associations
-- Session storage with connect-session-sequelize
 - UUID primary keys
 - Indexed queries (email, slug, user_id, post_id)
 
 **Performance & Caching**
-- Redis for server-side caching
+- Redis for server-side caching and sessions
 - React Query for client-side caching and prefetching
 - Performance benchmarking with perf_hooks
-- Load tested with k6 (30-50 concurrent users)
 
 **Features**
 - Search by title, content, author, date, or comments
@@ -112,8 +111,16 @@ To run this project locally:
     # Session Configuration
     SESSION_SECRET='your_session_secret'
     
-    # Redis Configuration (if using Redis locally)
+    # Redis Configuration
     REDIS_URL='redis://localhost:6379'
+    
+    # URLs
+    FRONTEND_URL='http://localhost:3000'
+    SERVER_URL='http://localhost:3001'
+    
+    # Google OAuth Configuration
+    GOOGLE_CLIENT_ID='your_google_client_id'
+    GOOGLE_CLIENT_SECRET='your_google_client_secret'
     
     # Node Environment
     NODE_ENV='development'
@@ -125,7 +132,7 @@ To run this project locally:
     source db/schema.sql
     ```
 
-6. Set up Redis (required for caching)
+6. Set up Redis (required for sessions and caching)
     ```bash
     # Install Redis if not already installed
     # For macOS:
