@@ -1,7 +1,16 @@
 # StackNova
-*A software engineer community platform built with React and Node.js, enabling technical discussions with Markdown support and optimized data retrieval*
 
-## Built With  
+A software engineer community platform where developers ask questions, share knowledge, and engage in technical discussions.
+
+**[Live Site](https://stacknova.ca)** | **Tech Stack:** React, Node.js, Express, MySQL, Redis, Tailwind CSS
+
+**Key Features:** HTTP-only cookie authentication • Markdown with syntax highlighting • Redis caching • Search • Light/dark modes • Rate limiting & XSS prevention
+
+![Home Page](client/public/readme-screenshots/home.png)
+
+<details>
+<summary><b>Built With</b></summary>
+
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&logo=JavaScript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=React&logoColor=black)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-06B6D4.svg?style=for-the-badge&logo=TailwindCSS&logoColor=white)](https://tailwindcss.com/docs/installation/using-vite)
@@ -13,12 +22,11 @@
 [![Redis](https://img.shields.io/badge/Redis-DC382D.svg?style=for-the-badge&logo=Redis&logoColor=white)](https://redis.io/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF.svg?style=for-the-badge&logo=Vite&logoColor=white)](https://vite.dev/guide/)
 
+</details>
+
 ## Table of Contents
-- [Description](#description)
-  - [Deployed Site](#deployed-site)
-- [Features](#features)
-- [Screenshots](#screenshots)
 - [Technical Details](#technical-details)
+- [Screenshots](#screenshots)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Roadmap](#roadmap)
@@ -26,95 +34,55 @@
 - [License](#license)
 - [Questions](#questions)
 
-## Description
-StackNova is a software engineer community and Q&A platform that allows developers to ask questions, share knowledge, and engage in technical discussions. Built using a React frontend and Node.js/Express backend with MySQL database, the platform implements best practices for performance, security, and user experience.
+## Technical Details
 
-The application features secure authentication with HTTP-only cookies, advanced search capabilities, and a responsive UI with light/dark modes powered by Tailwind CSS. StackNova leverages server-side caching with Redis and client-side optimizations with React Query to deliver exceptional performance. The platform supports Markdown formatting for posts and comments, allowing developers to share code snippets with syntax highlighting through prism-react-renderer.
+**Frontend**
+- React with hooks and Context API
+- React Query for data fetching and caching
+- Tailwind CSS with dark/light mode
+- Code splitting and lazy loading
+- Markdown rendering with syntax highlighting (react-markdown, prism-react-renderer)
 
-### Deployed Site
-Visit the live website at: [https://stacknova.ca](https://stacknova.ca)
+**Backend**
+- Node.js/Express REST API
+- Express-session with HTTP-only cookies
+- Google OAuth integration
+- Bcrypt password hashing
+- Rate limiting (express-rate-limit)
+- Input validation (express-validator) and sanitization (sanitize-html)
+- Helmet.js security headers
 
-## Features
-- **Secure Auth with HTTP-only Cookies**: Robust authentication system with protected routes and secure session management.
-  * Verification via API endpoint using HTTP-only cookies
-  * Client-side auth context for state management
-  * Server-side session storage with express-session
-- **Advanced Search**: Find posts by title, content, author, date, or comments.
-- **Pagination**: Displays 10 posts per page for better navigation.
-- **Responsive UI**: Adaptive design with light/dark modes powered by Tailwind CSS.
-- **Server-Side Caching**: Speeds up responses using Redis.
-- **Client-Side Caching & Prefetching**: Optimized data fetching with React Query.
-- **Rate Limiting**: Protects against excessive requests using express-rate-limit.
-  * Restricts login attempts
-  * Limits post submissions
-  * Controls comment frequency
-- **Validation & Sanitization**: Ensures clean and safe input with express-validator and sanitize-html.
-  * Preserves Markdown formatting
-  * Prevents XSS attacks
-- **Rich Icons**: Clean and modern icons provided by lucide-react.
-- **Markdown Support**: Write and format posts with react-markdown.
-  * Syntax highlighting via prism-react-renderer
-  * Code block formatting
-- **Performance Benchmarking**: Measures database vs. cache query times using perf_hooks.
-  * Provides insights into performance improvements
-  * Helps identify bottlenecks
-- **User Profiles**: View comprehensive user statistics.
-  * Post and comment counts
-  * Account creation date
-  * Activity tracking
-- **UUID-based IDs**: Enhances security by preventing:
-  * Enumeration attacks
-  * URL tampering
-  * Data leakage
-  * Business information exposure
+**Database**
+- MySQL with Sequelize ORM
+- Models: User, Post, Comment with associations
+- Session storage with connect-session-sequelize
+- UUID primary keys
+- Indexed queries (email, slug, user_id, post_id)
+
+**Performance & Caching**
+- Redis for server-side caching
+- React Query for client-side caching and prefetching
+- Performance benchmarking with perf_hooks
+- Load tested with k6 (30-50 concurrent users)
+
+**Features**
+- Search by title, content, author, date, or comments
+- Pagination (10 posts per page)
+- User profiles with activity tracking
+- SEO-friendly URLs with automatic slug generation
+- Sitemap generation for search engines
+- Remember Me option (30-day sessions)
+- XSS prevention via sanitization
 
 ## Screenshots
-![Home Page](client/public/readme-screenshots/home.png)
+<details>
+<summary><b>View More Screenshots</b></summary>
+
 ![Post Details](client/public/readme-screenshots/post.png)
 ![User Dashboard](client/public/readme-screenshots/dashboard.png)
 ![User Profile](client/public/readme-screenshots/profile.png)
 
-## Technical Details
-StackNova is built with a modern tech stack implementing several advanced patterns and features:
-
-* **Frontend Architecture**:
-  * React with functional components and hooks
-  * Context API for state management
-  * React Query for data fetching and caching
-  * Tailwind CSS for responsive styling
-  * Dark/light mode theming
-  * Code splitting for optimized loading
-* **Backend Structure**:
-  * Node.js with Express for API endpoints
-  * API-focused architecture separating concerns
-  * Models for data structure and database interaction
-  * Controllers for business logic
-  * RESTful API design principles
-  * Middleware for authentication, validation, and error handling
-  * Rate limiting for security
-* **Database Design**:
-  * MySQL with Sequelize ORM
-  * User Model: Authentication and profile information
-  * Post Model: Title, content, and user relationships
-  * Comment Model: Content with user and post relationships
-  * Efficient indexing for performance
-* **Authentication System**:
-  * HTTP-only cookies for secure sessions
-  * Express-session for session management
-  * Bcrypt for password hashing
-  * Protected routes using middleware
-  * Session persistence with connect-session-sequelize
-* **Performance Optimizations**:
-  * Redis for server-side caching
-  * Query optimization
-  * Client-side data prefetching
-  * Lazy loading components
-* **Security Features**:
-  * XSS prevention through sanitization
-  * Rate limiting
-  * Input validation
-  * Secure cookie configuration
-  * UUID-based identifiers
+</details>
 
 ## Installation
 To run this project locally:
@@ -129,13 +97,12 @@ To run this project locally:
     cd stacknova
     ```
 
-3. Install dependencies for both client and server automatically
+3. Install dependencies
     ```bash
     npm install
     ```
-    This will install the dependencies for both client and server thanks to the custom install script in the root package.json.
 
-4. Create a `.env` file in the server directory with the following variables
+4. Create a `.env` file in the server directory
     ```bash
     # Database Configuration
     DB_NAME='stacknova_db'
@@ -177,56 +144,38 @@ To run this project locally:
     ```
 
 ## Usage
-1. Start the development server (both frontend and backend)
+1. Start the development server
     ```bash
     npm run dev
     ```
 
 2. Access the application at `http://localhost:3000`
 
-3. Create an account to:
-   * Ask and answer questions
-   * Manage your content through the dashboard
-   * View your activity history
+3. Create an account to ask questions, post answers, and view your activity
 
 ## Roadmap
+- [x] Accessibility improvements
+- [x] SEO meta tags
 - [x] Favicon
-- [x] Improve accessibility
-- [x] Modularize code
-- [x] Meta tags for SEO
-- [x] Integrate social login options
-- [ ] Implement answer acceptance feature
-- [ ] Add user reputation system
-- [ ] Add real-time notifications
+- [x] Code modularization
+- [x] Social login options
+- [ ] Answer acceptance feature
+- [ ] User reputation system
+- [ ] Real-time notifications
 
 ## Contributing
-Contributions are welcome! Here are ways you can help:
+Contributions are welcome:
 
 1. Fork the repository
-2. Create a feature branch
-    ```bash
-    git checkout -b feature/YourFeature
-    ```
-3. Make your changes - this could include:
-    * Adding new features
-    * Improving the UI/UX
-    * Optimizing database queries
-    * Enhancing security
-    * Bug fixes
-4. Commit your changes
-5. Push to your branch
-6. Open a Pull Request
-
-Please ensure your contributions:
-* Follow the existing code style
-* Include appropriate error handling
-* Test all changes locally
-* Include clear descriptions in your pull request
+2. Create a feature branch (`git checkout -b feature/YourFeature`)
+3. Make your changes
+4. Commit and push to your branch
+5. Open a Pull Request
 
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge&logo=mit)](https://opensource.org/licenses/MIT)
 
-This project is licensed under the [MIT](https://opensource.org/licenses/MIT) license - see the LICENSE file for details.
+This project is licensed under the [MIT](https://opensource.org/licenses/MIT) license.
 
 ## Questions
-For any questions, feel free to email me at hello@austingraham.ca.
+For questions, email me at devkyoriku@gmail.com.
