@@ -219,7 +219,7 @@ const Header = () => {
             onMouseEnter={() => prefetchPosts()}
           >
             <img
-              src="favicon/favicon.svg"
+              src="/favicon/favicon.svg"
               alt="StackNova Logo"
               className="w-8 h-8"
             />
