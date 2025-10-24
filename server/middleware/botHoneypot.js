@@ -204,7 +204,7 @@ const checkBannedIP = async (req, res, next) => {
     const alreadyLogged = await redisService.get(logKey);
 
     if (!alreadyLogged) {
-      console.log(`[BLOCKED] ${req.ip} → ${req.path}`);
+      console.log(`\x1b[31m[BLOCKED]\x1b[0m ${req.ip} → ${req.path}`);
       await redisService.set(logKey, true, 3600); // 1 hour
     }
 
