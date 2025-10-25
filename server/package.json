@@ -5,7 +5,13 @@
   "scripts": {
     "start": "NODE_ENV=production node server.js",
     "watch": "NODE_ENV=development nodemon server.js",
-    "seed": "node seeds/seed.js"
+    "seed": "node seeds/seed.js",
+    "test:rate-limit": "node tests/rate-limit.js",
+    "test:benchmark": "node tests/benchmark.js",
+    "test:load": "k6 run tests/k6-load-test.js",
+    "test:load:web": "k6 run --out web-dashboard tests/k6-load-test.js",
+    "redis:inspect": "node tests/inspect-redis.js",
+    "redis:reset": "node tests/reset-rate-limit.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
