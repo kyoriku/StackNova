@@ -16,7 +16,26 @@ const skipLocalhost = (req) => {
   const isLocalhost = req.ip === '::1' || 
                       req.ip === '::ffff:127.0.0.1' || 
                       req.ip === '127.0.0.1';
-  return isLocalhost && process.env.NODE_ENV !== 'production';
+  
+  // If not localhost, never skip
+  if (!isLocalhost) 
+    return false;
+  
+  // If in production, never skip localhost
+  if (process.env.NODE_ENV === 'production') 
+    return false;
+  
+  // In development: check for test header OR environment variable
+  // This allows testing without restarting server
+  const isTestRequest = req.headers['x-bypass-localhost-whitelist'] === 'true';
+  const isTestMode = process.env.TEST_RATE_LIMITS === 'true';
+  
+  // Don't skip (apply rate limits) if either test mode is active
+  if (isTestRequest || isTestMode) 
+    return false;
+  
+  // Otherwise skip rate limits for localhost in development
+  return true;
 };
 
 // Create Redis client for rate limiting

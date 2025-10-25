@@ -1,7 +1,7 @@
 const sequelize = require("../config/connection");
 const { performance } = require("perf_hooks");
 const { Post, User, Comment } = require("../models");
-const redisService = require("../config/redis");
+const redisService = require("../config/redisCache");
 
 // Fetch from database
 async function fetchFromDatabase() {
@@ -89,8 +89,8 @@ async function runMultipleBenchmarks() {
   const allCacheTimes = [];
   const allImprovements = [];
 
-  // Run 20 benchmark sets
-  for (let i = 0; i < 20; i++) {
+  // Run 50 benchmark sets
+  for (let i = 0; i < 50; i++) {
     const results = await runBenchmark(i + 1);
     allDbTimes.push(results.avgDbTime);
     allCacheTimes.push(results.avgCacheTime);

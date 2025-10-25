@@ -116,7 +116,7 @@ To run this project locally:
     REDIS_URL='redis://localhost:6379'
     
     # URLs
-    FRONTEND_URL='http://localhost:3000'
+    CLIENT_URL='http://localhost:3000'
     SERVER_URL='http://localhost:3001'
     
     # Google OAuth Configuration
