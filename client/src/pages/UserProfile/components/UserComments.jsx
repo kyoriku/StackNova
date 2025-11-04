@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import { MarkdownPreview } from '../../../components/MarkdownEditor';
@@ -6,10 +6,32 @@ import { Pagination } from '../../../pages/Posts/components/Pagination';
 import { ResponsiveDate } from '../../../components/ResponsiveDate';
 
 export const UserComments = ({ comments, prefetchPost }) => {
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 4;
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('newest');
   const [expandedComments, setExpandedComments] = useState(new Set());
+  const headerRef = useRef(null);
+  const prevPage = useRef(1);
+
+  useEffect(() => {
+    if (prevPage.current === currentPage) {
+      prevPage.current = currentPage;
+      return;
+    }
+
+    prevPage.current = currentPage;
+
+    if (!headerRef.current) return;
+
+    const NAV_HEIGHT = document.querySelector('nav')?.offsetHeight ?? 64;
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const y = headerRef.current.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT;
+        window.scrollTo({ top: y, behavior: 'instant' });
+      })
+    });
+  }, [currentPage]);
 
   const toggleComment = (commentId) => {
     setExpandedComments((prev) => {
@@ -73,7 +95,7 @@ export const UserComments = ({ comments, prefetchPost }) => {
   return (
     <div className="space-y-4 mt-8">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-black bg-gradient-to-r 
+        <h2 ref={headerRef} className="text-2xl font-black bg-gradient-to-r 
                      from-gray-900 via-blue-800 to-purple-800 
                      dark:from-gray-100 dark:via-blue-300 dark:to-purple-300
                      bg-clip-text text-transparent">

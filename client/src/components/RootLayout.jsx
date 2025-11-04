@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from "@ta
 import Header from "./Header";
 import Footer from "./Footer";
 import SessionWarningModal from "./sessionWarningModal";
+import ScrollToTop from './ScrollToTop';
 
 // QueryClient with auth integration
 const QueryClientWithAuth = ({ children }) => {
@@ -49,7 +50,7 @@ const QueryClientWithAuth = ({ children }) => {
             if (error?.status === 401 || error?.response?.status === 401) {
               return false;
             }
-            return failureCount < 1;
+            return failureCount < 3;
           },
           structuralSharing: false,
         },
@@ -69,6 +70,7 @@ export const RootLayout = () => {
     <AuthProvider>
       <ThemeProvider>
         <QueryClientWithAuth>
+          <ScrollToTop />
           <div className="min-h-screen bg-gray-100
                         bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20
                         dark:from-gray-900 dark:via-gray-900 dark:to-gray-800
