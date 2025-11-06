@@ -89,12 +89,12 @@ To run this project locally:
 
 1. Clone the repository
     ```bash
-    git clone https://github.com/kyoriku/stacknova.git
+    git clone https://github.com/kyoriku/stack-nova.git
     ```
 
 2. Navigate to the project directory
     ```bash
-    cd stacknova
+    cd stack-nova
     ```
 
 3. Install dependencies
