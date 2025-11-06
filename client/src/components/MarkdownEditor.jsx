@@ -321,6 +321,13 @@ export const MarkdownPreview = ({ content, showLineNumbers = false }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      urlTransform={(url) => {
+        // Only allow real URLs with proper protocols
+        if (!/^(https?|mailto|ftp):\/\//i.test(url)) {
+          return null; // Don't create a link for filesystem paths, etc.
+        }
+        return url;
+      }}
       components={{
         code({ node, inline, className, children, ...props }) {
           const hasNewlines = String(children).includes('\n');
